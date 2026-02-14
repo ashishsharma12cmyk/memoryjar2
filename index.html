@@ -51,15 +51,18 @@
         ❤️ Happy Valentine's Day, Beautiful! ❤️
     </div>
 
-    <header class="bg-white p-10 rounded-b-[3rem] shadow-lg text-center border-b border-rose-100 relative z-10">
-        <i data-lucide="heart" class="mx-auto text-rose-500 mb-2 fill-rose-500 w-10 h-10 animate-pulse"></i>
-        <h1 class="text-sm uppercase tracking-widest font-bold text-rose-400 mb-4 text-balance">Our Journey Since May 13, 2025</h1>
-        <div class="flex justify-center items-center gap-6 mt-2">
-            <div class="flex flex-col"><span id="days" class="text-4xl font-black text-slate-800">0</span><span class="text-[10px] font-bold text-slate-400 uppercase">Days</span></div>
-            <div class="h-10 w-[2px] bg-rose-100"></div>
-            <div class="flex flex-col"><span id="hours" class="text-4xl font-black text-slate-800">0</span><span class="text-[10px] font-bold text-slate-400 uppercase">Hrs</span></div>
-            <div class="h-10 w-[2px] bg-rose-100"></div>
-            <div class="flex flex-col"><span id="mins" class="text-4xl font-black text-slate-800">0</span><span class="text-[10px] font-bold text-slate-400 uppercase">Min</span></div>
+    <header class="bg-white p-8 rounded-b-[3rem] shadow-lg text-center border-b border-rose-100 relative z-10">
+        <i data-lucide="heart" class="mx-auto text-rose-500 mb-2 fill-rose-500 w-8 h-8 animate-pulse"></i>
+        <h1 class="text-xs uppercase tracking-widest font-bold text-rose-400 mb-4 text-balance">Our Journey Since May 13, 2025</h1>
+        
+        <div class="flex justify-center items-center gap-3 mt-2">
+            <div class="flex flex-col"><span id="days" class="text-3xl font-black text-slate-800 tabular-nums">0</span><span class="text-[9px] font-bold text-slate-400 uppercase">Days</span></div>
+            <div class="h-8 w-[1px] bg-rose-100"></div>
+            <div class="flex flex-col"><span id="hours" class="text-3xl font-black text-slate-800 tabular-nums">0</span><span class="text-[9px] font-bold text-slate-400 uppercase">Hrs</span></div>
+            <div class="h-8 w-[1px] bg-rose-100"></div>
+            <div class="flex flex-col"><span id="mins" class="text-3xl font-black text-slate-800 tabular-nums">0</span><span class="text-[9px] font-bold text-slate-400 uppercase">Min</span></div>
+            <div class="h-8 w-[1px] bg-rose-100"></div>
+            <div class="flex flex-col"><span id="secs" class="text-3xl font-black text-rose-500 tabular-nums">0</span><span class="text-[9px] font-bold text-slate-400 uppercase">Sec</span></div>
         </div>
     </header>
 
@@ -78,7 +81,7 @@
 
         <div id="story-tab" class="tab-content">
             <h2 class="text-2xl font-bold mb-6 text-slate-700 text-center">Our Story Details</h2>
-            <div id="story-list" class="space-y-4 max-h-[50vh] overflow-y-auto pr-2 pb-4">
+            <div id="story-list" class="space-y-4 max-h-[45vh] overflow-y-auto pr-2 pb-4">
                 <p class="text-center text-slate-400 py-10">Loading our story...</p>
             </div>
             <button onclick="event.stopPropagation(); document.getElementById('story-modal').classList.remove('hidden')" class="fixed bottom-24 right-8 bg-rose-500 text-white p-4 rounded-full shadow-2xl z-40">
@@ -123,7 +126,6 @@
             { text: "The very beginning of our beautiful story on May 13th.", date: "May 13, 2025" }
         ];
 
-        // --- HEART BURST LOGIC ---
         function createHeartBurst(e) {
             const colors = ['❤️', '💖', '💝', '💗', '💓'];
             for (let i = 0; i < 6; i++) {
@@ -139,7 +141,6 @@
             }
         }
 
-        // --- BACKGROUND FLOATING HEARTS ---
         function createFloatingHeart() {
             const container = document.getElementById('hearts-bg');
             const heart = document.createElement('div');
@@ -184,7 +185,8 @@
             const diff = Math.abs(new Date() - START_DATE);
             document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
             document.getElementById('hours').innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
-            document.getElementById('mins').innerText = Math.floor((diff / 1000 / 60) % 60);
+            document.getElementById('mins').innerText = Math.floor((diff / (1000 * 60)) % 60);
+            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
         }
 
         function pickMemory(e) {
@@ -207,6 +209,7 @@
             if(tab === 'story') fetchStories();
         }
 
+        // Ticking every second
         setInterval(updateTimer, 1000);
         updateTimer();
         fetchStories();
