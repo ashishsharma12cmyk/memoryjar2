@@ -10,7 +10,7 @@
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
-          appId: "YOUR_ONESIGNAL_APP_ID",
+          appId: "15856578-2177-4ce4-a042-37632241a93b", 
           allowLocalhostAsSecureOrigin: true,
         });
       });
@@ -23,7 +23,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Inter:wght@400;700;900&display=swap');
         .font-handwriting { font-family: 'Dancing Script', cursive; }
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; touch-action: manipulation; }
-        /* Prevent system selection while holding */
         .story-card { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -40,6 +39,7 @@
     <header class="bg-white p-8 rounded-b-[3rem] shadow-lg text-center border-b border-rose-100 relative z-10">
         <i data-lucide="heart" class="mx-auto text-rose-500 mb-2 fill-rose-500 w-8 h-8 animate-pulse"></i>
         <h1 class="text-xs uppercase tracking-widest font-bold text-rose-400 mb-4 tracking-tighter">Our Journey Since May 13, 2025</h1>
+        
         <div class="flex justify-center items-center gap-2 mt-2">
             <div class="flex flex-col"><span id="days" class="text-3xl font-black text-slate-800 tabular-nums">0</span><span class="text-[9px] font-bold text-slate-400 uppercase">Days</span></div>
             <div class="h-8 w-[1px] bg-rose-100"></div>
@@ -58,8 +58,8 @@
                 <i data-lucide="sparkles" class="text-rose-500 w-10 h-10 mx-auto mb-4"></i>
                 <p class="font-bold text-lg text-rose-600">Shake the Jar</p>
             </div>
-            <button onclick="event.stopPropagation(); document.getElementById('jar-modal').classList.remove('hidden')" class="bg-rose-100 text-rose-600 px-6 py-3 rounded-full font-bold text-sm shadow-sm flex items-center gap-2 mx-auto active:scale-95">
-                <i data-lucide="plus" class="w-4 h-4"></i> Add Note
+            <button onclick="event.stopPropagation(); document.getElementById('jar-modal').classList.remove('hidden')" class="bg-rose-100 text-rose-600 px-6 py-3 rounded-full font-bold text-sm shadow-sm flex items-center gap-2 mx-auto active:scale-95 transition-all">
+                <i data-lucide="plus" class="w-4 h-4"></i> Add a Note
             </button>
             <div id="memory-display" class="hidden mt-8 bg-white p-8 rounded-3xl shadow-xl border-t-4 border-rose-400 animate-in zoom-in">
                 <p id="memory-text" class="text-2xl leading-relaxed font-handwriting text-slate-700"></p>
@@ -69,7 +69,6 @@
 
         <div id="story-tab" class="tab-content">
             <h2 class="text-2xl font-bold mb-6 text-slate-700 text-center">Our Story</h2>
-            <p class="text-[10px] text-center text-slate-400 mb-4 uppercase tracking-widest">Hold a message or tap the gear</p>
             <div id="story-list" class="space-y-6 max-h-[45vh] overflow-y-auto pr-2 pb-4"></div>
             <button onclick="event.stopPropagation(); document.getElementById('story-modal').classList.remove('hidden')" class="fixed bottom-24 right-8 bg-rose-500 text-white p-4 rounded-full shadow-2xl z-40">
                 <i data-lucide="camera" class="w-6 h-6"></i>
@@ -79,7 +78,7 @@
 
     <div id="edit-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6" onclick="event.stopPropagation()">
         <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
-            <h3 class="text-xl font-bold mb-4 font-handwriting text-rose-500 text-center">Edit Memory</h3>
+            <h3 class="text-xl font-bold mb-4 font-handwriting text-rose-500 text-center">Moment Options</h3>
             <textarea id="edit-input" class="w-full border-2 border-rose-50 rounded-2xl p-4 outline-none focus:border-rose-300 mb-4" rows="3"></textarea>
             <div class="space-y-3">
                 <button id="pin-btn-text" onclick="togglePin()" class="w-full bg-rose-50 text-rose-600 py-3 rounded-xl font-bold flex items-center justify-center gap-2 border border-rose-100">
@@ -93,26 +92,27 @@
     </div>
 
     <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6" onclick="event.stopPropagation()">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
-            <h3 class="text-xl font-bold mb-2 font-handwriting text-rose-500 text-center">Note for the Jar</h3>
-            <textarea id="jar-input" class="w-full border-2 border-rose-50 rounded-2xl p-4 outline-none focus:border-rose-300 mb-2" rows="3" placeholder="Max 25 words..."></textarea>
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center">
+            <h3 class="text-xl font-bold mb-2 font-handwriting text-rose-500">Note for the Jar</h3>
+            <p class="text-[10px] text-slate-400 mb-4 uppercase tracking-wider">Max 25 words</p>
+            <textarea id="jar-input" class="w-full border-2 border-rose-50 rounded-2xl p-4 outline-none focus:border-rose-300 mb-2" rows="3" placeholder="Something cute..."></textarea>
             <div class="flex gap-3 mt-4">
                 <button onclick="closeJarModal()" class="flex-1 py-3 text-slate-400 font-bold">Cancel</button>
-                <button id="save-jar-btn" onclick="saveJarNote()" class="flex-1 bg-rose-500 text-white py-3 rounded-xl font-bold shadow-lg">Drop in ❤️</button>
+                <button id="save-jar-btn" onclick="saveJarNote()" class="flex-1 bg-rose-500 text-white py-3 rounded-xl font-bold">Drop in ❤️</button>
             </div>
         </div>
     </div>
 
     <div id="story-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6" onclick="event.stopPropagation()">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
-            <h3 class="text-xl font-bold mb-4 font-handwriting text-rose-500 text-center">New Story Moment</h3>
-            <textarea id="story-input" class="w-full border-2 border-rose-50 rounded-2xl p-4 outline-none focus:border-rose-300 mb-4" rows="3" placeholder="Describe the moment..."></textarea>
-            <label class="flex items-center justify-center gap-2 w-full py-3 bg-rose-50 text-rose-600 rounded-xl cursor-pointer hover:bg-rose-100 mb-4 border-2 border-dashed border-rose-200">
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center">
+            <h3 class="text-xl font-bold mb-4 font-handwriting text-rose-500">New Story Moment</h3>
+            <textarea id="story-input" class="w-full border-2 border-rose-50 rounded-2xl p-4 outline-none focus:border-rose-300 mb-4" rows="3" placeholder="Describe it..."></textarea>
+            <label class="flex items-center justify-center gap-2 w-full py-3 bg-rose-50 text-rose-600 rounded-xl cursor-pointer border-2 border-dashed border-rose-200">
                 <i data-lucide="image" class="w-5 h-5"></i>
-                <span id="file-label" class="font-bold text-sm">Add a Photo</span>
+                <span id="file-label" class="font-bold text-sm">Add Photo</span>
                 <input type="file" id="image-input" class="hidden" accept="image/*" onchange="updateFileLabel()">
             </label>
-            <div class="flex gap-3">
+            <div class="flex gap-3 mt-4">
                 <button onclick="closeModal()" class="flex-1 py-3 text-slate-400 font-bold">Cancel</button>
                 <button id="save-btn" onclick="saveStory()" class="flex-1 bg-rose-500 text-white py-3 rounded-xl font-bold shadow-lg">Post ❤️</button>
             </div>
@@ -120,8 +120,8 @@
     </div>
 
     <nav class="fixed bottom-6 left-4 right-4 bg-white/90 backdrop-blur-md border border-white p-2 flex justify-around rounded-[2rem] shadow-2xl z-30" onclick="event.stopPropagation()">
-        <button onclick="switchTab('jar')" id="nav-jar" class="flex-1 flex flex-col items-center py-2 rounded-2xl text-rose-500 bg-rose-50"><i data-lucide="clock" class="w-5 h-5"></i><span class="text-[9px] mt-1 font-black">JAR</span></button>
-        <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-2 rounded-2xl text-slate-400"><i data-lucide="message-circle" class="w-5 h-5"></i><span class="text-[9px] mt-1 font-black">STORY</span></button>
+        <button onclick="switchTab('jar')" id="nav-jar" class="flex-1 flex flex-col items-center py-2 rounded-2xl text-rose-500 bg-rose-50"><i data-lucide="clock" class="w-5 h-5"></i><span class="text-[9px] mt-1 font-black uppercase">Jar</span></button>
+        <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-2 rounded-2xl text-slate-400"><i data-lucide="message-circle" class="w-5 h-5"></i><span class="text-[9px] mt-1 font-black uppercase">Story</span></button>
     </nav>
 
     <script>
@@ -131,15 +131,15 @@
         const START_DATE = new Date('2025-05-13T00:00:00');
 
         let dynamicMemories = [
-            { text: "Watching 'Piku' on our first date. Best choice ever.", date: "May 2025" },
-            { text: "Silent walks at India Gate.", date: "Dates" }
+            { text: "Watching 'Piku' on our first date. Still my favorite memory.", date: "May 13, 2025" },
+            { text: "Late walks at India Gate.", date: "Dates" }
         ];
 
         let currentEditId = null;
         let currentIsPinned = false;
         let pressTimer;
 
-        // --- IMPROVED MENU TRIGGER ---
+        // --- MENU TRIGGER ---
         function openEditMenu(id, text, isPinned) {
             currentEditId = id;
             currentIsPinned = isPinned;
@@ -149,12 +149,9 @@
             lucide.createIcons();
         }
 
-        function startPress(e, id, text, isPinned) {
-            pressTimer = window.setTimeout(() => {
-                openEditMenu(id, text, isPinned);
-            }, 800);
+        function startPress(id, text, isPinned) {
+            pressTimer = window.setTimeout(() => openEditMenu(id, text, isPinned), 800);
         }
-
         function cancelPress() { clearTimeout(pressTimer); }
 
         async function togglePin() {
@@ -171,7 +168,7 @@
         }
 
         async function deleteMessage() {
-            if(confirm("Delete this memory forever?")) {
+            if(confirm("Delete forever?")) {
                 await _supabase.from('stories').delete().eq('id', currentEditId);
                 closeEditModal();
                 fetchStories();
@@ -180,21 +177,26 @@
 
         function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); currentEditId = null; }
 
-        // --- FETCH LOGIC ---
+        function updateTimer() {
+            const diff = Math.abs(new Date() - START_DATE);
+            document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('hours').innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            document.getElementById('mins').innerText = Math.floor((diff / (1000 * 60)) % 60);
+            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
+        }
+
         async function fetchStories() {
             const { data } = await _supabase.from('stories').select('*').eq('is_jar', false).order('is_pinned', { ascending: false }).order('created_at', { ascending: false });
             const list = document.getElementById('story-list');
             if (data) {
                 list.innerHTML = data.map(s => `
                     <div class="story-card bg-white rounded-3xl shadow-md border ${s.is_pinned ? 'border-rose-300 bg-rose-50/30' : 'border-rose-100'} overflow-hidden mb-6 relative"
-                         onmousedown="startPress(event, ${s.id}, '${s.text.replace(/'/g, "\\'")}', ${s.is_pinned})" 
+                         onmousedown="startPress(${s.id}, '${s.text.replace(/'/g, "\\'")}', ${s.is_pinned})" 
                          onmouseup="cancelPress()" 
-                         ontouchstart="startPress(event, ${s.id}, '${s.text.replace(/'/g, "\\'")}', ${s.is_pinned})" 
+                         ontouchstart="startPress(${s.id}, '${s.text.replace(/'/g, "\\'")}', ${s.is_pinned})" 
                          ontouchend="cancelPress()">
                         
-                        <button onclick="event.stopPropagation(); openEditMenu(${s.id}, '${s.text.replace(/'/g, "\\'")}', ${s.is_pinned})" class="absolute top-4 right-4 text-slate-300 hover:text-rose-400 z-20">
-                            <i data-lucide="settings" class="w-4 h-4"></i>
-                        </button>
+                        <button onclick="event.stopPropagation(); openEditMenu(${s.id}, '${s.text.replace(/'/g, "\\'")}', ${s.is_pinned})" class="absolute top-4 right-4 text-slate-300 z-20"><i data-lucide="settings" class="w-4 h-4"></i></button>
 
                         ${s.is_pinned ? `<div class="bg-rose-100 text-rose-500 text-[8px] font-bold px-3 py-1 flex items-center gap-1 uppercase tracking-widest"><i data-lucide="pin" class="w-2 h-2"></i> Pinned</div>` : ''}
                         ${s.image_url ? `<img src="${s.image_url}" class="w-full h-48 object-cover pointer-events-none">` : ''}
@@ -208,10 +210,10 @@
             }
         }
 
-        // --- JAR & STORY LOGIC ---
         async function saveJarNote() {
             const input = document.getElementById('jar-input');
-            if(!input.value) return;
+            const words = input.value.trim().split(/\s+/).filter(w => w.length > 0);
+            if(words.length > 25 || !input.value) { alert("Under 25 words! ❤️"); return; }
             const btn = document.getElementById('save-jar-btn');
             btn.disabled = true;
             await _supabase.from('stories').insert([{ text: input.value, is_jar: true }]);
@@ -252,21 +254,12 @@
             fetchStories();
         }
 
-        // --- ANIMATIONS & TIMERS ---
-        function updateTimer() {
-            const diff = Math.abs(new Date() - START_DATE);
-            document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById('hours').innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
-            document.getElementById('mins').innerText = Math.floor((diff / (1000 * 60)) % 60);
-            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
-        }
-
         function createHeartBurst(e) {
-            const hearts = ['❤️', '💖', '💝', '💗'];
+            const h = ['❤️', '💖', '💝', '💗'];
             for (let i = 0; i < 6; i++) {
                 const heart = document.createElement('div');
                 heart.className = 'heart-burst';
-                heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.innerHTML = h[Math.floor(Math.random() * h.length)];
                 heart.style.left = e.clientX + 'px';
                 heart.style.top = e.clientY + 'px';
                 heart.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
