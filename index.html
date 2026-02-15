@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Our Story ❤️</title>
+    
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignal.js" async=""></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "YOUR_ONESIGNAL_APP_ID", // 👈 REPLACE WITH YOUR ONESIGNAL APP ID
+          allowLocalhostAsSecureOrigin: true,
+        });
+      });
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -13,47 +25,19 @@
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; touch-action: manipulation; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-
-        /* Background Floating Hearts */
-        .heart-float {
-            position: fixed;
-            bottom: -10%;
-            pointer-events: none;
-            opacity: 0.6;
-            animation: float-up 6s linear infinite;
-            z-index: 0;
-        }
-        @keyframes float-up {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
-        }
-
-        /* Burst Hearts */
-        .heart-burst {
-            position: fixed;
-            pointer-events: none;
-            z-index: 100;
-            animation: burst 0.8s ease-out forwards;
-        }
-        @keyframes burst {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; }
-        }
+        .heart-float { position: fixed; bottom: -10%; pointer-events: none; opacity: 0.6; animation: float-up 6s linear infinite; z-index: 0; }
+        @keyframes float-up { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; } }
+        .heart-burst { position: fixed; pointer-events: none; z-index: 100; animation: burst 0.8s ease-out forwards; }
+        @keyframes burst { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; } }
     </style>
 </head>
 <body class="bg-rose-50 pb-32 text-slate-800" onclick="createHeartBurst(event)">
 
     <div id="hearts-bg" class="fixed inset-0 pointer-events-none"></div>
 
-    <div id="vday-banner" class="hidden bg-rose-500 text-white text-center py-2 text-xs font-bold tracking-widest uppercase relative z-10">
-        ❤️ Happy Valentine's Day, Beautiful! ❤️
-    </div>
-
     <header class="bg-white p-8 rounded-b-[3rem] shadow-lg text-center border-b border-rose-100 relative z-10">
         <i data-lucide="heart" class="mx-auto text-rose-500 mb-2 fill-rose-500 w-8 h-8 animate-pulse"></i>
-        <h1 class="text-xs uppercase tracking-widest font-bold text-rose-400 mb-4 text-balance">Our Journey Since May 13, 2025</h1>
+        <h1 class="text-xs uppercase tracking-widest font-bold text-rose-400 mb-4">Since May 13, 2025</h1>
         
         <div class="flex justify-center items-center gap-3 mt-2">
             <div class="flex flex-col"><span id="days" class="text-3xl font-black text-slate-800 tabular-nums">0</span><span class="text-[9px] font-bold text-slate-400 uppercase">Days</span></div>
@@ -68,11 +52,14 @@
 
     <main class="p-6 max-w-md mx-auto relative z-10">
         <div id="jar-tab" class="tab-content active text-center">
-            <h2 class="text-2xl font-bold mb-6 text-slate-700">Memory Jar</h2>
-            <div onclick="pickMemory(event)" class="bg-white rounded-[2rem] p-10 cursor-pointer shadow-md active:scale-95 border-2 border-white">
+            <h2 class="text-2xl font-bold mb-6 text-slate-700 font-handwriting">Memory Jar</h2>
+            <div onclick="pickMemory(event)" class="bg-white rounded-[2rem] p-10 cursor-pointer shadow-md border-2 border-white active:scale-95 mb-6">
                 <i data-lucide="sparkles" class="text-rose-500 w-10 h-10 mx-auto mb-4"></i>
                 <p class="font-bold text-lg text-rose-600">Shake the Jar</p>
             </div>
+            <button onclick="event.stopPropagation(); document.getElementById('jar-modal').classList.remove('hidden')" class="bg-rose-100 text-rose-600 px-6 py-3 rounded-full font-bold text-sm shadow-sm flex items-center gap-2 mx-auto active:scale-95">
+                <i data-lucide="plus" class="w-4 h-4"></i> Add a Note
+            </button>
             <div id="memory-display" class="hidden mt-8 bg-white p-8 rounded-3xl shadow-xl border-t-4 border-rose-400 animate-in zoom-in">
                 <p id="memory-text" class="text-2xl leading-relaxed font-handwriting text-slate-700"></p>
                 <p id="memory-date" class="text-sm font-medium text-slate-400 mt-4 text-right"></p>
@@ -80,58 +67,133 @@
         </div>
 
         <div id="story-tab" class="tab-content">
-            <h2 class="text-2xl font-bold mb-6 text-slate-700 text-center">Our Story Details</h2>
-            <div id="story-list" class="space-y-4 max-h-[45vh] overflow-y-auto pr-2 pb-4">
-                <p class="text-center text-slate-400 py-10">Loading our story...</p>
-            </div>
+            <h2 class="text-2xl font-bold mb-6 text-slate-700 text-center">Our Story</h2>
+            <div id="story-list" class="space-y-6 max-h-[45vh] overflow-y-auto pr-2 pb-4"></div>
             <button onclick="event.stopPropagation(); document.getElementById('story-modal').classList.remove('hidden')" class="fixed bottom-24 right-8 bg-rose-500 text-white p-4 rounded-full shadow-2xl z-40">
-                <i data-lucide="pen-tool" class="w-6 h-6"></i>
+                <i data-lucide="camera" class="w-6 h-6"></i>
             </button>
         </div>
     </main>
 
+    <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6" onclick="event.stopPropagation()">
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
+            <h3 class="text-xl font-bold mb-2 font-handwriting text-rose-500 text-center">Note for the Jar</h3>
+            <textarea id="jar-input" class="w-full border-2 border-rose-50 rounded-2xl p-4 outline-none focus:border-rose-300 mb-2" rows="3" placeholder="Something cute (max 25 words)..."></textarea>
+            <div class="flex gap-3 mt-4">
+                <button onclick="closeJarModal()" class="flex-1 py-3 text-slate-400 font-bold">Cancel</button>
+                <button id="save-jar-btn" onclick="saveJarNote()" class="flex-1 bg-rose-500 text-white py-3 rounded-xl font-bold">Drop in ❤️</button>
+            </div>
+        </div>
+    </div>
+
     <div id="story-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6" onclick="event.stopPropagation()">
         <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
-            <h3 class="text-xl font-bold mb-4 font-handwriting text-rose-500">A new detail for us...</h3>
-            <textarea id="story-input" class="w-full border-2 border-rose-50 rounded-2xl p-4 outline-none focus:border-rose-300 mb-4" rows="4" placeholder="Remember when we..."></textarea>
+            <h3 class="text-xl font-bold mb-4 font-handwriting text-rose-500 text-center">New Story Moment</h3>
+            <textarea id="story-input" class="w-full border-2 border-rose-50 rounded-2xl p-4 outline-none focus:border-rose-300 mb-4" rows="3" placeholder="Describe the moment..."></textarea>
+            <label class="flex items-center justify-center gap-2 w-full py-3 bg-rose-50 text-rose-600 rounded-xl cursor-pointer hover:bg-rose-100 mb-4 border-2 border-dashed border-rose-200">
+                <i data-lucide="image" class="w-5 h-5"></i>
+                <span id="file-label" class="font-bold text-sm">Add a Photo</span>
+                <input type="file" id="image-input" class="hidden" accept="image/*" onchange="updateFileLabel()">
+            </label>
             <div class="flex gap-3">
-                <button onclick="document.getElementById('story-modal').classList.add('hidden')" class="flex-1 py-3 text-slate-400 font-bold">Cancel</button>
-                <button id="save-btn" onclick="saveStory()" class="flex-1 bg-rose-500 text-white py-3 rounded-xl font-bold shadow-lg">Share ❤️</button>
+                <button onclick="closeModal()" class="flex-1 py-3 text-slate-400 font-bold">Cancel</button>
+                <button id="save-btn" onclick="saveStory()" class="flex-1 bg-rose-500 text-white py-3 rounded-xl font-bold shadow-lg">Post ❤️</button>
             </div>
         </div>
     </div>
 
     <nav class="fixed bottom-6 left-4 right-4 bg-white/90 backdrop-blur-md border border-white p-2 flex justify-around rounded-[2rem] shadow-2xl z-30" onclick="event.stopPropagation()">
-        <button onclick="switchTab('jar')" id="nav-jar" class="flex-1 flex flex-col items-center py-2 rounded-2xl text-rose-500 bg-rose-50">
-            <i data-lucide="clock" class="w-5 h-5"></i>
-            <span class="text-[9px] mt-1 font-black">JAR</span>
-        </button>
-        <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-2 rounded-2xl text-slate-400">
-            <i data-lucide="message-circle" class="w-5 h-5"></i>
-            <span class="text-[9px] mt-1 font-black">STORY</span>
-        </button>
+        <button onclick="switchTab('jar')" id="nav-jar" class="flex-1 flex flex-col items-center py-2 rounded-2xl text-rose-500 bg-rose-50"><i data-lucide="clock" class="w-5 h-5"></i><span class="text-[9px] mt-1 font-black">JAR</span></button>
+        <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-2 rounded-2xl text-slate-400"><i data-lucide="message-circle" class="w-5 h-5"></i><span class="text-[9px] mt-1 font-black">STORY</span></button>
     </nav>
 
     <script>
+        // Pre-filled from your screenshots
         const SUPABASE_URL = 'https://hverhbwbfjwrbmuffnwf.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_x59UvZOhR14OvMuQBkC2TQ_W7BVCfN_';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const START_DATE = new Date('2025-05-13T00:00:00');
 
-        const memories = [
-            { text: "Our first date watching 'Piku'. I couldn't stop looking at you.", date: "May 2025" },
-            { text: "Slow, silent walks at India Gate where the world felt quiet.", date: "Evening Memories" },
-            { text: "Street food hopping and discovering new favorites together.", date: "Best Dates" },
-            { text: "The way you smile in every travel memory we have.", date: "Travel Journal" },
-            { text: "The very beginning of our beautiful story on May 13th.", date: "May 13, 2025" }
+        let dynamicMemories = [
+            { text: "Watching 'Piku' on our first date. Best choice ever.", date: "May 2025" },
+            { text: "Silent walks at India Gate.", date: "Dates" }
         ];
 
+        function updateTimer() {
+            const diff = Math.abs(new Date() - START_DATE);
+            document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('hours').innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            document.getElementById('mins').innerText = Math.floor((diff / (1000 * 60)) % 60);
+            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
+        }
+
+        async function saveJarNote() {
+            const input = document.getElementById('jar-input');
+            const words = input.value.trim().split(/\s+/).filter(w => w.length > 0);
+            if(words.length > 25) { alert("Under 25 words! ❤️"); return; }
+            if(!input.value) return;
+            const btn = document.getElementById('save-jar-btn');
+            btn.disabled = true;
+            await _supabase.from('stories').insert([{ text: input.value, is_jar: true }]);
+            closeJarModal();
+            btn.disabled = false;
+            fetchJarMemories();
+        }
+
+        async function fetchJarMemories() {
+            const { data } = await _supabase.from('stories').select('*').eq('is_jar', true);
+            if(data) dynamicMemories = [...dynamicMemories, ...data.map(d => ({ text: d.text, date: new Date(d.created_at).toLocaleDateString() }))];
+        }
+
+        function pickMemory(e) {
+            e.stopPropagation();
+            const m = dynamicMemories[Math.floor(Math.random() * dynamicMemories.length)];
+            document.getElementById('memory-text').innerText = `"${m.text}"`;
+            document.getElementById('memory-date').innerText = m.date;
+            document.getElementById('memory-display').classList.remove('hidden');
+        }
+
+        async function saveStory() {
+            const textInput = document.getElementById('story-input');
+            const imageInput = document.getElementById('image-input');
+            const btn = document.getElementById('save-btn');
+            if (!textInput.value && !imageInput.files[0]) return;
+            btn.disabled = true;
+            let imageUrl = null;
+            if (imageInput.files[0]) {
+                const file = imageInput.files[0];
+                const fileName = Date.now() + '_' + file.name;
+                const { data } = await _supabase.storage.from('story-photos').upload(fileName, file);
+                if (data) imageUrl = _supabase.storage.from('story-photos').getPublicUrl(fileName).data.publicUrl;
+            }
+            await _supabase.from('stories').insert([{ text: textInput.value, image_url: imageUrl, is_jar: false }]);
+            closeModal();
+            btn.disabled = false;
+            fetchStories();
+        }
+
+        async function fetchStories() {
+            const { data } = await _supabase.from('stories').select('*').eq('is_jar', false).order('created_at', { ascending: false });
+            const list = document.getElementById('story-list');
+            if (data) {
+                list.innerHTML = data.map(s => `
+                    <div class="bg-white rounded-3xl shadow-md border border-rose-100 overflow-hidden mb-6">
+                        ${s.image_url ? `<img src="${s.image_url}" class="w-full h-48 object-cover">` : ''}
+                        <div class="p-5">
+                            <p class="text-slate-700 italic">"${s.text}"</p>
+                            <p class="text-[9px] text-rose-300 mt-4 text-right uppercase tracking-widest">${new Date(s.created_at).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
         function createHeartBurst(e) {
-            const colors = ['❤️', '💖', '💝', '💗', '💓'];
+            const hearts = ['❤️', '💖', '💝', '💗'];
             for (let i = 0; i < 6; i++) {
                 const heart = document.createElement('div');
                 heart.className = 'heart-burst';
-                heart.innerHTML = colors[Math.floor(Math.random() * colors.length)];
+                heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
                 heart.style.left = e.clientX + 'px';
                 heart.style.top = e.clientY + 'px';
                 heart.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
@@ -142,78 +204,34 @@
         }
 
         function createFloatingHeart() {
-            const container = document.getElementById('hearts-bg');
             const heart = document.createElement('div');
             heart.innerHTML = '❤️';
             heart.className = 'heart-float';
             heart.style.left = Math.random() * 100 + 'vw';
             heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
             heart.style.fontSize = (Math.random() * 1 + 0.5) + 'rem';
-            container.appendChild(heart);
+            document.getElementById('hearts-bg').appendChild(heart);
             setTimeout(() => heart.remove(), 7000);
-        }
-        setInterval(createFloatingHeart, 600);
-
-        async function saveStory() {
-            const input = document.getElementById('story-input');
-            const btn = document.getElementById('save-btn');
-            if (!input.value) return;
-            btn.disabled = true;
-            btn.innerText = "Saving...";
-            await _supabase.from('stories').insert([{ text: input.value }]);
-            input.value = '';
-            btn.disabled = false;
-            btn.innerText = "Share ❤️";
-            document.getElementById('story-modal').classList.add('hidden');
-            fetchStories();
-        }
-
-        async function fetchStories() {
-            const { data, error } = await _supabase.from('stories').select('*').order('created_at', { ascending: false });
-            const list = document.getElementById('story-list');
-            if (data) {
-                list.innerHTML = data.length ? data.map(s => `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-rose-100 relative z-10">
-                        <p class="text-slate-700 italic">"${s.text}"</p>
-                        <p class="text-[9px] text-rose-300 mt-2 text-right">${new Date(s.created_at).toLocaleDateString()}</p>
-                    </div>
-                `).join('') : '<p class="text-center text-slate-400 py-10">No story details yet. Write the first one!</p>';
-            }
-        }
-
-        function updateTimer() {
-            const diff = Math.abs(new Date() - START_DATE);
-            document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById('hours').innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
-            document.getElementById('mins').innerText = Math.floor((diff / (1000 * 60)) % 60);
-            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
-        }
-
-        function pickMemory(e) {
-            e.stopPropagation();
-            const m = memories[Math.floor(Math.random() * memories.length)];
-            const display = document.getElementById('memory-display');
-            document.getElementById('memory-text').innerText = `"${m.text}"`;
-            document.getElementById('memory-date').innerText = m.date;
-            display.classList.remove('hidden');
         }
 
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(b => { 
-                b.classList.remove('bg-rose-50', 'text-rose-500'); 
-                b.classList.add('text-slate-400'); 
-            });
+            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-rose-50', 'text-rose-500'); b.classList.add('text-slate-400'); });
             document.getElementById(tab + '-tab').classList.add('active');
             document.getElementById('nav-' + tab).classList.add('bg-rose-50', 'text-rose-500');
             if(tab === 'story') fetchStories();
+            if(tab === 'jar') fetchJarMemories();
         }
 
-        // Ticking every second
+        function closeJarModal() { document.getElementById('jar-modal').classList.add('hidden'); document.getElementById('jar-input').value = ''; }
+        function closeModal() { document.getElementById('story-modal').classList.add('hidden'); document.getElementById('story-input').value = ''; document.getElementById('image-input').value = ''; }
+        function updateFileLabel() { document.getElementById('file-label').innerText = "Photo Ready!"; }
+
         setInterval(updateTimer, 1000);
+        setInterval(createFloatingHeart, 600);
         updateTimer();
         fetchStories();
-        if (new Date().getMonth() === 1 && new Date().getDate() === 14) document.getElementById('vday-banner').classList.remove('hidden');
+        fetchJarMemories();
         lucide.createIcons();
     </script>
 </body>
