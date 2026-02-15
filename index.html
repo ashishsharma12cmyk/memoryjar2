@@ -23,13 +23,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Inter:wght@400;700;900&display=swap');
         .font-handwriting { font-family: 'Dancing Script', cursive; }
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; touch-action: manipulation; }
-        .story-card { -webkit-touch-callout: none; user-select: none; }
+        .story-card { -webkit-touch-callout: none; user-select: none; transition: all 0.2s ease; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .heart-float { position: fixed; bottom: -10%; pointer-events: none; opacity: 0.6; animation: float-up 6s linear infinite; z-index: 0; }
         @keyframes float-up { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; } }
-        .heart-burst { position: fixed; pointer-events: none; z-index: 100; animation: burst 0.8s ease-out forwards; }
-        @keyframes burst { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; } }
     </style>
 </head>
 <body class="bg-rose-50 pb-32 text-slate-800" onclick="createHeartBurst(event)">
@@ -38,7 +36,7 @@
 
     <header class="bg-white p-8 rounded-b-[3rem] shadow-lg text-center border-b border-rose-100 relative z-10">
         <i data-lucide="heart" class="mx-auto text-rose-500 mb-2 fill-rose-500 w-8 h-8 animate-pulse"></i>
-        <h1 class="text-xs uppercase tracking-widest font-bold text-rose-400 mb-4 tracking-tighter text-balance">Our Journey Since May 13, 2025</h1>
+        <h1 class="text-xs uppercase tracking-widest font-bold text-rose-400 mb-4 tracking-tighter">Our Journey Since May 13, 2025</h1>
         <div class="flex justify-center items-center gap-2 mt-2">
             <div class="flex flex-col"><span id="days" class="text-3xl font-black text-slate-800 tabular-nums">0</span><span class="text-[9px] font-bold text-slate-400 uppercase">Days</span></div>
             <div class="h-8 w-[1px] bg-rose-100"></div>
@@ -57,7 +55,7 @@
                 <i data-lucide="sparkles" class="text-rose-500 w-10 h-10 mx-auto mb-4"></i>
                 <p class="font-bold text-lg text-rose-600">Shake the Jar</p>
             </div>
-            <button onclick="event.stopPropagation(); document.getElementById('jar-modal').classList.remove('hidden')" class="bg-rose-100 text-rose-600 px-6 py-3 rounded-full font-bold text-sm shadow-sm flex items-center gap-2 mx-auto active:scale-95 transition-all">
+            <button onclick="event.stopPropagation(); document.getElementById('jar-modal').classList.remove('hidden')" class="bg-rose-100 text-rose-600 px-6 py-3 rounded-full font-bold text-sm shadow-sm flex items-center gap-2 mx-auto active:scale-95">
                 <i data-lucide="plus" class="w-4 h-4"></i> Add a Note
             </button>
             <div id="memory-display" class="hidden mt-8 bg-white p-8 rounded-3xl shadow-xl border-t-4 border-rose-400 animate-in zoom-in">
@@ -68,8 +66,9 @@
 
         <div id="story-tab" class="tab-content">
             <h2 class="text-2xl font-bold mb-6 text-slate-700 text-center">Our Story</h2>
-            <p class="text-[10px] text-center text-slate-400 mb-4 uppercase tracking-widest">Tap gear or hold message for options</p>
-            <div id="story-list" class="space-y-6 max-h-[45vh] overflow-y-auto pr-2 pb-4"></div>
+            <p class="text-[10px] text-center text-slate-400 mb-4 uppercase tracking-widest">Tap the pen or hold a message to edit</p>
+            <div id="story-list" class="space-y-6 max-h-[45vh] overflow-y-auto pr-2 pb-4">
+                </div>
             <button onclick="event.stopPropagation(); document.getElementById('story-modal').classList.remove('hidden')" class="fixed bottom-24 right-8 bg-rose-500 text-white p-4 rounded-full shadow-2xl z-40">
                 <i data-lucide="camera" class="w-6 h-6"></i>
             </button>
@@ -78,7 +77,7 @@
 
     <div id="edit-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6" onclick="event.stopPropagation()">
         <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
-            <h3 class="text-xl font-bold mb-4 font-handwriting text-rose-500 text-center">Moment Options</h3>
+            <h3 class="text-xl font-bold mb-4 font-handwriting text-rose-500 text-center">Edit Moment</h3>
             <textarea id="edit-input" class="w-full border-2 border-rose-50 rounded-2xl p-4 outline-none focus:border-rose-300 mb-4" rows="3"></textarea>
             <div class="space-y-3">
                 <button id="pin-btn-text" onclick="togglePin()" class="w-full bg-rose-50 text-rose-600 py-3 rounded-xl font-bold flex items-center justify-center gap-2 border border-rose-100">
@@ -94,7 +93,7 @@
     <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6" onclick="event.stopPropagation()">
         <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center">
             <h3 class="text-xl font-bold mb-2 font-handwriting text-rose-500">Note for the Jar</h3>
-            <textarea id="jar-input" class="w-full border-2 border-rose-50 rounded-2xl p-4 outline-none focus:border-rose-300 mb-2" rows="3" placeholder="Max 25 words..."></textarea>
+            <textarea id="jar-input" class="w-full border-2 border-rose-50 rounded-2xl p-4 outline-none focus:border-rose-300 mb-2" rows="3" placeholder="Something cute..."></textarea>
             <div class="flex gap-3 mt-4">
                 <button onclick="closeJarModal()" class="flex-1 py-3 text-slate-400 font-bold">Cancel</button>
                 <button id="save-jar-btn" onclick="saveJarNote()" class="flex-1 bg-rose-500 text-white py-3 rounded-xl font-bold">Drop in ❤️</button>
@@ -129,20 +128,16 @@
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const START_DATE = new Date('2025-05-13T00:00:00');
 
-        let dynamicMemories = [
-            { text: "Watching 'Piku' on our first date. Best choice ever.", date: "May 13, 2025" }
-        ];
-
+        let dynamicMemories = [];
+        let allStoryData = [];
         let currentEditId = null;
         let currentIsPinned = false;
         let pressTimer;
-        let allStoryData = []; // Local storage of all stories to avoid quoting errors
 
         // --- MENU LOGIC ---
         function openEditMenu(id) {
             const story = allStoryData.find(s => s.id === id);
             if (!story) return;
-
             currentEditId = id;
             currentIsPinned = story.is_pinned;
             document.getElementById('edit-input').value = story.text;
@@ -153,28 +148,28 @@
             lucide.createIcons();
         }
 
+        function startPress(id) { pressTimer = window.setTimeout(() => openEditMenu(id), 800); }
+        function cancelPress() { clearTimeout(pressTimer); }
+
         // --- FETCHING ---
         async function fetchStories() {
             const { data } = await _supabase.from('stories').select('*').eq('is_jar', false).order('is_pinned', { ascending: false }).order('created_at', { ascending: false });
             const list = document.getElementById('story-list');
             if (data) {
-                allStoryData = data; // Save data locally
+                allStoryData = data;
                 list.innerHTML = data.map(s => `
                     <div class="story-card bg-white rounded-3xl shadow-md border ${s.is_pinned ? 'border-rose-300 bg-rose-50/30' : 'border-rose-100'} overflow-hidden mb-6 relative"
-                         onmousedown="startPress(${s.id})" 
-                         onmouseup="cancelPress()" 
-                         ontouchstart="startPress(${s.id})" 
-                         ontouchend="cancelPress()">
+                         onmousedown="startPress(${s.id})" onmouseup="cancelPress()" ontouchstart="startPress(${s.id})" ontouchend="cancelPress()">
                         
-                        <button onclick="event.stopPropagation(); openEditMenu(${s.id})" class="absolute top-4 right-4 text-slate-300 p-2 z-20">
-                            <i data-lucide="settings" class="w-6 h-6"></i>
+                        <button onclick="event.stopPropagation(); openEditMenu(${s.id})" class="absolute top-4 right-4 bg-rose-50 text-rose-400 p-2 rounded-full shadow-sm z-20 active:bg-rose-100">
+                            <i data-lucide="pen-tool" class="w-4 h-4"></i>
                         </button>
 
-                        ${s.is_pinned ? `<div class="bg-rose-100 text-rose-500 text-[8px] font-bold px-3 py-1 flex items-center gap-1 uppercase tracking-widest"><i data-lucide="pin" class="w-2 h-2"></i> Pinned</div>` : ''}
+                        ${s.is_pinned ? `<div class="bg-rose-100 text-rose-500 text-[8px] font-bold px-3 py-1 flex items-center gap-1 uppercase tracking-widest"><i data-lucide="pin" class="w-2 h-2"></i> Pinned Moment</div>` : ''}
                         ${s.image_url ? `<img src="${s.image_url}" class="w-full h-48 object-cover pointer-events-none">` : ''}
-                        <div class="p-5 pointer-events-none">
-                            <p class="text-slate-700 italic">"${s.text}"</p>
-                            <p class="text-[9px] text-rose-300 mt-4 text-right uppercase tracking-widest">${new Date(s.created_at).toLocaleDateString()}</p>
+                        <div class="p-5">
+                            <p class="text-slate-700 italic font-medium leading-relaxed">"${s.text}"</p>
+                            <p class="text-[9px] text-rose-300 mt-4 text-right font-bold uppercase tracking-widest">${new Date(s.created_at).toLocaleDateString()}</p>
                         </div>
                     </div>
                 `).join('');
@@ -182,18 +177,7 @@
             }
         }
 
-        // --- TIMER & BURST ---
-        function updateTimer() {
-            const diff = Math.abs(new Date() - START_DATE);
-            document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById('hours').innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
-            document.getElementById('mins').innerText = Math.floor((diff / (1000 * 60)) % 60);
-            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
-        }
-
-        function startPress(id) { pressTimer = window.setTimeout(() => openEditMenu(id), 800); }
-        function cancelPress() { clearTimeout(pressTimer); }
-
+        // --- DATABASE OPERATIONS ---
         async function togglePin() {
             await _supabase.from('stories').update({ is_pinned: !currentIsPinned }).eq('id', currentEditId);
             closeEditModal();
@@ -208,7 +192,7 @@
         }
 
         async function deleteMessage() {
-            if(confirm("Delete forever?")) {
+            if(confirm("Delete this memory forever?")) {
                 await _supabase.from('stories').delete().eq('id', currentEditId);
                 closeEditModal();
                 fetchStories();
@@ -216,30 +200,6 @@
         }
 
         function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); currentEditId = null; }
-
-        async function saveJarNote() {
-            const input = document.getElementById('jar-input');
-            if(!input.value) return;
-            const btn = document.getElementById('save-jar-btn');
-            btn.disabled = true;
-            await _supabase.from('stories').insert([{ text: input.value, is_jar: true }]);
-            closeJarModal();
-            btn.disabled = false;
-            fetchJarMemories();
-        }
-
-        async function fetchJarMemories() {
-            const { data } = await _supabase.from('stories').select('*').eq('is_jar', true);
-            if(data) dynamicMemories = [...dynamicMemories, ...data.map(d => ({ text: d.text, date: new Date(d.created_at).toLocaleDateString() }))];
-        }
-
-        function pickMemory(e) {
-            e.stopPropagation();
-            const m = dynamicMemories[Math.floor(Math.random() * dynamicMemories.length)];
-            document.getElementById('memory-text').innerText = `"${m.text}"`;
-            document.getElementById('memory-date').innerText = m.date;
-            document.getElementById('memory-display').classList.remove('hidden');
-        }
 
         async function saveStory() {
             const textInput = document.getElementById('story-input');
@@ -260,30 +220,13 @@
             fetchStories();
         }
 
-        function createHeartBurst(e) {
-            const h = ['❤️', '💖', '💝', '💗'];
-            for (let i = 0; i < 6; i++) {
-                const heart = document.createElement('div');
-                heart.className = 'heart-burst';
-                heart.innerHTML = h[Math.floor(Math.random() * h.length)];
-                heart.style.left = e.clientX + 'px';
-                heart.style.top = e.clientY + 'px';
-                heart.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
-                heart.style.setProperty('--ty', (Math.random() - 0.5) * 200 + 'px');
-                document.body.appendChild(heart);
-                setTimeout(() => heart.remove(), 800);
-            }
-        }
-
-        function createFloatingHeart() {
-            const heart = document.createElement('div');
-            heart.innerHTML = '❤️';
-            heart.className = 'heart-float';
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
-            heart.style.fontSize = (Math.random() * 1 + 0.5) + 'rem';
-            document.getElementById('hearts-bg').appendChild(heart);
-            setTimeout(() => heart.remove(), 7000);
+        // --- UTILS ---
+        function updateTimer() {
+            const diff = Math.abs(new Date() - START_DATE);
+            document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('hours').innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            document.getElementById('mins').innerText = Math.floor((diff / (1000 * 60)) % 60);
+            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
         }
 
         function switchTab(tab) {
@@ -292,18 +235,11 @@
             document.getElementById(tab + '-tab').classList.add('active');
             document.getElementById('nav-' + tab).classList.add('bg-rose-50', 'text-rose-500');
             if(tab === 'story') fetchStories();
-            if(tab === 'jar') fetchJarMemories();
         }
 
-        function closeJarModal() { document.getElementById('jar-modal').classList.add('hidden'); document.getElementById('jar-input').value = ''; }
-        function closeModal() { document.getElementById('story-modal').classList.add('hidden'); document.getElementById('story-input').value = ''; document.getElementById('image-input').value = ''; }
-        function updateFileLabel() { document.getElementById('file-label').innerText = "Photo Ready!"; }
-
         setInterval(updateTimer, 1000);
-        setInterval(createFloatingHeart, 600);
         updateTimer();
         fetchStories();
-        fetchJarMemories();
         lucide.createIcons();
     </script>
 </body>
