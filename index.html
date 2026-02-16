@@ -22,13 +22,7 @@
         @keyframes float { 0% { transform: translateY(110vh) rotate(0deg); } 100% { transform: translateY(-20vh) rotate(360deg); } }
 
         .story-card, .polaroid { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
-        
-        .polaroid {
-            padding: 12px 12px 30px 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            transform: rotate(-1deg);
-            transition: all 0.3s ease;
-        }
+        .polaroid { padding: 12px 12px 30px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: rotate(-1deg); transition: all 0.3s ease; }
         .polaroid:nth-child(even) { transform: rotate(1deg); }
 
         .tab-content { display: none; }
@@ -36,27 +30,43 @@
         
         #memory-display { animation: zoomIn 0.5s ease; }
         @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        /* Mood Ring Glow */
+        .mood-glow { box-shadow: 0 0 15px rgba(251, 113, 133, 0.4); border: 2px solid white; }
     </style>
 </head>
 <body class="pb-32">
 
     <div id="flower-container" class="fixed inset-0 pointer-events-none"></div>
 
+    <a href="https://www.youtube.com/watch?v=mb80yhETaD8" target="_blank" 
+       class="fixed bottom-28 left-6 bg-white/90 p-4 rounded-full shadow-2xl border border-rose-100 z-50 flex items-center justify-center animate-bounce">
+        <i data-lucide="music" class="text-rose-400 w-5 h-5"></i>
+        <span class="absolute -top-2 -right-2 bg-rose-500 text-white text-[7px] px-2 py-1 rounded-full font-black tracking-tighter">NAKKASHI</span>
+    </a>
+
     <header class="bg-white/90 p-8 rounded-b-[3rem] shadow-sm text-center relative z-10">
-        <h1 class="text-[10px] uppercase tracking-[0.2em] font-bold text-rose-400 mb-2">Our Journey Since May 13, 2025</h1>
-        <div class="flex justify-center items-center gap-4 mb-4">
+        <p id="personal-greeting" class="font-roygen italic text-rose-400 mb-1 text-sm"></p>
+        <h1 class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mb-4">Together Since May 13, 2025</h1>
+        
+        <div class="flex justify-center items-center gap-4 mb-6">
             <div class="flex flex-col"><span id="days" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Days</span></div>
             <div class="flex flex-col"><span id="hours" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Hrs</span></div>
             <div class="flex flex-col"><span id="mins" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Min</span></div>
             <div class="flex flex-col"><span id="secs" class="text-3xl font-black text-rose-500">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Sec</span></div>
         </div>
-        <div class="pt-2 border-t border-rose-50">
+
+        <div onclick="openMoodModal()" class="inline-flex items-center gap-2 bg-rose-50 px-4 py-2 rounded-full cursor-pointer hover:bg-rose-100 transition-all">
+            <span id="current-mood-emoji" class="text-lg">❤️</span>
+            <span id="current-mood-text" class="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Thinking of you</span>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-rose-50">
             <p id="bday-countdown" class="text-sm font-bold text-slate-600 tracking-tighter"></p>
         </div>
     </header>
 
     <main class="p-6 max-w-md mx-auto relative z-10">
-        
         <div id="jar-tab" class="tab-content active text-center">
             <h2 class="text-4xl mb-8 text-slate-800 font-roygen-bold">Memory Jar</h2>
             <div onclick="pickMemory()" class="bg-white/80 rounded-[2.5rem] p-12 cursor-pointer shadow-xl border-2 border-white active:scale-95 mb-6">
@@ -77,17 +87,14 @@
                     <i data-lucide="camera"></i> Add a Photo
                     <input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="uploadPhoto(this)">
                 </label>
-                <p id="upload-status" class="text-[10px] mt-2 text-slate-400 font-bold uppercase"></p>
             </div>
-            <div id="moments-list" class="grid grid-cols-1 gap-12 px-6 pb-12"></div>
+            <div id="moments-list" class="grid grid-cols-1 gap-12 px-4 pb-12"></div>
         </div>
 
         <div id="story-tab" class="tab-content">
             <h2 class="text-4xl mb-8 text-slate-800 font-roygen-bold text-center">Our Story</h2>
             <div id="story-list" class="space-y-6"></div>
-            <button onclick="document.getElementById('story-modal').classList.remove('hidden')" class="fixed bottom-24 right-8 bg-rose-500 text-white p-5 rounded-full shadow-2xl z-40">
-                <i data-lucide="pen-line" class="w-6 h-6"></i>
-            </button>
+            <button onclick="document.getElementById('story-modal').classList.remove('hidden')" class="fixed bottom-24 right-8 bg-rose-500 text-white p-5 rounded-full shadow-2xl z-40"><i data-lucide="pen-line"></i></button>
         </div>
     </main>
 
@@ -97,40 +104,36 @@
         <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="book-open" class="w-4 h-4"></i></button>
     </nav>
 
-    <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
-            <h3 class="text-xl font-roygen-bold text-rose-500 mb-4">Add to Jar</h3>
-            <textarea id="jar-input" maxlength="100" class="w-full border-2 p-4 rounded-2xl mb-1" rows="3" placeholder="A short sweet note..."></textarea>
-            <button onclick="saveNote(true)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Drop in ❤️</button>
+    <div id="mood-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center">
+            <h3 class="text-xl font-roygen-bold mb-6 text-slate-800">How are you feeling?</h3>
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <button onclick="setMood('❤️', 'Thinking of you')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">❤️</button>
+                <button onclick="setMood('😊', 'Happy & Blessed')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">😊</button>
+                <button onclick="setMood('🥺', 'Missing you')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">🥺</button>
+                <button onclick="setMood('🏃‍♂️', 'At the Gym')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">🏃‍♂️</button>
+                <button onclick="setMood('😴', 'Going to Sleep')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">😴</button>
+                <button onclick="setMood('✨', 'Carving our Story')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">✨</button>
+            </div>
+            <button onclick="document.getElementById('mood-modal').classList.add('hidden')" class="text-slate-400 text-xs font-bold uppercase tracking-widest">Close</button>
         </div>
     </div>
 
-    <div id="story-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
-            <h3 class="text-xl font-roygen-bold text-rose-500 mb-4">New Story</h3>
-            <textarea id="story-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="4"></textarea>
-            <button onclick="saveNote(false)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Post ❤️</button>
-        </div>
-    </div>
+    <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-roygen-bold text-rose-500 mb-4">Add to Jar</h3><textarea id="jar-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="3"></textarea><button onclick="saveNote(true)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Drop in ❤️</button></div></div>
+    <div id="story-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-roygen-bold text-rose-500 mb-4">New Story</h3><textarea id="story-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="4"></textarea><button onclick="saveNote(false)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Post ❤️</button></div></div>
 
     <script>
-        // --- OneSignal Initialization ---
+        // --- OneSignal ---
         window.OneSignal = window.OneSignal || [];
         OneSignal.push(function() {
-            OneSignal.init({
-                appId: "15856578-2177-4ce4-a042-37632241a93b",
-                safari_web_id: "web.onesignal.auto.64332b50-6101-496f-871d-7203d924151b",
-                notifyButton: { enable: true },
-                allowLocalhostAsSecureOrigin: true,
-            });
-            // Force the prompt to show so the user can subscribe
-            OneSignal.showNativePrompt();
+            OneSignal.init({ appId: "15856578-2177-4ce4-a042-37632241a93b", safari_web_id: "web.onesignal.auto.64332b50-6101-496f-871d-7203d924151b", allowLocalhostAsSecureOrigin: true });
+            OneSignal.Slidedown.promptTrigger();
         });
 
-        // --- Supabase & Logic ---
+        // --- Supabase ---
         const _supabase = supabase.createClient('https://hverhbwbfjwrbmuffnwf.supabase.co', 'sb_publishable_x59UvZOhR14OvMuQBkC2TQ_W7BVCfN_');
         const START_DATE = new Date('2025-05-13T00:00:00');
-        
+
         function updateTimers() {
             const now = new Date();
             const diff = Math.abs(now - START_DATE);
@@ -139,36 +142,58 @@
             document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60);
             document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
 
+            // Personalized Greeting
+            const hr = now.getHours();
+            let g = "Hi Khushi ❤️";
+            if (hr < 12) g = "Good Morning, Khushi ☀️";
+            else if (hr < 18) g = "Good Afternoon, Khushi 🌷";
+            else g = "Good Evening, Khushi ✨";
+            document.getElementById('personal-greeting').innerText = g;
+
             let nextBday = new Date(now.getFullYear(), 9, 25);
             if (now > nextBday) nextBday.setFullYear(now.getFullYear() + 1);
             const bDiff = nextBday - now;
             document.getElementById('bday-countdown').innerText = `${Math.floor(bDiff / 86400000)}d ${Math.floor((bDiff / 3600000) % 24)}h until your day!`;
         }
 
+        // --- Mood Logic ---
+        function openMoodModal() { document.getElementById('mood-modal').classList.remove('hidden'); }
+        async function setMood(emoji, text) {
+            await _supabase.from('status').upsert([{ id: 1, emoji, text }]); // Needs a 'status' table in Supabase
+            document.getElementById('mood-modal').classList.add('hidden');
+            fetchMood();
+        }
+        async function fetchMood() {
+            const { data } = await _supabase.from('status').select('*').eq('id', 1).single();
+            if (data) {
+                document.getElementById('current-mood-emoji').innerText = data.emoji;
+                document.getElementById('current-mood-text').innerText = data.text;
+            }
+        }
+
+        // --- Other logic (fetchMoments, uploadPhoto, fetchContent, saveNote, createFlower) remains same as previous version ---
         async function uploadPhoto(input) {
             if (!input.files || input.files.length === 0) return;
             const file = input.files[0];
-            const status = document.getElementById('upload-status');
-            status.innerText = "Uploading our moment...";
             const fileName = `${Date.now()}-${file.name}`;
-            const { data: uploadData, error: uploadError } = await _supabase.storage.from('moments').upload(fileName, file);
-            if (uploadError) { status.innerText = "Error!"; return; }
-            const { data: urlData } = _supabase.storage.from('moments').getPublicUrl(fileName);
-            const caption = prompt("Add a caption?") || "A beautiful memory.";
-            await _supabase.from('moments').insert([{ image_url: urlData.publicUrl, caption: caption }]);
-            status.innerText = "Saved! ❤️";
-            fetchMoments();
+            const { data } = await _supabase.storage.from('moments').upload(fileName, file);
+            if (data) {
+                const { data: urlData } = _supabase.storage.from('moments').getPublicUrl(fileName);
+                const caption = prompt("Add a caption?") || "A beautiful memory.";
+                await _supabase.from('moments').insert([{ image_url: urlData.publicUrl, caption: caption }]);
+                fetchMoments();
+            }
         }
 
         async function fetchMoments() {
             const { data } = await _supabase.from('moments').select('*').order('created_at', { ascending: false });
             let html = `
-                <div class="polaroid bg-white"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022361.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">Every lift with you is a lift up. ❤️</p></div>
-                <div class="polaroid bg-white"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022359.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">Forever to go.</p></div>
-                <div class="polaroid bg-white"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022363.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">The best view is always you.</p></div>
+                <div class="polaroid bg-white"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022361.jpg?raw=true" class="w-full h-auto rounded-sm mb-2 shadow-inner"><p class="font-roygen italic text-slate-500 text-sm mt-3">Every lift with you is a lift up. ❤️</p></div>
+                <div class="polaroid bg-white"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022359.jpg?raw=true" class="w-full h-auto rounded-sm mb-2 shadow-inner"><p class="font-roygen italic text-slate-500 text-sm mt-3">Forever to go.</p></div>
+                <div class="polaroid bg-white"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022363.jpg?raw=true" class="w-full h-auto rounded-sm mb-2 shadow-inner"><p class="font-roygen italic text-slate-500 text-sm mt-3">The best view is always you.</p></div>
             `;
             if (data) data.forEach(p => {
-                html += `<div class="polaroid bg-white"><img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">${p.caption}</p></div>`;
+                html += `<div class="polaroid bg-white"><img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2 shadow-inner"><p class="font-roygen italic text-slate-500 text-sm mt-3">${p.caption}</p></div>`;
             });
             document.getElementById('moments-list').innerHTML = html;
         }
@@ -178,9 +203,7 @@
             if (data) {
                 const stories = data.filter(s => !s.is_jar);
                 document.getElementById('story-list').innerHTML = stories.map(s => `
-                    <div class="story-card rounded-[2rem] p-8 shadow-sm">
-                        <p class="leading-relaxed text-lg font-roygen text-slate-700">"${s.text}"</p>
-                    </div>
+                    <div class="story-card rounded-[2rem] p-8 shadow-sm"><p class="font-roygen text-slate-700">"${s.text}"</p></div>
                 `).join('');
                 window.jarMemories = data.filter(s => s.is_jar);
             }
@@ -188,7 +211,6 @@
 
         async function saveNote(isJar) {
             const input = document.getElementById(isJar ? 'jar-input' : 'story-input');
-            if(!input.value) return;
             await _supabase.from('stories').insert([{ text: input.value, is_jar: isJar }]);
             document.getElementById(isJar ? 'jar-modal' : 'story-modal').classList.add('hidden');
             input.value = '';
@@ -198,27 +220,23 @@
         function pickMemory() {
             const m = window.jarMemories || [];
             if (m.length === 0) return;
-            const random = m[Math.floor(Math.random() * m.length)];
-            document.getElementById('memory-text').innerText = `"${random.text}"`;
-            document.getElementById('memory-date').innerText = new Date(random.created_at).toLocaleDateString();
+            const r = m[Math.floor(Math.random() * m.length)];
+            document.getElementById('memory-text').innerText = `"${r.text}"`;
+            document.getElementById('memory-date').innerText = new Date(r.created_at).toLocaleDateString();
             document.getElementById('memory-display').classList.remove('hidden');
         }
 
         function switchTab(t) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(t + '-tab').classList.add('active');
-            document.querySelectorAll('nav button').forEach(b => { 
-                b.classList.remove('bg-rose-50', 'text-rose-500'); 
-                b.classList.add('text-slate-400'); 
-            });
+            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-rose-50', 'text-rose-500'); b.classList.add('text-slate-400'); });
             document.getElementById('nav-' + t).classList.add('bg-rose-50', 'text-rose-500');
             if(t === 'story') fetchContent();
             if(t === 'moments') fetchMoments();
         }
 
         function createFlower() {
-            const d = document.createElement('div');
-            d.className = 'flower-bg';
+            const d = document.createElement('div'); d.className = 'flower-bg';
             d.innerHTML = `<svg width="40" height="40" viewBox="0 0 100 100"><circle cx="50" cy="50" r="12" fill="#FBBF24" /><g fill="white"><ellipse cx="50" cy="20" rx="8" ry="18" /><ellipse cx="50" cy="80" rx="8" ry="18" /><ellipse cx="20" cy="50" rx="18" ry="8" /><ellipse cx="80" cy="50" rx="18" ry="8" /></g></svg>`;
             d.style.left = Math.random() * 100 + 'vw';
             document.getElementById('flower-container').appendChild(d);
@@ -227,8 +245,8 @@
 
         setInterval(updateTimers, 1000);
         setInterval(createFlower, 4000);
-        fetchContent();
-        fetchMoments();
+        setInterval(fetchMood, 5000); // Polling for mood updates every 5 seconds
+        fetchContent(); fetchMoments(); fetchMood();
         lucide.createIcons();
     </script>
 </body>
