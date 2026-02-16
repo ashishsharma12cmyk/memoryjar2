@@ -14,6 +14,7 @@
         
         :root {
             --bg-color: #E9DCC9;
+            --accent-color: #f43f5e; /* Rose 500 */
         }
 
         .font-roygen { font-family: 'Playfair Display', serif; }
@@ -21,17 +22,17 @@
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: var(--bg-color); 
-            transition: all 1.5s ease-in-out;
+            transition: background-color 2s ease-in-out;
             overflow-x: hidden; 
         }
 
-        /* Birthday Mode Styling */
+        /* Birthday Mode - Red Theme */
         body.birthday-mode {
-            background-color: #3d0303 !important; /* Deep Crimson */
-            color: #FFD700; /* Gold */
+            background-color: #2D0A0A !important;
+            color: #FFD700;
         }
 
-        .flower-bg {
+        .daisy-bg, .rose-bg {
             position: fixed;
             pointer-events: none;
             z-index: 0;
@@ -47,13 +48,13 @@
         .story-card { 
             background: rgba(255, 255, 255, 0.9); 
             backdrop-filter: blur(10px);
-            transition: all 0.8s ease;
+            transition: all 0.5s ease;
         }
 
         .birthday-mode .story-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            color: #fce4ec;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: white;
         }
 
         .tab-content { display: none; }
@@ -64,25 +65,30 @@
 
     <div id="flower-container" class="fixed inset-0 pointer-events-none"></div>
 
-    <div id="bday-message" class="hidden fixed top-40 inset-x-0 z-[100] flex flex-col items-center text-center p-6 pointer-events-none">
-        <h1 class="font-roygen text-5xl text-yellow-400 mb-4 drop-shadow-lg">Happy Birthday Khushi! 🌹</h1>
-        <p class="text-rose-200 text-lg italic">You are the most beautiful part of my story.</p>
+    <div id="bday-message" class="hidden fixed inset-0 z-[100] flex flex-col items-center justify-center text-center p-6 pointer-events-none">
+        <h1 class="font-roygen text-6xl text-white mb-4 animate-bounce">Happy Birthday Khushi! 🌹</h1>
+        <p class="text-rose-200 text-xl font-handwriting">You make every day feel like a dream.</p>
     </div>
 
-    <header id="app-header" class="bg-white/90 p-8 rounded-b-[3rem] shadow-sm text-center relative z-10 transition-colors duration-1000">
+    <header class="bg-white/90 backdrop-blur-md p-8 rounded-b-[3rem] shadow-sm text-center relative z-10 mx-2">
         <h1 class="text-[10px] uppercase tracking-[0.2em] font-bold text-rose-400 mb-2">Since May 13, 2025</h1>
-        <div class="flex justify-center items-center gap-4">
+        <div class="flex justify-center items-center gap-4 mb-4">
             <div class="flex flex-col"><span id="days" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Days</span></div>
             <div class="flex flex-col"><span id="hours" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Hrs</span></div>
             <div class="flex flex-col"><span id="mins" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Min</span></div>
             <div class="flex flex-col"><span id="secs" class="text-3xl font-black text-rose-500">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Sec</span></div>
         </div>
+
+        <div id="bday-timer-wrapper" class="pt-4 border-t border-rose-50">
+            <p class="text-[9px] font-bold text-rose-300 uppercase tracking-widest mb-1">Birthday Countdown 🎂</p>
+            <p id="bday-countdown" class="text-sm font-bold text-slate-600 tracking-tighter">Calculating...</p>
+        </div>
     </header>
 
     <main class="p-6 max-w-md mx-auto relative z-10">
         <div id="jar-tab" class="tab-content active text-center">
-            <h2 id="jar-title" class="text-4xl mb-8 text-slate-800 font-roygen">Memory Jar</h2>
-            <div onclick="pickMemory()" class="bg-white/80 rounded-[2.5rem] p-12 cursor-pointer shadow-xl border-2 border-white active:scale-95 mb-8">
+            <h2 class="text-4xl mb-8 text-slate-800 font-roygen">Memory Jar</h2>
+            <div onclick="pickMemory()" class="bg-white/80 backdrop-blur-md rounded-[2.5rem] p-12 cursor-pointer shadow-xl border-2 border-white active:scale-95 mb-8">
                 <i data-lucide="sparkles" class="text-rose-400 w-12 h-12 mx-auto mb-4"></i>
                 <p class="font-bold text-rose-500 uppercase tracking-widest text-[10px]">Shake the Jar</p>
             </div>
@@ -93,7 +99,7 @@
         </div>
 
         <div id="story-tab" class="tab-content">
-            <h2 id="story-title" class="text-4xl mb-8 text-slate-800 font-roygen text-center">Our Story</h2>
+            <h2 class="text-4xl mb-8 text-slate-800 font-roygen text-center">Our Story</h2>
             <div id="story-list" class="space-y-6"></div>
             <button onclick="document.getElementById('story-modal').classList.remove('hidden')" class="fixed bottom-24 right-8 bg-rose-500 text-white p-5 rounded-full shadow-2xl z-40">
                 <i data-lucide="pen-line" class="w-6 h-6"></i>
@@ -101,32 +107,57 @@
         </div>
     </main>
 
-    <nav id="app-nav" class="fixed bottom-8 left-6 right-6 bg-white/90 p-2 flex justify-around rounded-full shadow-2xl z-30 transition-colors">
+    <nav class="fixed bottom-8 left-6 right-6 bg-white/90 backdrop-blur-lg p-2 flex justify-around rounded-full shadow-2xl z-30 border border-white/50">
         <button onclick="switchTab('jar')" id="nav-jar" class="flex-1 flex flex-col items-center py-3 rounded-full text-rose-500 bg-rose-50"><i data-lucide="archive" class="w-5 h-5"></i></button>
         <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="book-open" class="w-5 h-5"></i></button>
     </nav>
 
-    <div id="story-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-10">
-            <textarea id="story-input" class="w-full bg-slate-50 p-4 rounded-2xl mb-4" rows="4"></textarea>
-            <button onclick="saveStory()" class="w-full bg-rose-500 text-white py-4 rounded-2xl font-bold">Post ❤️</button>
+    <div id="story-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-10 shadow-2xl">
+            <h3 class="text-2xl font-roygen text-rose-500 mb-6 text-center">New Story</h3>
+            <textarea id="story-input" class="w-full bg-slate-50 border-none rounded-2xl p-6 outline-none focus:ring-2 focus:ring-rose-200 mb-6" rows="4"></textarea>
+            <div class="flex gap-4">
+                <button onclick="document.getElementById('story-modal').classList.add('hidden')" class="flex-1 py-4 text-slate-400 font-bold">Cancel</button>
+                <button onclick="saveStory()" class="flex-1 bg-rose-500 text-white py-4 rounded-2xl font-bold">Post ❤️</button>
+            </div>
         </div>
     </div>
 
     <script>
         const _supabase = supabase.createClient('https://hverhbwbfjwrbmuffnwf.supabase.co', 'sb_publishable_x59UvZOhR14OvMuQBkC2TQ_W7BVCfN_');
         const START_DATE = new Date('2025-05-13T00:00:00');
-        
-        // --- TESTING MODE: Set to today (Feb 16) ---
-        const BDAY_DATE = new Date(2026, 1, 16); 
-        
+        const BDAY_DATE = new Date(new Date().getFullYear(), 9, 25); // Oct 25
+
         let isBirthday = false;
 
-        function checkDate() {
+        function updateTimers() {
             const now = new Date();
-            // Check if month (1 = Feb) and date (16) match
-            if (now.getMonth() === BDAY_DATE.getMonth() && now.getDate() === BDAY_DATE.getDate()) {
-                triggerBirthday();
+            
+            // Relationship Timer
+            const diff = Math.abs(now - START_DATE);
+            document.getElementById('days').innerText = Math.floor(diff / 86400000);
+            document.getElementById('hours').innerText = Math.floor((diff / 3600000) % 24);
+            document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60);
+            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
+
+            // Birthday Countdown
+            let bdayDiff = BDAY_DATE - now;
+            if (bdayDiff < 0) {
+                // If it's her birthday!
+                if (now.getMonth() === 9 && now.getDate() === 25) {
+                    triggerBirthday();
+                } else {
+                    // Reset for next year
+                    BDAY_DATE.setFullYear(now.getFullYear() + 1);
+                    bdayDiff = BDAY_DATE - now;
+                }
+            }
+
+            if (!isBirthday) {
+                const bDays = Math.floor(bdayDiff / 86400000);
+                const bHours = Math.floor((bdayDiff / 3600000) % 24);
+                const bMins = Math.floor((bdayDiff / 60000) % 60);
+                document.getElementById('bday-countdown').innerText = `${bDays}d ${bHours}h ${bMins}m until your day!`;
             }
         }
 
@@ -134,30 +165,25 @@
             if (isBirthday) return;
             isBirthday = true;
             document.body.classList.add('birthday-mode');
+            document.getElementById('bday-timer-wrapper').classList.add('hidden');
             document.getElementById('bday-message').classList.remove('hidden');
-            document.getElementById('app-header').style.backgroundColor = 'rgba(45, 3, 3, 0.9)';
-            document.getElementById('app-nav').style.backgroundColor = 'rgba(45, 3, 3, 0.9)';
-            document.getElementById('jar-title').style.color = '#FFD700';
-            document.getElementById('story-title').style.color = '#FFD700';
+            // Change header style
+            document.querySelector('header').style.backgroundColor = 'rgba(45, 10, 10, 0.9)';
             document.querySelectorAll('span').forEach(s => s.style.color = '#FFD700');
-        }
-
-        function updateTimer() {
-            const diff = Math.abs(new Date() - START_DATE);
-            document.getElementById('days').innerText = Math.floor(diff / 86400000);
-            document.getElementById('hours').innerText = Math.floor((diff / 3600000) % 24);
-            document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60);
-            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
         }
 
         function createFlower() {
             const d = document.createElement('div');
-            d.className = 'flower-bg';
+            d.className = isBirthday ? 'rose-bg' : 'daisy-bg';
+            
             if (isBirthday) {
-                d.innerHTML = `<svg width="40" height="40" viewBox="0 0 100 100"><path d="M50 20 C20 20 20 60 50 80 C80 60 80 20 50 20" fill="#9b1c1c" /></svg>`;
+                // SVG for a Red Rose petal
+                d.innerHTML = `<svg width="40" height="40" viewBox="0 0 100 100"><path d="M50 20 C20 20 20 60 50 80 C80 60 80 20 50 20" fill="#991B1B" /></svg>`;
             } else {
+                // SVG for a Daisy
                 d.innerHTML = `<svg width="60" height="60" viewBox="0 0 100 100"><circle cx="50" cy="50" r="12" fill="#FBBF24" /><g fill="white"><ellipse cx="50" cy="20" rx="8" ry="18" /><ellipse cx="50" cy="80" rx="8" ry="18" /><ellipse cx="20" cy="50" rx="18" ry="8" /><ellipse cx="80" cy="50" rx="18" ry="8" /></g></svg>`;
             }
+            
             d.style.left = Math.random() * 100 + 'vw';
             d.style.animationDuration = (Math.random() * 10 + 15) + 's';
             document.getElementById('flower-container').appendChild(d);
@@ -169,7 +195,7 @@
             if (data) document.getElementById('story-list').innerHTML = data.map(s => `
                 <div class="story-card rounded-[2rem] p-8 shadow-sm">
                     <p class="leading-relaxed text-lg">"${s.text}"</p>
-                    <p class="text-[9px] text-right mt-6 uppercase font-bold opacity-50 tracking-widest">${new Date(s.created_at).toLocaleDateString()}</p>
+                    <p class="text-[9px] text-right mt-6 uppercase font-black opacity-50 tracking-widest">${new Date(s.created_at).toLocaleDateString()}</p>
                 </div>
             `).join('');
         }
@@ -185,15 +211,14 @@
 
         function switchTab(t) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-rose-50', 'text-rose-500'); b.classList.add('text-slate-400'); });
             document.getElementById(t + '-tab').classList.add('active');
+            document.getElementById('nav-' + t).classList.add('bg-rose-50', 'text-rose-500');
             if(t === 'story') fetchStories();
         }
 
-        setInterval(updateTimer, 1000);
-        setInterval(createFlower, 3000);
-        setInterval(checkDate, 1000);
-        checkDate(); 
-        updateTimer();
+        setInterval(updateTimers, 1000);
+        setInterval(createFlower, 4000);
         fetchStories();
         lucide.createIcons();
     </script>
