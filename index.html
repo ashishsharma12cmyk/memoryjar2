@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignal.js" async=""></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;700;900&display=swap');
@@ -71,7 +72,6 @@
 
         <div id="moments-tab" class="tab-content text-center">
             <h2 class="text-4xl mb-8 text-slate-800 font-roygen-bold">Our Moments</h2>
-            
             <div class="mb-10">
                 <label class="bg-rose-500 text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg cursor-pointer inline-flex items-center gap-2">
                     <i data-lucide="camera"></i> Add a Photo
@@ -79,9 +79,7 @@
                 </label>
                 <p id="upload-status" class="text-[10px] mt-2 text-slate-400 font-bold uppercase"></p>
             </div>
-
-            <div id="moments-list" class="grid grid-cols-1 gap-12 px-6 pb-12">
-                </div>
+            <div id="moments-list" class="grid grid-cols-1 gap-12 px-6 pb-12"></div>
         </div>
 
         <div id="story-tab" class="tab-content">
@@ -93,23 +91,16 @@
         </div>
     </main>
 
-    <div id="edit-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6 text-center">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
-            <h3 class="text-xl font-roygen-bold mb-4 text-rose-500">Manage Memory</h3>
-            <textarea id="edit-input" class="w-full border-2 border-rose-50 rounded-2xl p-4 outline-none focus:border-rose-300 mb-4" rows="3"></textarea>
-            <div class="space-y-3">
-                <button onclick="updateMessage()" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Save Changes</button>
-                <button onclick="deleteMessage()" class="w-full bg-slate-100 text-red-500 py-3 rounded-xl font-bold">Delete</button>
-                <button onclick="document.getElementById('edit-modal').classList.add('hidden')" class="w-full py-2 text-slate-400 font-bold">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <nav class="fixed bottom-8 left-6 right-6 bg-white/90 p-2 flex justify-around rounded-full shadow-2xl z-30">
+        <button onclick="switchTab('jar')" id="nav-jar" class="flex-1 flex flex-col items-center py-3 rounded-full text-rose-500 bg-rose-50"><i data-lucide="archive" class="w-4 h-4"></i></button>
+        <button onclick="switchTab('moments')" id="nav-moments" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="camera" class="w-4 h-4"></i></button>
+        <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="book-open" class="w-4 h-4"></i></button>
+    </nav>
 
     <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center">
         <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
             <h3 class="text-xl font-roygen-bold text-rose-500 mb-4">Add to Jar</h3>
             <textarea id="jar-input" maxlength="100" class="w-full border-2 p-4 rounded-2xl mb-1" rows="3" placeholder="A short sweet note..."></textarea>
-            <p class="text-[9px] text-slate-400 mb-4 text-right">Max 100 characters</p>
             <button onclick="saveNote(true)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Drop in ❤️</button>
         </div>
     </div>
@@ -122,20 +113,24 @@
         </div>
     </div>
 
-    <nav class="fixed bottom-8 left-6 right-6 bg-white/90 p-2 flex justify-around rounded-full shadow-2xl z-30">
-        <button onclick="switchTab('jar')" id="nav-jar" class="flex-1 flex flex-col items-center py-3 rounded-full text-rose-500 bg-rose-50"><i data-lucide="archive" class="w-4 h-4"></i></button>
-        <button onclick="switchTab('moments')" id="nav-moments" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="camera" class="w-4 h-4"></i></button>
-        <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="book-open" class="w-4 h-4"></i></button>
-    </nav>
-
     <script>
+        // --- OneSignal Initialization ---
+        window.OneSignal = window.OneSignal || [];
+        OneSignal.push(function() {
+            OneSignal.init({
+                appId: "15856578-2177-4ce4-a042-37632241a93b",
+                safari_web_id: "web.onesignal.auto.64332b50-6101-496f-871d-7203d924151b",
+                notifyButton: { enable: true },
+                allowLocalhostAsSecureOrigin: true,
+            });
+            // Force the prompt to show so the user can subscribe
+            OneSignal.showNativePrompt();
+        });
+
+        // --- Supabase & Logic ---
         const _supabase = supabase.createClient('https://hverhbwbfjwrbmuffnwf.supabase.co', 'sb_publishable_x59UvZOhR14OvMuQBkC2TQ_W7BVCfN_');
         const START_DATE = new Date('2025-05-13T00:00:00');
         
-        let allStoryData = [];
-        let currentEditId = null;
-        let pressTimer;
-
         function updateTimers() {
             const now = new Date();
             const diff = Math.abs(now - START_DATE);
@@ -155,12 +150,9 @@
             const file = input.files[0];
             const status = document.getElementById('upload-status');
             status.innerText = "Uploading our moment...";
-
             const fileName = `${Date.now()}-${file.name}`;
             const { data: uploadData, error: uploadError } = await _supabase.storage.from('moments').upload(fileName, file);
-
             if (uploadError) { status.innerText = "Error!"; return; }
-
             const { data: urlData } = _supabase.storage.from('moments').getPublicUrl(fileName);
             const caption = prompt("Add a caption?") || "A beautiful memory.";
             await _supabase.from('moments').insert([{ image_url: urlData.publicUrl, caption: caption }]);
@@ -170,57 +162,24 @@
 
         async function fetchMoments() {
             const { data } = await _supabase.from('moments').select('*').order('created_at', { ascending: false });
-            const list = document.getElementById('moments-list');
-            
             let html = `
                 <div class="polaroid bg-white"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022361.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">Every lift with you is a lift up. ❤️</p></div>
                 <div class="polaroid bg-white"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022359.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">Forever to go.</p></div>
                 <div class="polaroid bg-white"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022363.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">The best view is always you.</p></div>
             `;
-
-            if (data) {
-                data.forEach(p => {
-                    html += `<div class="polaroid bg-white"><img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">${p.caption}</p></div>`;
-                });
-            }
-            list.innerHTML = html;
-        }
-
-        function startPress(id) {
-            pressTimer = window.setTimeout(() => {
-                const item = allStoryData.find(s => s.id === id);
-                if (item) {
-                    currentEditId = id;
-                    document.getElementById('edit-input').value = item.text;
-                    document.getElementById('edit-modal').classList.remove('hidden');
-                }
-            }, 800);
-        }
-        function stopPress() { clearTimeout(pressTimer); }
-
-        async function updateMessage() {
-            await _supabase.from('stories').update({ text: document.getElementById('edit-input').value }).eq('id', currentEditId);
-            document.getElementById('edit-modal').classList.add('hidden');
-            fetchContent();
-        }
-
-        async function deleteMessage() {
-            if(confirm("Delete this memory?")) {
-                await _supabase.from('stories').delete().eq('id', currentEditId);
-                document.getElementById('edit-modal').classList.add('hidden');
-                fetchContent();
-            }
+            if (data) data.forEach(p => {
+                html += `<div class="polaroid bg-white"><img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">${p.caption}</p></div>`;
+            });
+            document.getElementById('moments-list').innerHTML = html;
         }
 
         async function fetchContent() {
             const { data } = await _supabase.from('stories').select('*').order('created_at', { ascending: false });
             if (data) {
-                allStoryData = data;
                 const stories = data.filter(s => !s.is_jar);
                 document.getElementById('story-list').innerHTML = stories.map(s => `
-                    <div class="story-card rounded-[2rem] p-8 shadow-sm" onmousedown="startPress(${s.id})" onmouseup="stopPress()" ontouchstart="startPress(${s.id})" ontouchend="stopPress()">
+                    <div class="story-card rounded-[2rem] p-8 shadow-sm">
                         <p class="leading-relaxed text-lg font-roygen text-slate-700">"${s.text}"</p>
-                        <p class="text-[9px] text-right mt-6 uppercase font-bold text-rose-300 tracking-widest">${new Date(s.created_at).toLocaleDateString()}</p>
                     </div>
                 `).join('');
                 window.jarMemories = data.filter(s => s.is_jar);
@@ -248,7 +207,10 @@
         function switchTab(t) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(t + '-tab').classList.add('active');
-            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-rose-50', 'text-rose-500'); b.classList.add('text-slate-400'); });
+            document.querySelectorAll('nav button').forEach(b => { 
+                b.classList.remove('bg-rose-50', 'text-rose-500'); 
+                b.classList.add('text-slate-400'); 
+            });
             document.getElementById('nav-' + t).classList.add('bg-rose-50', 'text-rose-500');
             if(t === 'story') fetchContent();
             if(t === 'moments') fetchMoments();
@@ -257,7 +219,7 @@
         function createFlower() {
             const d = document.createElement('div');
             d.className = 'flower-bg';
-            d.innerHTML = `<svg width="60" height="60" viewBox="0 0 100 100"><circle cx="50" cy="50" r="12" fill="#FBBF24" /><g fill="white"><ellipse cx="50" cy="20" rx="8" ry="18" /><ellipse cx="50" cy="80" rx="8" ry="18" /><ellipse cx="20" cy="50" rx="18" ry="8" /><ellipse cx="80" cy="50" rx="18" ry="8" /></g></svg>`;
+            d.innerHTML = `<svg width="40" height="40" viewBox="0 0 100 100"><circle cx="50" cy="50" r="12" fill="#FBBF24" /><g fill="white"><ellipse cx="50" cy="20" rx="8" ry="18" /><ellipse cx="50" cy="80" rx="8" ry="18" /><ellipse cx="20" cy="50" rx="18" ry="8" /><ellipse cx="80" cy="50" rx="18" ry="8" /></g></svg>`;
             d.style.left = Math.random() * 100 + 'vw';
             document.getElementById('flower-container').appendChild(d);
             setTimeout(() => d.remove(), 20000);
