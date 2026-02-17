@@ -26,7 +26,6 @@
 
         .polaroid { background: white; padding: 12px 12px 30px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: rotate(-1deg); }
         .polaroid:nth-child(even) { transform: rotate(1deg); }
-        #chat-messages::-webkit-scrollbar { width: 0px; }
     </style>
 </head>
 <body class="pb-32">
@@ -87,15 +86,6 @@
             </div>
         </div>
 
-        <div id="chat-tab" class="tab-content flex flex-col h-[60vh]">
-            <h2 class="text-4xl mb-6 text-slate-800 font-roygen italic font-bold text-center">Our Chat</h2>
-            <div id="chat-messages" class="flex-1 overflow-y-auto px-2 space-y-4 mb-4 flex flex-col"></div>
-            <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-inner border border-rose-100">
-                <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 bg-transparent px-4 py-2 outline-none text-sm">
-                <button onclick="sendMessage()" class="bg-rose-500 text-white p-3 rounded-xl shadow-lg"><i data-lucide="send" class="w-4 h-4"></i></button>
-            </div>
-        </div>
-
         <div id="moments-tab" class="tab-content text-center">
             <h2 class="text-4xl mb-8 text-slate-800 font-roygen italic font-bold">Our Moments</h2>
             <label class="bg-rose-500 text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg cursor-pointer inline-flex items-center gap-2 mb-10">
@@ -114,7 +104,6 @@
 
     <nav class="fixed bottom-8 left-6 right-6 bg-white/90 p-2 flex justify-around rounded-full shadow-2xl z-30">
         <button onclick="switchTab('jar')" id="nav-jar" class="flex-1 flex flex-col items-center py-3 rounded-full text-rose-500 bg-rose-50"><i data-lucide="archive" class="w-4 h-4"></i></button>
-        <button onclick="switchTab('chat')" id="nav-chat" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="message-circle" class="w-4 h-4"></i></button>
         <button onclick="switchTab('moments')" id="nav-moments" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="camera" class="w-4 h-4"></i></button>
         <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="book-open" class="w-4 h-4"></i></button>
     </nav>
@@ -181,7 +170,6 @@
         }
 
         function highlightMyBubble() {
-            // Add a small ring to show which bubble is "Me"
             document.getElementById('bubble-Aashish').classList.toggle('ring-2', myName === 'Aashish');
             document.getElementById('bubble-Aashish').classList.toggle('ring-sky-400', myName === 'Aashish');
             document.getElementById('bubble-Khushi').classList.toggle('ring-2', myName === 'Khushi');
@@ -225,38 +213,13 @@
         window.addEventListener('touchend', async () => {
             if (tEnd - tStart > 100 && window.scrollY === 0) {
                 ri.style.transform = `translateY(20px)`; rx.classList.add('animate-spin');
-                await Promise.all([fetchContent(), fetchMoments(), fetchMood(), fetchDailyNote(), fetchMessages()]);
+                await Promise.all([fetchContent(), fetchMoments(), fetchMood(), fetchDailyNote()]);
                 setTimeout(() => { ri.style.transform = `translateY(-100%)`; rx.classList.remove('animate-spin'); }, 800);
             } else { ri.style.transform = `translateY(-100%)`; }
         });
 
-        // --- Chat ---
-        async function sendMessage() {
-            const input = document.getElementById('chat-input'); if (!input.value) return;
-            const msg = input.value; input.value = '';
-            await _supabase.from('messages').insert([{ sender_name: myName, message_text: msg }]);
-            fetchMessages();
-        }
-        async function fetchMessages() {
-            const { data } = await _supabase.from('messages').select('*').order('created_at', { ascending: false }).limit(20);
-            if (data) {
-                const chatArea = document.getElementById('chat-messages');
-                chatArea.innerHTML = data.reverse().map(m => {
-                    const isMe = m.sender_name === myName;
-                    return `<div class="flex ${isMe ? 'justify-end' : 'justify-start'} w-full animate-in fade-in slide-in-from-bottom-2">
-                        <div class="max-w-[80%] ${isMe ? 'bg-rose-500 text-white rounded-t-2xl rounded-bl-2xl' : 'bg-white text-slate-700 rounded-t-2xl rounded-br-2xl shadow-sm'} px-4 py-2">
-                            <p class="text-[8px] font-black uppercase opacity-50 mb-1">${m.sender_name}</p>
-                            <p class="text-sm leading-relaxed">${m.message_text}</p>
-                        </div>
-                    </div>`;
-                }).join('');
-                chatArea.scrollTop = chatArea.scrollHeight;
-            }
-        }
-
         // --- Mood ---
         function openMoodModal(user) { 
-            // Only allow changing your OWN mood
             if (user !== myName) { alert(`This is ${user}'s status. You can only change your own!`); return; }
             document.getElementById('mood-title').innerText = `Updating My Mood`; 
             document.getElementById('mood-modal').classList.remove('hidden'); 
@@ -289,7 +252,7 @@
         }
         function showDailyNote() {
             if (allStories.length === 0) { toggleDailyWrite(true); document.getElementById('daily-note-modal').classList.remove('hidden'); return; }
-            currentStoryIdx = allStories.length - 1; // NEWEST FIRST
+            currentStoryIdx = allStories.length - 1;
             renderStory();
             document.getElementById('daily-note-modal').classList.remove('hidden');
             const newestId = allStories[allStories.length - 1].id;
@@ -371,7 +334,7 @@
             document.getElementById(t + '-tab').classList.add('active');
             document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-rose-50', 'text-rose-500'); b.classList.add('text-slate-400'); });
             document.getElementById('nav-' + t).classList.add('bg-rose-50', 'text-rose-500');
-            if(t === 'story') fetchContent(); if(t === 'moments') fetchMoments(); if(t === 'chat') fetchMessages();
+            if(t === 'story') fetchContent(); if(t === 'moments') fetchMoments();
         }
 
         function createFlower() {
@@ -381,7 +344,7 @@
             setTimeout(() => d.remove(), 20000);
         }
 
-        setInterval(updateTimers, 1000); setInterval(createFlower, 4000); setInterval(() => { fetchMood(); fetchDailyNote(); fetchMessages(); }, 5000);
+        setInterval(updateTimers, 1000); setInterval(createFlower, 4000); setInterval(() => { fetchMood(); fetchDailyNote(); }, 5000);
         updateTimers(); fetchContent(); fetchMoments(); fetchMood(); fetchDailyNote(); highlightMyBubble(); lucide.createIcons();
     </script>
 </body>
