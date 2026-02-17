@@ -74,6 +74,7 @@
     </header>
 
     <main class="p-6 max-w-md mx-auto relative z-10">
+        
         <div id="jar-tab" class="tab-content active text-center">
             <h2 class="text-4xl mb-8 text-slate-800 font-roygen italic font-bold">Memory Jar</h2>
             <div onclick="pickMemory()" class="bg-white/80 rounded-[2.5rem] p-12 cursor-pointer shadow-xl border-2 border-white active:scale-95 mb-6">
@@ -84,6 +85,23 @@
             <div id="memory-display" class="hidden bg-white p-10 rounded-[2rem] shadow-2xl">
                 <p id="memory-text" class="text-2xl leading-relaxed italic text-slate-700 font-roygen"></p>
                 <p id="memory-date" class="text-[10px] font-bold text-rose-300 mt-6 text-right uppercase"></p>
+            </div>
+        </div>
+
+        <div id="garden-tab" class="tab-content text-center">
+            <h2 class="text-4xl mb-4 text-slate-800 font-roygen italic font-bold">Our Garden</h2>
+            <p id="tree-status" class="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-10">Sapling Stage</p>
+            <div class="relative flex justify-center items-end h-80 mb-10 overflow-hidden">
+                <div class="absolute bottom-4 w-40 h-6 bg-black/5 rounded-full blur-md"></div>
+                <div id="tree-visual" onclick="rustleTree()" class="relative transition-all duration-1000 ease-out origin-bottom cursor-pointer active:scale-95">
+                    <i data-lucide="seedling" id="tree-icon" class="text-rose-400 w-16 h-16 transition-all duration-1000"></i>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <button id="water-btn" onclick="waterTree()" class="bg-sky-400 text-white p-5 rounded-full shadow-lg active:scale-90 transition-all disabled:opacity-50 disabled:grayscale">
+                    <i data-lucide="droplet" class="w-6 h-6"></i>
+                </button>
+                <p id="water-message" class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Tap to water our love</p>
             </div>
         </div>
 
@@ -105,6 +123,7 @@
 
     <nav class="fixed bottom-8 left-6 right-6 bg-white/90 p-2 flex justify-around rounded-full shadow-2xl z-30">
         <button onclick="switchTab('jar')" id="nav-jar" class="flex-1 flex flex-col items-center py-3 rounded-full text-rose-500 bg-rose-50"><i data-lucide="archive" class="w-4 h-4"></i></button>
+        <button onclick="switchTab('garden')" id="nav-garden" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="sprout" class="w-4 h-4"></i></button>
         <button onclick="switchTab('moments')" id="nav-moments" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="camera" class="w-4 h-4"></i></button>
         <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="book-open" class="w-4 h-4"></i></button>
     </nav>
@@ -167,7 +186,7 @@
     <div id="story-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">New Story</h3><textarea id="story-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="4"></textarea><button onclick="saveNote(false)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Post ❤️</button></div></div>
 
     <script>
-        // --- Haptics Utility ---
+        // --- Core Utils ---
         function triggerHaptic(type) {
             if (!navigator.vibrate) return;
             if (type === 'light') navigator.vibrate(15);
@@ -176,7 +195,7 @@
             if (type === 'warning') navigator.vibrate([60, 100, 60]);
         }
 
-        // --- Identity & Initialization ---
+        // --- Identity ---
         let myName = localStorage.getItem('userName');
         if (!myName) document.getElementById('identity-modal').classList.remove('hidden');
 
@@ -217,27 +236,77 @@
             lucide.createIcons();
         }
 
-        // --- Mood ---
-        function openMoodModal(user) { 
-            if (user !== myName) { triggerHaptic('warning'); return; }
+        // --- Garden Logic ---
+        function rustleTree() {
             triggerHaptic('light');
-            document.getElementById('mood-modal').classList.remove('hidden'); 
-        }
-        async function setMood(emoji, text) {
-            triggerHaptic('medium');
-            await _supabase.from('status').upsert([{ user_name: myName, emoji, text }]);
-            document.getElementById('mood-modal').classList.add('hidden');
-            fetchMood();
-        }
-        async function fetchMood() {
-            const { data } = await _supabase.from('status').select('*');
-            if(data) data.forEach(s => {
-                const em = document.getElementById(`mood-emoji-${s.user_name}`), tx = document.getElementById(`mood-text-${s.user_name}`);
-                if(em && tx) { em.innerText = s.emoji; tx.innerText = s.text; }
-            });
+            const tree = document.getElementById('tree-visual');
+            tree.classList.add('animate-bounce');
+            setTimeout(() => tree.classList.remove('animate-bounce'), 500);
         }
 
-        // --- Daily Stories with Photos ---
+        async function waterTree() {
+            const lastWatered = localStorage.getItem('lastWateredDate');
+            const today = new Date().toDateString();
+            if (lastWatered === today) { triggerHaptic('warning'); return; }
+
+            triggerHaptic('success');
+            localStorage.setItem('lastWateredDate', today);
+            const btn = document.getElementById('water-btn');
+            btn.classList.add('animate-ping');
+            document.getElementById('water-message').innerText = "Refreshing... ❤️";
+
+            setTimeout(() => {
+                btn.classList.remove('animate-ping');
+                updateTreeGrowth(10);
+                checkWaterButton();
+            }, 1500);
+        }
+
+        function checkWaterButton() {
+            const lastWatered = localStorage.getItem('lastWateredDate');
+            const today = new Date().toDateString();
+            const btn = document.getElementById('water-btn');
+            if (lastWatered === today) {
+                btn.disabled = true;
+                document.getElementById('water-message').innerText = "Healthy & Hydrated ✨";
+            }
+        }
+
+        async function updateTreeGrowth(extraBoost = 0) {
+            const now = new Date();
+            const daysTogether = Math.floor(Math.abs(now - START_DATE) / 86400000);
+            const { count } = await _supabase.from('stories').select('*', { count: 'exact', head: true });
+            const points = (daysTogether * 3) + ((count || 0) * 5) + extraBoost;
+            
+            const icon = document.getElementById('tree-icon');
+            const visual = document.getElementById('tree-visual');
+            const status = document.getElementById('tree-status');
+
+            if (points < 100) {
+                status.innerText = "Tiny Sapling";
+                icon.setAttribute('data-lucide', 'seedling');
+                visual.style.transform = `scale(${0.8 + (points/200)})`;
+            } else if (points < 500) {
+                status.innerText = "Growing Sakura";
+                icon.setAttribute('data-lucide', 'sprout');
+                icon.classList.add('text-rose-300');
+                visual.style.transform = `scale(${1.2 + (points/500)})`;
+            } else if (points < 2000) {
+                status.innerText = "Sakura in Bloom";
+                icon.setAttribute('data-lucide', 'tree-pine');
+                icon.classList.add('text-rose-400');
+                visual.style.transform = `scale(${1.8 + (points/1500)})`;
+            } else {
+                status.innerText = "Enormous Eternal Sakura";
+                icon.setAttribute('data-lucide', 'palmtree');
+                icon.classList.add('text-rose-500', 'drop-shadow-2xl');
+                visual.style.transform = `scale(2.8)`;
+            }
+            lucide.createIcons();
+            checkWaterButton();
+        }
+
+        // --- Stories & Content ---
         let allStories = [], currentStoryIdx = 0;
         async function fetchDailyNote() {
             const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -258,12 +327,10 @@
                 await _supabase.storage.from('moments').upload(name, photoFile);
                 imageUrl = _supabase.storage.from('moments').getPublicUrl(name).data.publicUrl;
             }
-
             await _supabase.from('daily_notes').insert([{ user_name: myName, note_text: text, image_url: imageUrl }]);
             triggerHaptic('success');
             document.getElementById('daily-note-input').value = '';
             document.getElementById('daily-photo-input').value = '';
-            document.getElementById('story-photo-label').innerText = 'Add Photo';
             toggleDailyWrite(false);
             await fetchDailyNote(); showDailyNote();
         }
@@ -289,14 +356,14 @@
         function toggleDailyWrite(isWrite) { triggerHaptic('light'); document.getElementById('view-note-mode').classList.toggle('hidden', isWrite); document.getElementById('write-note-mode').classList.toggle('hidden', !isWrite); }
         function closeDailyNote() { document.getElementById('daily-note-modal').classList.add('hidden'); }
 
-        // --- Tab Core ---
+        // --- Core ---
         function switchTab(t) {
             triggerHaptic('light');
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(t + '-tab').classList.add('active');
             document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-rose-50', 'text-rose-500'); b.classList.add('text-slate-400'); });
             document.getElementById('nav-' + t).classList.add('bg-rose-50', 'text-rose-500');
-            if(t === 'story') fetchContent(); if(t === 'moments') fetchMoments();
+            if(t === 'story') fetchContent(); if(t === 'moments') fetchMoments(); if(t === 'garden') updateTreeGrowth();
         }
 
         async function uploadPhoto(input) {
@@ -304,7 +371,7 @@
             const file = input.files[0], name = `moments/${Date.now()}-${file.name}`;
             await _supabase.storage.from('moments').upload(name, file);
             const url = _supabase.storage.from('moments').getPublicUrl(name).data.publicUrl;
-            await _supabase.from('moments').insert([{ image_url: url, caption: prompt("Add a caption?") || "Memory" }]);
+            await _supabase.from('moments').insert([{ image_url: url, caption: prompt("Caption?") || "Memory" }]);
             triggerHaptic('success');
             fetchMoments();
         }
@@ -326,7 +393,6 @@
 
         async function saveNote(isJar) {
             const el = document.getElementById(isJar ? 'jar-input' : 'story-input');
-            if(!el.value) return;
             await _supabase.from('stories').insert([{ text: el.value, is_jar: isJar }]);
             triggerHaptic('success');
             document.getElementById(isJar ? 'jar-modal' : 'story-modal').classList.add('hidden');
@@ -334,22 +400,15 @@
         }
 
         function pickMemory() { triggerHaptic('medium'); const m = window.jarMemories || []; if (!m.length) return; const r = m[Math.floor(Math.random() * m.length)]; document.getElementById('memory-text').innerText = `"${r.text}"`; document.getElementById('memory-date').innerText = new Date(r.created_at).toLocaleDateString(); document.getElementById('memory-display').classList.remove('hidden'); }
-
-        function updateTimers() {
-            const now = new Date(), diff = Math.abs(now - START_DATE);
-            document.getElementById('days').innerText = Math.floor(diff / 86400000);
-            document.getElementById('hours').innerText = Math.floor((diff / 3600000) % 24);
-            document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60);
-            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
-            const hr = now.getHours();
-            document.getElementById('personal-greeting').innerText = `${hr < 12 ? "Good Morning" : hr < 18 ? "Good Afternoon" : "Good Evening"}, ${myName || 'Love'} ❤️`;
-        }
-
+        async function setMood(emoji, text) { triggerHaptic('medium'); await _supabase.from('status').upsert([{ user_name: myName, emoji, text }]); document.getElementById('mood-modal').classList.add('hidden'); fetchMood(); }
+        async function fetchMood() { const { data } = await _supabase.from('status').select('*'); if(data) data.forEach(s => { const em = document.getElementById(`mood-emoji-${s.user_name}`), tx = document.getElementById(`mood-text-${s.user_name}`); if(em && tx) { em.innerText = s.emoji; tx.innerText = s.text; } }); }
+        function openMoodModal(user) { if (user !== myName) { triggerHaptic('warning'); return; } triggerHaptic('light'); document.getElementById('mood-modal').classList.remove('hidden'); }
+        function updateTimers() { const now = new Date(), diff = Math.abs(now - START_DATE); document.getElementById('days').innerText = Math.floor(diff / 86400000); document.getElementById('hours').innerText = Math.floor((diff / 3600000) % 24); document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60); document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60); const hr = now.getHours(); document.getElementById('personal-greeting').innerText = `${hr < 12 ? "Good Morning" : hr < 18 ? "Good Afternoon" : "Good Evening"}, ${myName || 'Love'} ❤️`; }
         function createFlower() { const d = document.createElement('div'); d.className = 'flower-bg'; d.innerHTML = `<svg width="20" height="20" viewBox="0 0 100 100"><circle cx="50" cy="50" r="12" fill="#FBBF24" /><g fill="white"><ellipse cx="50" cy="20" rx="8" ry="18" /><ellipse cx="50" cy="80" rx="8" ry="18" /><ellipse cx="20" cy="50" rx="18" ry="8" /><ellipse cx="80" cy="50" rx="18" ry="8" /></g></svg>`; d.style.left = Math.random() * 100 + 'vw'; document.getElementById('flower-container').appendChild(d); setTimeout(() => d.remove(), 20000); }
 
         // --- Init ---
         setInterval(updateTimers, 1000); setInterval(createFlower, 4000); setInterval(() => { fetchMood(); fetchDailyNote(); }, 5000);
-        updateTimers(); fetchContent(); fetchMoments(); fetchMood(); fetchDailyNote(); highlightMyBubble(); lucide.createIcons();
+        updateTimers(); fetchContent(); fetchMoments(); fetchMood(); fetchDailyNote(); updateTreeGrowth(); highlightMyBubble(); lucide.createIcons();
     </script>
 </body>
 </html>
