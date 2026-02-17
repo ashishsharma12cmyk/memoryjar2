@@ -26,6 +26,7 @@
 
         .polaroid { background: white; padding: 12px 12px 30px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: rotate(-1deg); }
         .polaroid:nth-child(even) { transform: rotate(1deg); }
+        #chat-messages::-webkit-scrollbar { width: 0px; }
     </style>
 </head>
 <body class="pb-32">
@@ -39,7 +40,7 @@
 
     <button onclick="toggleMusic()" id="music-btn" class="fixed bottom-28 left-6 bg-white/90 p-4 rounded-full shadow-2xl border border-rose-100 z-50 flex items-center justify-center">
         <i id="music-icon" data-lucide="music" class="text-rose-400 w-5 h-5"></i>
-        <span id="music-label" class="absolute -top-2 -right-2 bg-rose-500 text-white text-[7px] px-2 py-1 rounded-full font-black tracking-tighter uppercase">Play Nakkashi</span>
+        <span id="music-label" class="absolute -top-2 -right-2 bg-rose-500 text-white text-[7px] px-2 py-1 rounded-full font-black tracking-tighter uppercase">Our Song</span>
     </button>
 
     <header class="bg-white/90 p-8 rounded-b-[3rem] shadow-sm text-center relative z-10">
@@ -47,7 +48,7 @@
             <div id="daily-bubble" class="w-12 h-12 rounded-full border-2 border-rose-400 p-0.5 transition-all">
                 <div class="w-full h-full rounded-full bg-rose-100 flex items-center justify-center"><i data-lucide="message-circle-heart" class="text-rose-500 w-5 h-5"></i></div>
             </div>
-            <p class="text-[7px] font-black text-rose-400 uppercase mt-1">Daily Notes</p>
+            <p class="text-[7px] font-black text-rose-400 uppercase mt-1">Stories</p>
         </div>
 
         <p id="personal-greeting" class="font-roygen italic text-rose-400 mb-1 text-sm"></p>
@@ -61,11 +62,11 @@
         </div>
 
         <div class="flex justify-center gap-3">
-            <div onclick="openMoodModal('Aashish')" class="flex items-center gap-2 bg-sky-50 px-4 py-2 rounded-full border border-sky-100 cursor-pointer shadow-sm active:scale-95 transition-transform">
+            <div onclick="openMoodModal('Aashish')" id="bubble-Aashish" class="flex items-center gap-2 bg-sky-50 px-4 py-2 rounded-full border border-sky-100 cursor-pointer shadow-sm active:scale-95 transition-all">
                 <span id="mood-emoji-Aashish" class="text-sm">❤️</span>
                 <div class="text-left"><p class="text-[7px] font-black text-sky-500 uppercase leading-none">Aashish</p><p id="mood-text-Aashish" class="text-[9px] font-bold text-sky-900/70 truncate max-w-[75px]">...</p></div>
             </div>
-            <div onclick="openMoodModal('Khushi')" class="flex items-center gap-2 bg-rose-50 px-4 py-2 rounded-full border border-rose-100 cursor-pointer shadow-sm active:scale-95 transition-transform">
+            <div onclick="openMoodModal('Khushi')" id="bubble-Khushi" class="flex items-center gap-2 bg-rose-50 px-4 py-2 rounded-full border border-rose-100 cursor-pointer shadow-sm active:scale-95 transition-all">
                 <span id="mood-emoji-Khushi" class="text-sm">😊</span>
                 <div class="text-left"><p class="text-[7px] font-black text-rose-500 uppercase leading-none">Khushi</p><p id="mood-text-Khushi" class="text-[9px] font-bold text-rose-900/70 truncate max-w-[75px]">...</p></div>
             </div>
@@ -83,6 +84,15 @@
             <div id="memory-display" class="hidden bg-white p-10 rounded-[2rem] shadow-2xl">
                 <p id="memory-text" class="text-2xl leading-relaxed italic text-slate-700 font-roygen"></p>
                 <p id="memory-date" class="text-[10px] font-bold text-rose-300 mt-6 text-right uppercase"></p>
+            </div>
+        </div>
+
+        <div id="chat-tab" class="tab-content flex flex-col h-[60vh]">
+            <h2 class="text-4xl mb-6 text-slate-800 font-roygen italic font-bold text-center">Our Chat</h2>
+            <div id="chat-messages" class="flex-1 overflow-y-auto px-2 space-y-4 mb-4 flex flex-col"></div>
+            <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-inner border border-rose-100">
+                <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 bg-transparent px-4 py-2 outline-none text-sm">
+                <button onclick="sendMessage()" class="bg-rose-500 text-white p-3 rounded-xl shadow-lg"><i data-lucide="send" class="w-4 h-4"></i></button>
             </div>
         </div>
 
@@ -104,32 +114,37 @@
 
     <nav class="fixed bottom-8 left-6 right-6 bg-white/90 p-2 flex justify-around rounded-full shadow-2xl z-30">
         <button onclick="switchTab('jar')" id="nav-jar" class="flex-1 flex flex-col items-center py-3 rounded-full text-rose-500 bg-rose-50"><i data-lucide="archive" class="w-4 h-4"></i></button>
+        <button onclick="switchTab('chat')" id="nav-chat" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="message-circle" class="w-4 h-4"></i></button>
         <button onclick="switchTab('moments')" id="nav-moments" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="camera" class="w-4 h-4"></i></button>
         <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="book-open" class="w-4 h-4"></i></button>
     </nav>
+
+    <div id="identity-modal" class="hidden fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-8 text-center">
+        <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 shadow-2xl">
+            <h3 class="text-2xl font-bold font-roygen mb-2">Welcome Home ❤️</h3>
+            <p class="text-xs text-slate-400 mb-8 uppercase tracking-widest">Who is opening the app?</p>
+            <div class="space-y-4">
+                <button onclick="setIdentity('Aashish')" class="w-full bg-sky-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-sky-100">I am Aashish</button>
+                <button onclick="setIdentity('Khushi')" class="w-full bg-rose-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-rose-100">I am Khushi</button>
+            </div>
+        </div>
+    </div>
 
     <div id="daily-note-modal" class="hidden fixed inset-0 bg-black/95 backdrop-blur-xl z-[150] flex items-center justify-center p-0">
         <div id="view-note-mode" class="w-full h-full flex flex-col justify-center items-center px-8 relative">
             <div class="absolute top-10 w-full px-6 flex gap-1" id="story-progress-bars"></div>
             <button onclick="closeDailyNote()" class="absolute top-14 right-6 text-white/50 z-50"><i data-lucide="x"></i></button>
-            
             <div id="story-content" class="text-center relative z-20">
                 <p id="display-daily-author" class="text-[10px] font-black uppercase text-rose-400 tracking-[0.3em] mb-4"></p>
                 <p id="display-daily-text" class="font-roygen italic text-3xl text-white leading-relaxed mb-4"></p>
                 <p id="display-daily-time" class="text-[8px] font-bold text-white/30 uppercase"></p>
             </div>
-
-            <div class="absolute inset-0 flex z-10">
-                <div onclick="prevStory()" class="w-1/3 h-full"></div>
-                <div onclick="nextStory()" class="w-2/3 h-full"></div>
-            </div>
-
+            <div class="absolute inset-0 flex z-10"><div onclick="prevStory()" class="w-1/3 h-full"></div><div onclick="nextStory()" class="w-2/3 h-full"></div></div>
             <button onclick="toggleDailyWrite(true)" class="absolute bottom-12 bg-white/10 border border-white/20 text-white px-6 py-3 rounded-full text-xs font-bold backdrop-blur-md z-30">+ New Note</button>
         </div>
-
         <div id="write-note-mode" class="hidden bg-white w-full max-w-sm rounded-[2.5rem] p-8 m-6 relative z-[160]">
             <h3 class="text-xl font-bold mb-4 font-roygen">Add to Daily Story</h3>
-            <textarea id="daily-note-input" class="w-full border-2 p-4 rounded-2xl mb-4 focus:border-rose-300 outline-none" rows="3" placeholder="What's happening?"></textarea>
+            <textarea id="daily-note-input" class="w-full border-2 p-4 rounded-2xl mb-4 outline-none" rows="3" placeholder="What's happening?"></textarea>
             <button onclick="saveDailyNote()" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold mb-2">Post ❤️</button>
             <button onclick="toggleDailyWrite(false)" class="text-slate-400 text-[10px] font-bold uppercase w-full">Cancel</button>
         </div>
@@ -139,14 +154,14 @@
         <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
             <h3 id="mood-title" class="text-xl font-bold mb-6 font-roygen">Update Status</h3>
             <div class="grid grid-cols-3 gap-4 mb-6">
-                <button onclick="setMood('❤️', 'Thinking of you')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">❤️</button>
-                <button onclick="setMood('😊', 'Happy')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">😊</button>
-                <button onclick="setMood('🥺', 'Missing you')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">🥺</button>
-                <button onclick="setMood('😴', 'Sleeping')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">😴</button>
-                <button onclick="setMood('✨', 'Inspired')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">✨</button>
-                <button onclick="setMood('🏃‍♂️', 'At Gym')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">🏃‍♂️</button>
+                <button onclick="setMood('❤️', 'Thinking of you')" class="text-2xl p-4 bg-slate-50 rounded-2xl">❤️</button>
+                <button onclick="setMood('😊', 'Happy')" class="text-2xl p-4 bg-slate-50 rounded-2xl">😊</button>
+                <button onclick="setMood('🥺', 'Missing you')" class="text-2xl p-4 bg-slate-50 rounded-2xl">🥺</button>
+                <button onclick="setMood('😴', 'Sleeping')" class="text-2xl p-4 bg-slate-50 rounded-2xl">😴</button>
+                <button onclick="setMood('✨', 'Inspired')" class="text-2xl p-4 bg-slate-50 rounded-2xl">✨</button>
+                <button onclick="setMood('🏃‍♂️', 'At Gym')" class="text-2xl p-4 bg-slate-50 rounded-2xl">🏃‍♂️</button>
             </div>
-            <button onclick="document.getElementById('mood-modal').classList.add('hidden')" class="text-slate-400 text-xs font-bold uppercase tracking-widest">Close</button>
+            <button onclick="document.getElementById('mood-modal').classList.add('hidden')" class="text-slate-400 text-xs font-bold uppercase">Close</button>
         </div>
     </div>
 
@@ -154,9 +169,28 @@
     <div id="story-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">New Story</h3><textarea id="story-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="4"></textarea><button onclick="saveNote(false)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Post ❤️</button></div></div>
 
     <script>
+        // --- Identity & State ---
+        let myName = localStorage.getItem('userName');
+        if (!myName) document.getElementById('identity-modal').classList.remove('hidden');
+
+        function setIdentity(name) {
+            localStorage.setItem('userName', name);
+            myName = name;
+            document.getElementById('identity-modal').classList.add('hidden');
+            highlightMyBubble();
+        }
+
+        function highlightMyBubble() {
+            // Add a small ring to show which bubble is "Me"
+            document.getElementById('bubble-Aashish').classList.toggle('ring-2', myName === 'Aashish');
+            document.getElementById('bubble-Aashish').classList.toggle('ring-sky-400', myName === 'Aashish');
+            document.getElementById('bubble-Khushi').classList.toggle('ring-2', myName === 'Khushi');
+            document.getElementById('bubble-Khushi').classList.toggle('ring-rose-400', myName === 'Khushi');
+        }
+
         // --- SDKs ---
         window.OneSignal = window.OneSignal || [];
-        OneSignal.push(() => { OneSignal.init({ appId: "15856578-2177-4ce4-a042-37632241a93b", allowLocalhostAsSecureOrigin: true }); OneSignal.Slidedown.promptTrigger(); });
+        OneSignal.push(() => { OneSignal.init({ appId: "15856578-2177-4ce4-a042-37632241a93b", allowLocalhostAsSecureOrigin: true }); });
         const _supabase = supabase.createClient('https://hverhbwbfjwrbmuffnwf.supabase.co', 'sb_publishable_x59UvZOhR14OvMuQBkC2TQ_W7BVCfN_');
         const START_DATE = new Date('2025-05-13T00:00:00');
 
@@ -172,18 +206,8 @@
         document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
 
         function toggleMusic() {
-            if (!isPlaying) {
-                player.playVideo(); isPlaying = true;
-                if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{});
-                document.getElementById('music-icon').setAttribute('data-lucide', 'pause');
-                document.getElementById('music-label').innerText = "Playing";
-                document.body.classList.add('music-playing-bg');
-            } else {
-                player.pauseVideo(); isPlaying = false;
-                document.getElementById('music-icon').setAttribute('data-lucide', 'music');
-                document.getElementById('music-label').innerText = "Paused";
-                document.body.classList.remove('music-playing-bg');
-            }
+            if (!isPlaying) { player.playVideo(); isPlaying = true; document.getElementById('music-icon').setAttribute('data-lucide', 'pause'); document.body.classList.add('music-playing-bg'); }
+            else { player.pauseVideo(); isPlaying = false; document.getElementById('music-icon').setAttribute('data-lucide', 'music'); document.body.classList.remove('music-playing-bg'); }
             lucide.createIcons();
         }
 
@@ -201,17 +225,44 @@
         window.addEventListener('touchend', async () => {
             if (tEnd - tStart > 100 && window.scrollY === 0) {
                 ri.style.transform = `translateY(20px)`; rx.classList.add('animate-spin');
-                await Promise.all([fetchContent(), fetchMoments(), fetchMood(), fetchDailyNote()]);
-                setTimeout(() => { ri.style.transform = `translateY(-100%)`; rx.classList.remove('animate-spin'); tStart = 0; tEnd = 0; }, 800);
-            } else { ri.style.transform = `translateY(-100%)`; tStart = 0; tEnd = 0; }
+                await Promise.all([fetchContent(), fetchMoments(), fetchMood(), fetchDailyNote(), fetchMessages()]);
+                setTimeout(() => { ri.style.transform = `translateY(-100%)`; rx.classList.remove('animate-spin'); }, 800);
+            } else { ri.style.transform = `translateY(-100%)`; }
         });
 
-        // --- Moods ---
-        let currentEditingUser = 'Aashish';
-        function openMoodModal(user) { currentEditingUser = user; document.getElementById('mood-title').innerText = `Updating ${user}'s Mood`; document.getElementById('mood-modal').classList.remove('hidden'); }
+        // --- Chat ---
+        async function sendMessage() {
+            const input = document.getElementById('chat-input'); if (!input.value) return;
+            const msg = input.value; input.value = '';
+            await _supabase.from('messages').insert([{ sender_name: myName, message_text: msg }]);
+            fetchMessages();
+        }
+        async function fetchMessages() {
+            const { data } = await _supabase.from('messages').select('*').order('created_at', { ascending: false }).limit(20);
+            if (data) {
+                const chatArea = document.getElementById('chat-messages');
+                chatArea.innerHTML = data.reverse().map(m => {
+                    const isMe = m.sender_name === myName;
+                    return `<div class="flex ${isMe ? 'justify-end' : 'justify-start'} w-full animate-in fade-in slide-in-from-bottom-2">
+                        <div class="max-w-[80%] ${isMe ? 'bg-rose-500 text-white rounded-t-2xl rounded-bl-2xl' : 'bg-white text-slate-700 rounded-t-2xl rounded-br-2xl shadow-sm'} px-4 py-2">
+                            <p class="text-[8px] font-black uppercase opacity-50 mb-1">${m.sender_name}</p>
+                            <p class="text-sm leading-relaxed">${m.message_text}</p>
+                        </div>
+                    </div>`;
+                }).join('');
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        }
+
+        // --- Mood ---
+        function openMoodModal(user) { 
+            // Only allow changing your OWN mood
+            if (user !== myName) { alert(`This is ${user}'s status. You can only change your own!`); return; }
+            document.getElementById('mood-title').innerText = `Updating My Mood`; 
+            document.getElementById('mood-modal').classList.remove('hidden'); 
+        }
         async function setMood(emoji, text) {
-            if (navigator.vibrate) navigator.vibrate(50);
-            await _supabase.from('status').upsert([{ user_name: currentEditingUser, emoji, text }]);
+            await _supabase.from('status').upsert([{ user_name: myName, emoji, text }]);
             document.getElementById('mood-modal').classList.add('hidden');
             fetchMood();
         }
@@ -223,74 +274,46 @@
             });
         }
 
-        // --- STORY FEED (24H) LOGIC ---
-        let allStories = [];
-        let currentStoryIndex = 0;
-        let lastSeenNoteId = parseInt(localStorage.getItem('lastSeenNoteId')) || 0;
-
+        // --- Stories (24h) ---
+        let allStories = [], currentStoryIdx = 0, lastSeenId = parseInt(localStorage.getItem('lastSeenId')) || 0;
         async function fetchDailyNote() {
             const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
             const { data } = await _supabase.from('daily_notes').select('*').gt('created_at', yesterday).order('created_at', { ascending: true });
-            
             allStories = data || [];
             const bubble = document.getElementById('daily-bubble');
-
             if (allStories.length > 0) {
                 const newestId = allStories[allStories.length - 1].id;
-                if (newestId > lastSeenNoteId) {
-                    bubble.classList.add('ring-4', 'ring-rose-400/50', 'animate-pulse');
-                } else {
-                    bubble.classList.remove('ring-4', 'ring-rose-400/50', 'animate-pulse');
-                }
+                if (newestId > lastSeenId) bubble.classList.add('ring-4', 'ring-rose-400/50', 'animate-pulse');
+                else bubble.classList.remove('ring-4', 'ring-rose-400/50', 'animate-pulse');
             }
         }
-
         function showDailyNote() {
             if (allStories.length === 0) { toggleDailyWrite(true); document.getElementById('daily-note-modal').classList.remove('hidden'); return; }
-            // NEWEST FIRST: Start at the end of the list
-            currentStoryIndex = allStories.length - 1;
+            currentStoryIdx = allStories.length - 1; // NEWEST FIRST
             renderStory();
             document.getElementById('daily-note-modal').classList.remove('hidden');
-            
             const newestId = allStories[allStories.length - 1].id;
-            localStorage.setItem('lastSeenNoteId', newestId);
-            lastSeenNoteId = newestId;
+            localStorage.setItem('lastSeenId', newestId); lastSeenId = newestId;
             document.getElementById('daily-bubble').classList.remove('ring-4', 'animate-pulse');
         }
-
         function renderStory() {
-            const story = allStories[currentStoryIndex];
-            if (!story) return;
+            const story = allStories[currentStoryIdx];
             document.getElementById('display-daily-text').innerText = `"${story.note_text}"`;
             document.getElementById('display-daily-author').innerText = story.user_name;
             document.getElementById('display-daily-time').innerText = new Date(story.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            
-            const bars = document.getElementById('story-progress-bars');
-            bars.innerHTML = allStories.map((_, i) => `<div class="h-1 flex-1 rounded-full ${i <= currentStoryIndex ? 'bg-rose-400' : 'bg-white/20'}"></div>`).join('');
+            document.getElementById('story-progress-bars').innerHTML = allStories.map((_, i) => `<div class="h-1 flex-1 rounded-full ${i <= currentStoryIdx ? 'bg-rose-400' : 'bg-white/20'}"></div>`).join('');
             lucide.createIcons();
         }
-
-        function nextStory() {
-            // Since we show newest first, "next" actually moves to the older stories (backward in index)
-            if (currentStoryIndex > 0) { currentStoryIndex--; renderStory(); } 
-            else { closeDailyNote(); }
-        }
-
-        function prevStory() {
-            // "Prev" moves to the newer stories (forward in index)
-            if (currentStoryIndex < allStories.length - 1) { currentStoryIndex++; renderStory(); }
-        }
-
-        function toggleDailyWrite(isWrite) { document.getElementById('view-note-mode').classList.toggle('hidden', isWrite); document.getElementById('write-note-mode').classList.toggle('hidden', !isWrite); }
-        function closeDailyNote() { document.getElementById('daily-note-modal').classList.add('hidden'); }
+        function nextStory() { if (currentStoryIdx > 0) { currentStoryIdx--; renderStory(); } else closeDailyNote(); }
+        function prevStory() { if (currentStoryIdx < allStories.length - 1) { currentStoryIdx++; renderStory(); } }
         async function saveDailyNote() {
             const text = document.getElementById('daily-note-input').value; if(!text) return;
-            if (navigator.vibrate) navigator.vibrate(50);
-            await _supabase.from('daily_notes').insert([{ user_name: currentEditingUser, note_text: text }]);
+            await _supabase.from('daily_notes').insert([{ user_name: myName, note_text: text }]);
             document.getElementById('daily-note-input').value = ''; toggleDailyWrite(false);
-            await fetchDailyNote();
-            currentStoryIndex = allStories.length - 1; renderStory();
+            await fetchDailyNote(); showDailyNote();
         }
+        function toggleDailyWrite(isWrite) { document.getElementById('view-note-mode').classList.toggle('hidden', isWrite); document.getElementById('write-note-mode').classList.toggle('hidden', !isWrite); }
+        function closeDailyNote() { document.getElementById('daily-note-modal').classList.add('hidden'); }
 
         // --- Core ---
         function updateTimers() {
@@ -300,7 +323,8 @@
             document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60);
             document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
             const hr = now.getHours();
-            document.getElementById('personal-greeting').innerText = hr < 12 ? "Good Morning, Khushi ☀️" : hr < 18 ? "Good Afternoon, Khushi 🌷" : "Good Evening, Khushi ✨";
+            const g = hr < 12 ? "Good Morning" : hr < 18 ? "Good Afternoon" : "Good Evening";
+            document.getElementById('personal-greeting').innerText = `${g}, ${myName === 'Khushi' ? 'Khushi' : 'Aashish'} ❤️`;
         }
 
         async function uploadPhoto(input) {
@@ -308,15 +332,14 @@
             const file = input.files[0], name = `${Date.now()}-${file.name}`;
             await _supabase.storage.from('moments').upload(name, file);
             const { data } = _supabase.storage.from('moments').getPublicUrl(name);
-            const cap = prompt("Caption?") || "Our Memory.";
-            await _supabase.from('moments').insert([{ image_url: data.publicUrl, caption: cap }]);
+            await _supabase.from('moments').insert([{ image_url: data.publicUrl, caption: prompt("Caption?") || "Memory" }]);
             fetchMoments();
         }
 
         async function fetchMoments() {
             const { data } = await _supabase.from('moments').select('*').order('created_at', { ascending: false });
-            let h = `<div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022361.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center">Every lift with you is a lift up. ❤️</p></div><div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022359.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center">Forever to go.</p></div><div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022363.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center">The best view is always you.</p></div>`;
-            if (data) data.forEach(p => { h += `<div class="polaroid"><img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center">${p.caption}</p></div>`; });
+            let h = `<div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022361.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center text-xs">Our lifting journey ❤️</p></div>`;
+            if (data) data.forEach(p => { h += `<div class="polaroid"><img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center text-xs">${p.caption}</p></div>`; });
             document.getElementById('moments-list').innerHTML = h;
         }
 
@@ -336,7 +359,6 @@
         }
 
         function pickMemory() {
-            if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
             const m = window.jarMemories || []; if (!m.length) return;
             const r = m[Math.floor(Math.random() * m.length)];
             document.getElementById('memory-text').innerText = `"${r.text}"`;
@@ -349,18 +371,18 @@
             document.getElementById(t + '-tab').classList.add('active');
             document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-rose-50', 'text-rose-500'); b.classList.add('text-slate-400'); });
             document.getElementById('nav-' + t).classList.add('bg-rose-50', 'text-rose-500');
-            if(t === 'story') fetchContent(); if(t === 'moments') fetchMoments();
+            if(t === 'story') fetchContent(); if(t === 'moments') fetchMoments(); if(t === 'chat') fetchMessages();
         }
 
         function createFlower() {
             const d = document.createElement('div'); d.className = 'flower-bg';
-            d.innerHTML = `<svg width="30" height="30" viewBox="0 0 100 100"><circle cx="50" cy="50" r="12" fill="#FBBF24" /><g fill="white"><ellipse cx="50" cy="20" rx="8" ry="18" /><ellipse cx="50" cy="80" rx="8" ry="18" /><ellipse cx="20" cy="50" rx="18" ry="8" /><ellipse cx="80" cy="50" rx="18" ry="8" /></g></svg>`;
+            d.innerHTML = `<svg width="20" height="20" viewBox="0 0 100 100"><circle cx="50" cy="50" r="12" fill="#FBBF24" /><g fill="white"><ellipse cx="50" cy="20" rx="8" ry="18" /><ellipse cx="50" cy="80" rx="8" ry="18" /><ellipse cx="20" cy="50" rx="18" ry="8" /><ellipse cx="80" cy="50" rx="18" ry="8" /></g></svg>`;
             d.style.left = Math.random() * 100 + 'vw'; document.getElementById('flower-container').appendChild(d);
             setTimeout(() => d.remove(), 20000);
         }
 
-        setInterval(updateTimers, 1000); setInterval(createFlower, 4000); setInterval(fetchMood, 5000); setInterval(fetchDailyNote, 10000);
-        updateTimers(); fetchContent(); fetchMoments(); fetchMood(); fetchDailyNote(); lucide.createIcons();
+        setInterval(updateTimers, 1000); setInterval(createFlower, 4000); setInterval(() => { fetchMood(); fetchDailyNote(); fetchMessages(); }, 5000);
+        updateTimers(); fetchContent(); fetchMoments(); fetchMood(); fetchDailyNote(); highlightMyBubble(); lucide.createIcons();
     </script>
 </body>
 </html>
