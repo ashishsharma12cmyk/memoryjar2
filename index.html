@@ -16,12 +16,14 @@
         .font-roygen { font-family: 'Playfair Display', serif; }
         body { font-family: 'Inter', sans-serif; background-color: #E9DCC9; transition: background-color 3s ease; overflow-x: hidden; touch-action: pan-y; }
 
+        /* Floating Flowers */
         .flower-bg { position: fixed; pointer-events: none; z-index: 0; opacity: 0.6; animation: float 20s linear infinite; }
         @keyframes float { 0% { transform: translateY(110vh) rotate(0deg); } 100% { transform: translateY(-20vh) rotate(360deg); } }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
+        /* Music Background Vibe */
         @keyframes musicVibe {
             0% { background-color: #E9DCC9; }
             50% { background-color: #F8E3E3; }
@@ -35,6 +37,7 @@
             transform: rotate(-1deg); transition: all 0.3s ease; 
         }
         .polaroid:nth-child(even) { transform: rotate(1deg); }
+        
         #refresh-indicator { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
@@ -55,6 +58,15 @@
     </button>
 
     <header class="bg-white/90 p-8 rounded-b-[3rem] shadow-sm text-center relative z-10">
+        <div onclick="showDailyNote()" class="absolute top-6 left-6 cursor-pointer group">
+            <div id="daily-bubble" class="w-12 h-12 rounded-full border-2 border-rose-400 p-0.5 transition-all">
+                <div class="w-full h-full rounded-full bg-rose-100 flex items-center justify-center">
+                    <i data-lucide="message-circle-heart" class="text-rose-500 w-5 h-5"></i>
+                </div>
+            </div>
+            <p class="text-[7px] font-black text-rose-400 uppercase mt-1">Daily Note</p>
+        </div>
+
         <p id="personal-greeting" class="font-roygen italic text-rose-400 mb-1 text-sm"></p>
         <h1 class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mb-4">Forever Since May 13, 2025</h1>
         
@@ -68,17 +80,11 @@
         <div class="flex justify-center gap-3">
             <div onclick="openMoodModal('Aashish')" class="flex items-center gap-2 bg-sky-50 px-4 py-2 rounded-full border border-sky-100 cursor-pointer shadow-sm active:scale-95 transition-transform">
                 <span id="mood-emoji-Aashish" class="text-sm">❤️</span>
-                <div class="text-left">
-                    <p class="text-[7px] font-black text-sky-500 uppercase leading-none">Aashish</p>
-                    <p id="mood-text-Aashish" class="text-[9px] font-bold text-sky-900/70 truncate max-w-[75px]">...</p>
-                </div>
+                <div class="text-left"><p class="text-[7px] font-black text-sky-500 uppercase leading-none">Aashish</p><p id="mood-text-Aashish" class="text-[9px] font-bold text-sky-900/70 truncate max-w-[75px]">...</p></div>
             </div>
             <div onclick="openMoodModal('Khushi')" class="flex items-center gap-2 bg-rose-50 px-4 py-2 rounded-full border border-rose-100 cursor-pointer shadow-sm active:scale-95 transition-transform">
                 <span id="mood-emoji-Khushi" class="text-sm">😊</span>
-                <div class="text-left">
-                    <p class="text-[7px] font-black text-rose-500 uppercase leading-none">Khushi</p>
-                    <p id="mood-text-Khushi" class="text-[9px] font-bold text-rose-900/70 truncate max-w-[75px]">...</p>
-                </div>
+                <div class="text-left"><p class="text-[7px] font-black text-rose-500 uppercase leading-none">Khushi</p><p id="mood-text-Khushi" class="text-[9px] font-bold text-rose-900/70 truncate max-w-[75px]">...</p></div>
             </div>
         </div>
     </header>
@@ -120,31 +126,51 @@
     </nav>
 
     <div id="mood-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6 text-center">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 shadow-2xl">
             <h3 id="mood-title" class="text-xl font-bold mb-6 font-roygen">Updating Status</h3>
             <div class="grid grid-cols-3 gap-4 mb-6">
-                <button onclick="setMood('❤️', 'Thinking of you')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">❤️</button>
-                <button onclick="setMood('😊', 'Happy')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">😊</button>
-                <button onclick="setMood('🥺', 'Missing you')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">🥺</button>
-                <button onclick="setMood('😴', 'Sleeping')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">😴</button>
-                <button onclick="setMood('✨', 'Inspired')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">✨</button>
-                <button onclick="setMood('🏃‍♂️', 'Working Out')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">🏃‍♂️</button>
+                <button onclick="setMood('❤️', 'Thinking of you')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50 transition-colors">❤️</button>
+                <button onclick="setMood('😊', 'Happy')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50 transition-colors">😊</button>
+                <button onclick="setMood('🥺', 'Missing you')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50 transition-colors">🥺</button>
+                <button onclick="setMood('😴', 'Sleeping')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50 transition-colors">😴</button>
+                <button onclick="setMood('✨', 'Inspired')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50 transition-colors">✨</button>
+                <button onclick="setMood('🏃‍♂️', 'Working Out')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50 transition-colors">🏃‍♂️</button>
             </div>
-            <button onclick="document.getElementById('mood-modal').classList.add('hidden')" class="text-slate-400 text-xs font-bold uppercase">Close</button>
+            <button onclick="document.getElementById('mood-modal').classList.add('hidden')" class="text-slate-400 text-xs font-bold uppercase tracking-widest">Close</button>
         </div>
     </div>
 
-    <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">Drop a Memory</h3><textarea id="jar-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="3" placeholder="Something sweet..."></textarea><button onclick="saveNote(true)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Add ❤️</button></div></div>
+    <div id="daily-note-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-6 text-center">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl">
+            <div id="view-note-mode">
+                <p class="text-[10px] font-black uppercase text-rose-400 tracking-widest mb-4">Daily Vanishing Note</p>
+                <p id="display-daily-text" class="font-roygen italic text-2xl text-slate-700 leading-relaxed mb-6">"..."</p>
+                <p id="display-daily-author" class="text-[9px] font-bold text-slate-400 uppercase mb-8"></p>
+                <div class="flex gap-2">
+                    <button onclick="document.getElementById('daily-note-modal').classList.add('hidden')" class="flex-1 bg-slate-100 text-slate-500 py-3 rounded-xl font-bold text-xs">Close</button>
+                    <button onclick="toggleDailyWrite(true)" class="flex-1 bg-rose-500 text-white py-3 rounded-xl font-bold text-xs">Write New</button>
+                </div>
+            </div>
+            <div id="write-note-mode" class="hidden">
+                <h3 class="text-xl font-bold mb-4 font-roygen">Update Daily Note</h3>
+                <textarea id="daily-note-input" class="w-full border-2 p-4 rounded-2xl mb-4 focus:border-rose-300 outline-none" rows="3" placeholder="What's on your mind?"></textarea>
+                <button onclick="saveDailyNote()" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold mb-2">Post for 24h ❤️</button>
+                <button onclick="toggleDailyWrite(false)" class="text-slate-400 text-[10px] font-bold uppercase">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">Drop a Memory</h3><textarea id="jar-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="3"></textarea><button onclick="saveNote(true)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Add ❤️</button></div></div>
     <div id="story-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">New Entry</h3><textarea id="story-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="4"></textarea><button onclick="saveNote(false)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Save ❤️</button></div></div>
 
     <script>
-        // --- SDKs ---
+        // --- 1. CONFIG & SDKS ---
         window.OneSignal = window.OneSignal || [];
         OneSignal.push(() => { OneSignal.init({ appId: "15856578-2177-4ce4-a042-37632241a93b", allowLocalhostAsSecureOrigin: true }); OneSignal.Slidedown.promptTrigger(); });
         const _supabase = supabase.createClient('https://hverhbwbfjwrbmuffnwf.supabase.co', 'sb_publishable_x59UvZOhR14OvMuQBkC2TQ_W7BVCfN_');
         const START_DATE = new Date('2025-05-13T00:00:00');
 
-        // --- Music Loop Player ---
+        // --- 2. MUSIC PLAYER (LOOPING) ---
         let player, isPlaying = false;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-audio', { height: '0', width: '0', videoId: 'mb80yhETaD8',
@@ -171,7 +197,7 @@
             lucide.createIcons();
         }
 
-        // --- Swipe Refresh ---
+        // --- 3. SWIPE TO REFRESH ---
         let tStart = 0, tEnd = 0;
         const ri = document.getElementById('refresh-indicator'), rx = document.getElementById('refresh-icon');
         window.addEventListener('touchstart', (e) => { if (window.scrollY === 0) tStart = e.targetTouches[0].screenY; }, { passive: true });
@@ -185,12 +211,12 @@
         window.addEventListener('touchend', async () => {
             if (tEnd - tStart > 100 && window.scrollY === 0) {
                 ri.style.transform = `translateY(20px)`; rx.classList.add('animate-spin');
-                await Promise.all([fetchContent(), fetchMoments(), fetchMood()]);
+                await Promise.all([fetchContent(), fetchMoments(), fetchMood(), fetchDailyNote()]);
                 setTimeout(() => { ri.style.transform = `translateY(-100%)`; rx.classList.remove('animate-spin'); tStart = 0; tEnd = 0; }, 800);
             } else { ri.style.transform = `translateY(-100%)`; tStart = 0; tEnd = 0; }
         });
 
-        // --- Dual Mood Logic ---
+        // --- 4. DUAL MOOD LOGIC ---
         let currentEditingUser = 'Aashish';
         function openMoodModal(user) { currentEditingUser = user; document.getElementById('mood-title').innerText = `Updating ${user}'s Mood`; document.getElementById('mood-modal').classList.remove('hidden'); }
         async function setMood(emoji, text) {
@@ -202,15 +228,31 @@
         async function fetchMood() {
             const { data } = await _supabase.from('status').select('*');
             if(data) data.forEach(s => {
-                const em = document.getElementById(`mood-emoji-${s.user_name}`);
-                const tx = document.getElementById(`mood-text-${s.user_name}`);
+                const em = document.getElementById(`mood-emoji-${s.user_name}`), tx = document.getElementById(`mood-text-${s.user_name}`);
                 if(em && tx) { em.innerText = s.emoji; tx.innerText = s.text; }
             });
         }
 
-        // --- Core Timer ---
+        // --- 5. DAILY NOTE (24h) LOGIC ---
+        function showDailyNote() { toggleDailyWrite(false); document.getElementById('daily-note-modal').classList.remove('hidden'); fetchDailyNote(); }
+        function toggleDailyWrite(isWrite) { document.getElementById('view-note-mode').classList.toggle('hidden', isWrite); document.getElementById('write-note-mode').classList.toggle('hidden', !isWrite); }
+        async function saveDailyNote() {
+            const text = document.getElementById('daily-note-input').value; if(!text) return;
+            if (navigator.vibrate) navigator.vibrate(50);
+            await _supabase.from('daily_notes').insert([{ user_name: currentEditingUser, note_text: text }]);
+            document.getElementById('daily-note-input').value = ''; toggleDailyWrite(false); fetchDailyNote();
+        }
+        async function fetchDailyNote() {
+            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            const { data } = await _supabase.from('daily_notes').select('*').gt('created_at', yesterday).order('created_at', { ascending: false }).limit(1).single();
+            const display = document.getElementById('display-daily-text'), author = document.getElementById('display-daily-author'), bubble = document.getElementById('daily-bubble');
+            if (data) { display.innerText = `"${data.note_text}"`; author.innerText = `— ${data.user_name}`; bubble.classList.add('ring-4', 'ring-rose-200', 'animate-pulse'); }
+            else { display.innerText = "No note set for today..."; author.innerText = ""; bubble.classList.remove('ring-4', 'ring-rose-200', 'animate-pulse'); }
+        }
+
+        // --- 6. CORE APP LOGIC ---
         function updateTimers() {
-            const now = new Date(); const diff = Math.abs(now - START_DATE);
+            const now = new Date(), diff = Math.abs(now - START_DATE);
             document.getElementById('days').innerText = Math.floor(diff / 86400000);
             document.getElementById('hours').innerText = Math.floor((diff / 3600000) % 24);
             document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60);
@@ -224,15 +266,15 @@
             const file = input.files[0], name = `${Date.now()}-${file.name}`;
             await _supabase.storage.from('moments').upload(name, file);
             const { data } = _supabase.storage.from('moments').getPublicUrl(name);
-            const cap = prompt("Caption for this memory?") || "Our Moment.";
+            const cap = prompt("Caption?") || "Memory.";
             await _supabase.from('moments').insert([{ image_url: data.publicUrl, caption: cap }]);
             fetchMoments();
         }
 
         async function fetchMoments() {
             const { data } = await _supabase.from('moments').select('*').order('created_at', { ascending: false });
-            let h = `<div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022361.jpg?raw=true" class="w-full h-auto rounded-sm mb-2 shadow-inner"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center">Every lift with you is a lift up. ❤️</p></div><div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022359.jpg?raw=true" class="w-full h-auto rounded-sm mb-2 shadow-inner"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center">Forever to go.</p></div><div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022363.jpg?raw=true" class="w-full h-auto rounded-sm mb-2 shadow-inner"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center">The best view is always you.</p></div>`;
-            if (data) data.forEach(p => { h += `<div class="polaroid"><img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2 shadow-inner"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center">${p.caption}</p></div>`; });
+            let h = `<div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022361.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center">Every lift with you is a lift up. ❤️</p></div><div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022359.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center">Forever to go.</p></div><div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022363.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center">The best view is always you.</p></div>`;
+            if (data) data.forEach(p => { h += `<div class="polaroid"><img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3 text-center">${p.caption}</p></div>`; });
             document.getElementById('moments-list').innerHTML = h;
         }
 
@@ -245,8 +287,7 @@
         }
 
         async function saveNote(isJar) {
-            const el = document.getElementById(isJar ? 'jar-input' : 'story-input');
-            if(!el.value) return;
+            const el = document.getElementById(isJar ? 'jar-input' : 'story-input'); if(!el.value) return;
             await _supabase.from('stories').insert([{ text: el.value, is_jar: isJar }]);
             document.getElementById(isJar ? 'jar-modal' : 'story-modal').classList.add('hidden');
             el.value = ''; fetchContent();
@@ -254,8 +295,7 @@
 
         function pickMemory() {
             if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
-            const m = window.jarMemories || [];
-            if (!m.length) return;
+            const m = window.jarMemories || []; if (!m.length) return;
             const r = m[Math.floor(Math.random() * m.length)];
             document.getElementById('memory-text').innerText = `"${r.text}"`;
             document.getElementById('memory-date').innerText = new Date(r.created_at).toLocaleDateString();
@@ -277,8 +317,9 @@
             setTimeout(() => d.remove(), 20000);
         }
 
-        setInterval(updateTimers, 1000); setInterval(createFlower, 4000); setInterval(fetchMood, 5000);
-        updateTimers(); fetchContent(); fetchMoments(); fetchMood(); lucide.createIcons();
+        // Init everything
+        setInterval(updateTimers, 1000); setInterval(createFlower, 4000); setInterval(fetchMood, 5000); setInterval(fetchDailyNote, 60000);
+        updateTimers(); fetchContent(); fetchMoments(); fetchMood(); fetchDailyNote(); lucide.createIcons();
     </script>
 </body>
 </html>
