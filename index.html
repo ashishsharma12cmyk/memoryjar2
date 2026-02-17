@@ -22,7 +22,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
-        /* Atmospheric Music Background */
         @keyframes musicVibe {
             0% { background-color: #E9DCC9; }
             50% { background-color: #F8E3E3; }
@@ -36,7 +35,6 @@
             transform: rotate(-1deg); transition: all 0.3s ease; 
         }
         .polaroid:nth-child(even) { transform: rotate(1deg); }
-        
         #refresh-indicator { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
@@ -48,10 +46,7 @@
         </div>
     </div>
 
-    <div id="player-container" class="hidden">
-        <div id="youtube-audio"></div>
-    </div>
-
+    <div id="player-container" class="hidden"><div id="youtube-audio"></div></div>
     <div id="flower-container" class="fixed inset-0 pointer-events-none"></div>
 
     <button onclick="toggleMusic()" id="music-btn" class="fixed bottom-28 left-6 bg-white/90 p-4 rounded-full shadow-2xl border border-rose-100 z-50 flex items-center justify-center">
@@ -62,14 +57,12 @@
     <header class="bg-white/90 p-8 rounded-b-[3rem] shadow-sm text-center relative z-10">
         <p id="personal-greeting" class="font-roygen italic text-rose-400 mb-1 text-sm"></p>
         <h1 class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mb-4">Forever Since May 13, 2025</h1>
-        
         <div class="flex justify-center items-center gap-4 mb-6">
             <div class="flex flex-col"><span id="days" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Days</span></div>
             <div class="flex flex-col"><span id="hours" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Hrs</span></div>
             <div class="flex flex-col"><span id="mins" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Min</span></div>
             <div class="flex flex-col"><span id="secs" class="text-3xl font-black text-rose-500">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Sec</span></div>
         </div>
-
         <div onclick="openMoodModal()" class="inline-flex items-center gap-2 bg-rose-50 px-4 py-2 rounded-full cursor-pointer border border-rose-100">
             <span id="current-mood-emoji">❤️</span>
             <span id="current-mood-text" class="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Thinking of you</span>
@@ -131,7 +124,7 @@
     <div id="story-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4">New Entry</h3><textarea id="story-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="4"></textarea><button onclick="saveNote(false)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Save ❤️</button></div></div>
 
     <script>
-        // --- 1. Init SDKs ---
+        // --- OneSignal & YT API ---
         window.OneSignal = window.OneSignal || [];
         OneSignal.push(() => {
             OneSignal.init({ appId: "15856578-2177-4ce4-a042-37632241a93b", allowLocalhostAsSecureOrigin: true });
@@ -141,31 +134,18 @@
         const _supabase = supabase.createClient('https://hverhbwbfjwrbmuffnwf.supabase.co', 'sb_publishable_x59UvZOhR14OvMuQBkC2TQ_W7BVCfN_');
         const START_DATE = new Date('2025-05-13T00:00:00');
 
-        // --- 2. Music Player ---
         let player;
         function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-audio', { height: '0', width: '0', videoId: 'mb80yhETaD8', playerVars: { 'autoplay': 0, 'controls': 0 } });
+            player = new YT.Player('youtube-audio', {
+                height: '0', width: '0', videoId: 'mb80yhETaD8',
+                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'mb80yhETaD8' },
+                events: { 'onStateChange': (e) => { if (e.data === YT.PlayerState.ENDED) player.playVideo(); } }
+            });
         }
         var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
         document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
 
-        let isPlaying = false;
-        function toggleMusic() {
-            if (!isPlaying) {
-                player.playVideo(); isPlaying = true;
-                document.getElementById('music-icon').setAttribute('data-lucide', 'pause');
-                document.getElementById('music-label').innerText = "Playing";
-                document.body.classList.add('music-playing-bg');
-            } else {
-                player.pauseVideo(); isPlaying = false;
-                document.getElementById('music-icon').setAttribute('data-lucide', 'music');
-                document.getElementById('music-label').innerText = "Paused";
-                document.body.classList.remove('music-playing-bg');
-            }
-            lucide.createIcons();
-        }
-
-        // --- 3. Swipe to Refresh ---
+        // --- Swipe Refresh ---
         let tStart = 0, tEnd = 0;
         const ri = document.getElementById('refresh-indicator'), rx = document.getElementById('refresh-icon');
         window.addEventListener('touchstart', (e) => { if (window.scrollY === 0) tStart = e.targetTouches[0].screenY; }, { passive: true });
@@ -184,9 +164,25 @@
             } else { ri.style.transform = `translateY(-100%)`; tStart = 0; tEnd = 0; }
         });
 
-        // --- 4. Core Features ---
+        // --- Features ---
+        let isPlaying = false;
+        function toggleMusic() {
+            if (!isPlaying) {
+                player.playVideo(); isPlaying = true;
+                document.getElementById('music-icon').setAttribute('data-lucide', 'pause');
+                document.getElementById('music-label').innerText = "Playing";
+                document.body.classList.add('music-playing-bg');
+            } else {
+                player.pauseVideo(); isPlaying = false;
+                document.getElementById('music-icon').setAttribute('data-lucide', 'music');
+                document.getElementById('music-label').innerText = "Paused";
+                document.body.classList.remove('music-playing-bg');
+            }
+            lucide.createIcons();
+        }
+
         async function setMood(emoji, text) {
-            if (navigator.vibrate) navigator.vibrate(50); 
+            if (navigator.vibrate) navigator.vibrate(50);
             await _supabase.from('status').upsert([{ id: 1, emoji, text }]);
             document.getElementById('mood-modal').classList.add('hidden');
             fetchMood();
@@ -220,11 +216,7 @@
 
         async function fetchMoments() {
             const { data } = await _supabase.from('moments').select('*').order('created_at', { ascending: false });
-            let h = `
-                <div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022361.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">Every lift with you is a lift up. ❤️</p></div>
-                <div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022359.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">Forever to go.</p></div>
-                <div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022363.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">The best view is always you.</p></div>
-            `;
+            let h = `<div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022361.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">Every lift with you is a lift up. ❤️</p></div><div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022359.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">Forever to go.</p></div><div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022363.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">The best view is always you.</p></div>`;
             if (data) data.forEach(p => { h += `<div class="polaroid"><img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-sm mt-3">${p.caption}</p></div>`; });
             document.getElementById('moments-list').innerHTML = h;
         }
