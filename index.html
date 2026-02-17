@@ -12,41 +12,26 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;700;900&display=swap');
-        
         .font-roygen { font-family: 'Playfair Display', serif; }
         body { font-family: 'Inter', sans-serif; background-color: #E9DCC9; transition: background-color 3s ease; overflow-x: hidden; touch-action: pan-y; }
 
-        /* Floating Flowers */
         .flower-bg { position: fixed; pointer-events: none; z-index: 0; opacity: 0.6; animation: float 20s linear infinite; }
         @keyframes float { 0% { transform: translateY(110vh) rotate(0deg); } 100% { transform: translateY(-20vh) rotate(360deg); } }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
-        /* Music Background Vibe */
-        @keyframes musicVibe {
-            0% { background-color: #E9DCC9; }
-            50% { background-color: #F8E3E3; }
-            100% { background-color: #E9DCC9; }
-        }
+        @keyframes musicVibe { 0%, 100% { background-color: #E9DCC9; } 50% { background-color: #F8E3E3; } }
         .music-playing-bg { animation: musicVibe 8s ease-in-out infinite; }
 
-        .polaroid { 
-            background: white; padding: 12px 12px 30px 12px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
-            transform: rotate(-1deg); transition: all 0.3s ease; 
-        }
+        .polaroid { background: white; padding: 12px 12px 30px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: rotate(-1deg); }
         .polaroid:nth-child(even) { transform: rotate(1deg); }
-        
-        #refresh-indicator { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
 <body class="pb-32">
 
-    <div id="refresh-indicator" class="fixed top-0 left-0 w-full flex justify-center items-center py-4 z-[100] -translate-y-full">
-        <div class="bg-white/90 p-3 rounded-full shadow-lg border border-rose-100">
-            <i data-lucide="refresh-cw" id="refresh-icon" class="text-rose-400 w-5 h-5"></i>
-        </div>
+    <div id="refresh-indicator" class="fixed top-0 left-0 w-full flex justify-center items-center py-4 z-[100] transition-transform duration-300 -translate-y-full">
+        <div class="bg-white/90 p-3 rounded-full shadow-lg border border-rose-100"><i data-lucide="refresh-cw" id="refresh-icon" class="text-rose-400 w-5 h-5"></i></div>
     </div>
 
     <div id="player-container" class="hidden"><div id="youtube-audio"></div></div>
@@ -60,21 +45,19 @@
     <header class="bg-white/90 p-8 rounded-b-[3rem] shadow-sm text-center relative z-10">
         <div onclick="showDailyNote()" class="absolute top-6 left-6 cursor-pointer group">
             <div id="daily-bubble" class="w-12 h-12 rounded-full border-2 border-rose-400 p-0.5 transition-all">
-                <div class="w-full h-full rounded-full bg-rose-100 flex items-center justify-center">
-                    <i data-lucide="message-circle-heart" class="text-rose-500 w-5 h-5"></i>
-                </div>
+                <div class="w-full h-full rounded-full bg-rose-100 flex items-center justify-center"><i data-lucide="message-circle-heart" class="text-rose-500 w-5 h-5"></i></div>
             </div>
-            <p class="text-[7px] font-black text-rose-400 uppercase mt-1">Daily Note</p>
+            <p class="text-[7px] font-black text-rose-400 uppercase mt-1">Daily Notes</p>
         </div>
 
         <p id="personal-greeting" class="font-roygen italic text-rose-400 mb-1 text-sm"></p>
         <h1 class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mb-4">Forever Since May 13, 2025</h1>
         
         <div class="flex justify-center items-center gap-4 mb-6">
-            <div class="flex flex-col"><span id="days" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Days</span></div>
-            <div class="flex flex-col"><span id="hours" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Hrs</span></div>
-            <div class="flex flex-col"><span id="mins" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Min</span></div>
-            <div class="flex flex-col"><span id="secs" class="text-3xl font-black text-rose-500">0</span><span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Sec</span></div>
+            <div class="flex flex-col"><span id="days" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Days</span></div>
+            <div class="flex flex-col"><span id="hours" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Hrs</span></div>
+            <div class="flex flex-col"><span id="mins" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Min</span></div>
+            <div class="flex flex-col"><span id="secs" class="text-3xl font-black text-rose-500">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Sec</span></div>
         </div>
 
         <div class="flex justify-center gap-3">
@@ -106,7 +89,7 @@
         <div id="moments-tab" class="tab-content text-center">
             <h2 class="text-4xl mb-8 text-slate-800 font-roygen italic font-bold">Our Moments</h2>
             <label class="bg-rose-500 text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg cursor-pointer inline-flex items-center gap-2 mb-10">
-                <i data-lucide="camera" class="w-4 h-4"></i> Add a Photo
+                <i data-lucide="camera" class="w-4 h-4"></i> Add Photo
                 <input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="uploadPhoto(this)">
             </label>
             <div id="moments-list" class="grid grid-cols-1 gap-12 pb-12"></div>
@@ -125,52 +108,59 @@
         <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="book-open" class="w-4 h-4"></i></button>
     </nav>
 
-    <div id="mood-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6 text-center">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 shadow-2xl">
-            <h3 id="mood-title" class="text-xl font-bold mb-6 font-roygen">Updating Status</h3>
+    <div id="daily-note-modal" class="hidden fixed inset-0 bg-black/95 backdrop-blur-xl z-[150] flex items-center justify-center p-0">
+        <div id="view-note-mode" class="w-full h-full flex flex-col justify-center items-center px-8 relative">
+            <div class="absolute top-10 w-full px-6 flex gap-1" id="story-progress-bars"></div>
+            <button onclick="closeDailyNote()" class="absolute top-14 right-6 text-white/50 z-50"><i data-lucide="x"></i></button>
+            
+            <div id="story-content" class="text-center relative z-20">
+                <p id="display-daily-author" class="text-[10px] font-black uppercase text-rose-400 tracking-[0.3em] mb-4"></p>
+                <p id="display-daily-text" class="font-roygen italic text-3xl text-white leading-relaxed mb-4"></p>
+                <p id="display-daily-time" class="text-[8px] font-bold text-white/30 uppercase"></p>
+            </div>
+
+            <div class="absolute inset-0 flex z-10">
+                <div onclick="prevStory()" class="w-1/3 h-full"></div>
+                <div onclick="nextStory()" class="w-2/3 h-full"></div>
+            </div>
+
+            <button onclick="toggleDailyWrite(true)" class="absolute bottom-12 bg-white/10 border border-white/20 text-white px-6 py-3 rounded-full text-xs font-bold backdrop-blur-md z-30">+ New Note</button>
+        </div>
+
+        <div id="write-note-mode" class="hidden bg-white w-full max-w-sm rounded-[2.5rem] p-8 m-6 relative z-[160]">
+            <h3 class="text-xl font-bold mb-4 font-roygen">Add to Daily Story</h3>
+            <textarea id="daily-note-input" class="w-full border-2 p-4 rounded-2xl mb-4 focus:border-rose-300 outline-none" rows="3" placeholder="What's happening?"></textarea>
+            <button onclick="saveDailyNote()" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold mb-2">Post ❤️</button>
+            <button onclick="toggleDailyWrite(false)" class="text-slate-400 text-[10px] font-bold uppercase w-full">Cancel</button>
+        </div>
+    </div>
+
+    <div id="mood-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-6 text-center">
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
+            <h3 id="mood-title" class="text-xl font-bold mb-6 font-roygen">Update Status</h3>
             <div class="grid grid-cols-3 gap-4 mb-6">
-                <button onclick="setMood('❤️', 'Thinking of you')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50 transition-colors">❤️</button>
-                <button onclick="setMood('😊', 'Happy')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50 transition-colors">😊</button>
-                <button onclick="setMood('🥺', 'Missing you')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50 transition-colors">🥺</button>
-                <button onclick="setMood('😴', 'Sleeping')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50 transition-colors">😴</button>
-                <button onclick="setMood('✨', 'Inspired')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50 transition-colors">✨</button>
-                <button onclick="setMood('🏃‍♂️', 'Working Out')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50 transition-colors">🏃‍♂️</button>
+                <button onclick="setMood('❤️', 'Thinking of you')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">❤️</button>
+                <button onclick="setMood('😊', 'Happy')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">😊</button>
+                <button onclick="setMood('🥺', 'Missing you')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">🥺</button>
+                <button onclick="setMood('😴', 'Sleeping')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">😴</button>
+                <button onclick="setMood('✨', 'Inspired')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">✨</button>
+                <button onclick="setMood('🏃‍♂️', 'At Gym')" class="text-2xl p-4 bg-slate-50 rounded-2xl hover:bg-rose-50">🏃‍♂️</button>
             </div>
             <button onclick="document.getElementById('mood-modal').classList.add('hidden')" class="text-slate-400 text-xs font-bold uppercase tracking-widest">Close</button>
         </div>
     </div>
 
-    <div id="daily-note-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-6 text-center">
-        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl">
-            <div id="view-note-mode">
-                <p class="text-[10px] font-black uppercase text-rose-400 tracking-widest mb-4">Daily Vanishing Note</p>
-                <p id="display-daily-text" class="font-roygen italic text-2xl text-slate-700 leading-relaxed mb-6">"..."</p>
-                <p id="display-daily-author" class="text-[9px] font-bold text-slate-400 uppercase mb-8"></p>
-                <div class="flex gap-2">
-                    <button onclick="document.getElementById('daily-note-modal').classList.add('hidden')" class="flex-1 bg-slate-100 text-slate-500 py-3 rounded-xl font-bold text-xs">Close</button>
-                    <button onclick="toggleDailyWrite(true)" class="flex-1 bg-rose-500 text-white py-3 rounded-xl font-bold text-xs">Write New</button>
-                </div>
-            </div>
-            <div id="write-note-mode" class="hidden">
-                <h3 class="text-xl font-bold mb-4 font-roygen">Update Daily Note</h3>
-                <textarea id="daily-note-input" class="w-full border-2 p-4 rounded-2xl mb-4 focus:border-rose-300 outline-none" rows="3" placeholder="What's on your mind?"></textarea>
-                <button onclick="saveDailyNote()" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold mb-2">Post for 24h ❤️</button>
-                <button onclick="toggleDailyWrite(false)" class="text-slate-400 text-[10px] font-bold uppercase">Back</button>
-            </div>
-        </div>
-    </div>
-
     <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">Drop a Memory</h3><textarea id="jar-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="3"></textarea><button onclick="saveNote(true)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Add ❤️</button></div></div>
-    <div id="story-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">New Entry</h3><textarea id="story-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="4"></textarea><button onclick="saveNote(false)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Save ❤️</button></div></div>
+    <div id="story-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">New Story</h3><textarea id="story-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="4"></textarea><button onclick="saveNote(false)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Post ❤️</button></div></div>
 
     <script>
-        // --- 1. CONFIG & SDKS ---
+        // --- SDKs ---
         window.OneSignal = window.OneSignal || [];
         OneSignal.push(() => { OneSignal.init({ appId: "15856578-2177-4ce4-a042-37632241a93b", allowLocalhostAsSecureOrigin: true }); OneSignal.Slidedown.promptTrigger(); });
         const _supabase = supabase.createClient('https://hverhbwbfjwrbmuffnwf.supabase.co', 'sb_publishable_x59UvZOhR14OvMuQBkC2TQ_W7BVCfN_');
         const START_DATE = new Date('2025-05-13T00:00:00');
 
-        // --- 2. MUSIC PLAYER (LOOPING) ---
+        // --- Music ---
         let player, isPlaying = false;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-audio', { height: '0', width: '0', videoId: 'mb80yhETaD8',
@@ -197,7 +187,7 @@
             lucide.createIcons();
         }
 
-        // --- 3. SWIPE TO REFRESH ---
+        // --- Swipe Refresh ---
         let tStart = 0, tEnd = 0;
         const ri = document.getElementById('refresh-indicator'), rx = document.getElementById('refresh-icon');
         window.addEventListener('touchstart', (e) => { if (window.scrollY === 0) tStart = e.targetTouches[0].screenY; }, { passive: true });
@@ -216,7 +206,7 @@
             } else { ri.style.transform = `translateY(-100%)`; tStart = 0; tEnd = 0; }
         });
 
-        // --- 4. DUAL MOOD LOGIC ---
+        // --- Moods ---
         let currentEditingUser = 'Aashish';
         function openMoodModal(user) { currentEditingUser = user; document.getElementById('mood-title').innerText = `Updating ${user}'s Mood`; document.getElementById('mood-modal').classList.remove('hidden'); }
         async function setMood(emoji, text) {
@@ -233,24 +223,76 @@
             });
         }
 
-        // --- 5. DAILY NOTE (24h) LOGIC ---
-        function showDailyNote() { toggleDailyWrite(false); document.getElementById('daily-note-modal').classList.remove('hidden'); fetchDailyNote(); }
+        // --- STORY FEED (24H) LOGIC ---
+        let allStories = [];
+        let currentStoryIndex = 0;
+        let lastSeenNoteId = parseInt(localStorage.getItem('lastSeenNoteId')) || 0;
+
+        async function fetchDailyNote() {
+            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            const { data } = await _supabase.from('daily_notes').select('*').gt('created_at', yesterday).order('created_at', { ascending: true });
+            
+            allStories = data || [];
+            const bubble = document.getElementById('daily-bubble');
+
+            if (allStories.length > 0) {
+                const newestId = allStories[allStories.length - 1].id;
+                if (newestId > lastSeenNoteId) {
+                    bubble.classList.add('ring-4', 'ring-rose-400/50', 'animate-pulse');
+                } else {
+                    bubble.classList.remove('ring-4', 'ring-rose-400/50', 'animate-pulse');
+                }
+            }
+        }
+
+        function showDailyNote() {
+            if (allStories.length === 0) { toggleDailyWrite(true); document.getElementById('daily-note-modal').classList.remove('hidden'); return; }
+            // NEWEST FIRST: Start at the end of the list
+            currentStoryIndex = allStories.length - 1;
+            renderStory();
+            document.getElementById('daily-note-modal').classList.remove('hidden');
+            
+            const newestId = allStories[allStories.length - 1].id;
+            localStorage.setItem('lastSeenNoteId', newestId);
+            lastSeenNoteId = newestId;
+            document.getElementById('daily-bubble').classList.remove('ring-4', 'animate-pulse');
+        }
+
+        function renderStory() {
+            const story = allStories[currentStoryIndex];
+            if (!story) return;
+            document.getElementById('display-daily-text').innerText = `"${story.note_text}"`;
+            document.getElementById('display-daily-author').innerText = story.user_name;
+            document.getElementById('display-daily-time').innerText = new Date(story.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            
+            const bars = document.getElementById('story-progress-bars');
+            bars.innerHTML = allStories.map((_, i) => `<div class="h-1 flex-1 rounded-full ${i <= currentStoryIndex ? 'bg-rose-400' : 'bg-white/20'}"></div>`).join('');
+            lucide.createIcons();
+        }
+
+        function nextStory() {
+            // Since we show newest first, "next" actually moves to the older stories (backward in index)
+            if (currentStoryIndex > 0) { currentStoryIndex--; renderStory(); } 
+            else { closeDailyNote(); }
+        }
+
+        function prevStory() {
+            // "Prev" moves to the newer stories (forward in index)
+            if (currentStoryIndex < allStories.length - 1) { currentStoryIndex++; renderStory(); }
+        }
+
         function toggleDailyWrite(isWrite) { document.getElementById('view-note-mode').classList.toggle('hidden', isWrite); document.getElementById('write-note-mode').classList.toggle('hidden', !isWrite); }
+        function closeDailyNote() { document.getElementById('daily-note-modal').classList.add('hidden'); }
         async function saveDailyNote() {
             const text = document.getElementById('daily-note-input').value; if(!text) return;
             if (navigator.vibrate) navigator.vibrate(50);
             await _supabase.from('daily_notes').insert([{ user_name: currentEditingUser, note_text: text }]);
-            document.getElementById('daily-note-input').value = ''; toggleDailyWrite(false); fetchDailyNote();
-        }
-        async function fetchDailyNote() {
-            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-            const { data } = await _supabase.from('daily_notes').select('*').gt('created_at', yesterday).order('created_at', { ascending: false }).limit(1).single();
-            const display = document.getElementById('display-daily-text'), author = document.getElementById('display-daily-author'), bubble = document.getElementById('daily-bubble');
-            if (data) { display.innerText = `"${data.note_text}"`; author.innerText = `— ${data.user_name}`; bubble.classList.add('ring-4', 'ring-rose-200', 'animate-pulse'); }
-            else { display.innerText = "No note set for today..."; author.innerText = ""; bubble.classList.remove('ring-4', 'ring-rose-200', 'animate-pulse'); }
+            document.getElementById('daily-note-input').value = ''; toggleDailyWrite(false);
+            await fetchDailyNote();
+            currentStoryIndex = allStories.length - 1; renderStory();
         }
 
-        // --- 6. CORE APP LOGIC ---
+        // --- Core ---
         function updateTimers() {
             const now = new Date(), diff = Math.abs(now - START_DATE);
             document.getElementById('days').innerText = Math.floor(diff / 86400000);
@@ -266,7 +308,7 @@
             const file = input.files[0], name = `${Date.now()}-${file.name}`;
             await _supabase.storage.from('moments').upload(name, file);
             const { data } = _supabase.storage.from('moments').getPublicUrl(name);
-            const cap = prompt("Caption?") || "Memory.";
+            const cap = prompt("Caption?") || "Our Memory.";
             await _supabase.from('moments').insert([{ image_url: data.publicUrl, caption: cap }]);
             fetchMoments();
         }
@@ -317,8 +359,7 @@
             setTimeout(() => d.remove(), 20000);
         }
 
-        // Init everything
-        setInterval(updateTimers, 1000); setInterval(createFlower, 4000); setInterval(fetchMood, 5000); setInterval(fetchDailyNote, 60000);
+        setInterval(updateTimers, 1000); setInterval(createFlower, 4000); setInterval(fetchMood, 5000); setInterval(fetchDailyNote, 10000);
         updateTimers(); fetchContent(); fetchMoments(); fetchMood(); fetchDailyNote(); lucide.createIcons();
     </script>
 </body>
