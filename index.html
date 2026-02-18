@@ -12,15 +12,10 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;700;900&display=swap');
         .font-roygen { font-family: 'Playfair Display', serif; }
-        body { font-family: 'Inter', sans-serif; transition: background-color 2s ease; overflow-x: hidden; touch-action: pan-y; }
+        body { font-family: 'Inter', sans-serif; background-color: #E9DCC9; transition: background-color 3s ease; overflow-x: hidden; touch-action: pan-y; }
 
-        /* Environmental Themes */
-        .theme-day { background-color: #E9DCC9; }
-        .theme-sunset { background-color: #fca5a5; }
-        .theme-night { background-color: #1a1c2c; }
-
-        /* Petal Animation */
-        .flower-bg { position: fixed; pointer-events: none; z-index: 5; opacity: 0.7; animation: float 15s linear infinite; }
+        /* Sakura Petal Animation */
+        .flower-bg { position: fixed; pointer-events: none; z-index: 0; opacity: 0.7; animation: float 15s linear infinite; }
         @keyframes float { 
             0% { transform: translateY(110vh) translateX(0) rotate(0deg); } 
             100% { transform: translateY(-20vh) translateX(50px) rotate(360deg); } 
@@ -28,40 +23,34 @@
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        
+        .music-playing-bg { animation: musicVibe 8s ease-in-out infinite; }
+        @keyframes musicVibe { 0%, 100% { background-color: #E9DCC9; } 50% { background-color: #F8E3E3; } }
 
-        /* Sakura Tree */
-        #sakura-tree-container { transform-origin: bottom center; animation: treeSway 6s ease-in-out infinite; }
-        @keyframes treeSway { 0%, 100% { transform: skewX(0deg); } 50% { transform: skewX(1.5deg); } }
-        .tree-day { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3)); }
-        .tree-night { filter: drop-shadow(0 0 15px rgba(255, 183, 197, 0.4)) brightness(0.7); }
+        .polaroid { background: white; padding: 12px 12px 30px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: rotate(-1deg); margin-bottom: 2rem; }
+        
+        #display-daily-text { 
+            text-shadow: 0 2px 12px rgba(0,0,0,0.9); 
+            min-height: 4em;
+            line-height: 1.5;
+        }
 
-        .polaroid { background: white; padding: 12px 12px 30px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: rotate(-1deg); transition: transform 0.2s; }
-        .polaroid:active { transform: scale(0.95); }
-
-        #display-daily-text { text-shadow: 0 2px 12px rgba(0,0,0,0.9); min-height: 4em; }
-        @keyframes shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
         .shake-jar { animation: shake 0.4s ease-in-out; }
     </style>
 </head>
-<body class="pb-32 theme-day">
+<body class="pb-32">
 
     <div id="player-container" class="hidden"><div id="youtube-audio"></div></div>
     <div id="flower-container" class="fixed inset-0 pointer-events-none"></div>
-    <div id="env-celestial" class="fixed top-20 right-10 w-16 h-16 rounded-full pointer-events-none z-0 transition-all duration-[2000ms]"></div>
 
-    <div id="sakura-tree-container" class="fixed bottom-0 right-0 w-64 h-96 pointer-events-none z-0 transition-all duration-1000">
-        <svg viewBox="0 0 200 400" class="w-full h-full">
-            <path id="tree-trunk" d="M100 400 Q95 350 110 300 T100 200 T110 100" stroke="#4A2C2A" stroke-width="8" fill="none" class="transition-all duration-1000" />
-            <g id="tree-blossoms" class="transition-all duration-1000"></g>
-        </svg>
-    </div>
-
-    <button onclick="hydrateTree()" class="fixed bottom-44 right-6 bg-blue-400/80 p-3 rounded-full shadow-lg z-50 active:scale-150 transition-transform">
-        <i data-lucide="droplets" class="text-white w-5 h-5"></i>
-    </button>
-
-    <button onclick="toggleMusic()" class="fixed bottom-28 left-6 bg-white/90 p-4 rounded-full shadow-2xl z-50">
+    <button onclick="toggleMusic()" id="music-btn" class="fixed bottom-28 left-6 bg-white/90 p-4 rounded-full shadow-2xl border border-rose-100 z-50">
         <i id="music-icon" data-lucide="music" class="text-rose-400 w-5 h-5"></i>
+        <span class="absolute -top-2 -right-2 bg-rose-500 text-white text-[7px] px-2 py-1 rounded-full font-black tracking-tighter uppercase">Our Song</span>
     </button>
 
     <header class="bg-white/90 p-8 rounded-b-[3rem] shadow-sm text-center relative z-10">
@@ -71,43 +60,54 @@
             </div>
             <p class="text-[7px] font-black text-rose-400 uppercase mt-1">Stories</p>
         </div>
+
         <p id="personal-greeting" class="font-roygen italic text-rose-400 mb-1 text-sm"></p>
         <h1 class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mb-4">Forever Since May 13, 2025</h1>
+        
         <div class="flex justify-center items-center gap-4 mb-6">
             <div class="flex flex-col"><span id="days" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Days</span></div>
             <div class="flex flex-col"><span id="hours" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Hrs</span></div>
             <div class="flex flex-col"><span id="mins" class="text-3xl font-black text-slate-800">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Min</span></div>
             <div class="flex flex-col"><span id="secs" class="text-3xl font-black text-rose-500">0</span><span class="text-[8px] font-bold text-slate-400 uppercase">Sec</span></div>
         </div>
+
         <div class="flex justify-center gap-3">
-            <div onclick="openMoodModal('Aashish')" id="bubble-Aashish" class="flex items-center gap-2 bg-sky-50 px-4 py-2 rounded-full border border-sky-100 shadow-sm"><span id="mood-emoji-Aashish">❤️</span><p id="mood-text-Aashish" class="text-[9px]">...</p></div>
-            <div onclick="openMoodModal('Khushi')" id="bubble-Khushi" class="flex items-center gap-2 bg-rose-50 px-4 py-2 rounded-full border border-rose-100 shadow-sm"><span id="mood-emoji-Khushi">😊</span><p id="mood-text-Khushi" class="text-[9px]">...</p></div>
+            <div onclick="openMoodModal('Aashish')" id="bubble-Aashish" class="flex items-center gap-2 bg-sky-50 px-4 py-2 rounded-full border border-sky-100 shadow-sm transition-all">
+                <span id="mood-emoji-Aashish" class="text-sm">❤️</span>
+                <div class="text-left"><p class="text-[7px] font-black text-sky-500 uppercase leading-none">Aashish</p><p id="mood-text-Aashish" class="text-[9px] font-bold text-sky-900/70 truncate max-w-[75px]">...</p></div>
+            </div>
+            <div onclick="openMoodModal('Khushi')" id="bubble-Khushi" class="flex items-center gap-2 bg-rose-50 px-4 py-2 rounded-full border border-rose-100 shadow-sm transition-all">
+                <span id="mood-emoji-Khushi" class="text-sm">😊</span>
+                <div class="text-left"><p class="text-[7px] font-black text-rose-500 uppercase leading-none">Khushi</p><p id="mood-text-Khushi" class="text-[9px] font-bold text-rose-900/70 truncate max-w-[75px]">...</p></div>
+            </div>
         </div>
     </header>
 
     <main class="p-6 max-w-md mx-auto relative z-10">
         <div id="jar-tab" class="tab-content active text-center">
-            <h2 class="text-4xl mb-8 font-roygen italic font-bold">Memory Jar</h2>
+            <h2 class="text-4xl mb-8 text-slate-800 font-roygen italic font-bold">Memory Jar</h2>
             <div onclick="pickMemory()" id="jar-container" class="bg-white/80 rounded-[2.5rem] p-12 cursor-pointer shadow-xl border-2 border-white mb-6">
                 <i data-lucide="sparkles" class="text-rose-400 w-12 h-12 mx-auto mb-4"></i>
                 <p class="font-bold text-rose-500 uppercase tracking-widest text-[10px]">Shake the Jar</p>
             </div>
-            <button onclick="document.getElementById('jar-modal').classList.remove('hidden')" class="bg-white text-rose-500 px-6 py-2 rounded-full text-xs font-bold shadow-sm mb-8">+ Add Note</button>
+            <button onclick="document.getElementById('jar-modal').classList.remove('hidden')" class="bg-white text-rose-500 px-6 py-2 rounded-full text-xs font-bold shadow-sm mb-8 border border-rose-100">+ Add Note</button>
             <div id="memory-display" class="hidden bg-white p-10 rounded-[2rem] shadow-2xl">
-                <p id="memory-text" class="text-2xl font-roygen italic"></p>
-                <p id="memory-date" class="text-[10px] mt-6 text-right"></p>
+                <p id="memory-text" class="text-2xl leading-relaxed italic text-slate-700 font-roygen"></p>
+                <p id="memory-date" class="text-[10px] font-bold text-rose-300 mt-6 text-right uppercase"></p>
             </div>
         </div>
+
         <div id="moments-tab" class="tab-content text-center">
-            <h2 class="text-4xl mb-8 font-roygen italic font-bold">Our Moments</h2>
+            <h2 class="text-4xl mb-8 text-slate-800 font-roygen italic font-bold">Our Moments</h2>
             <label class="bg-rose-500 text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg cursor-pointer inline-flex items-center gap-2 mb-10">
                 <i data-lucide="camera" class="w-4 h-4"></i> Add Photo
                 <input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="uploadPhoto(this)">
             </label>
             <div id="moments-list" class="grid grid-cols-1 gap-12 pb-12"></div>
         </div>
+
         <div id="story-tab" class="tab-content">
-            <h2 class="text-4xl mb-8 text-center font-roygen italic font-bold">Our Story</h2>
+            <h2 class="text-4xl mb-8 text-slate-800 font-roygen italic font-bold text-center">Our Story</h2>
             <div id="story-list" class="space-y-6"></div>
             <button onclick="document.getElementById('story-modal').classList.remove('hidden')" class="fixed bottom-24 right-8 bg-rose-500 text-white p-5 rounded-full shadow-2xl z-40"><i data-lucide="pen-line"></i></button>
         </div>
@@ -123,30 +123,36 @@
         <div id="view-note-mode" class="w-full h-full flex flex-col justify-center items-center px-8 relative bg-center bg-cover transition-all duration-700">
             <div class="absolute top-10 w-full px-6 flex gap-1" id="story-progress-bars"></div>
             <button onclick="closeDailyNote()" class="absolute top-14 right-6 text-white/50 z-50"><i data-lucide="x"></i></button>
-            <div class="text-center relative z-20">
-                <p id="display-daily-author" class="text-[10px] font-black uppercase text-rose-400 mb-4"></p>
+            <div id="story-content" class="text-center relative z-20">
+                <p id="display-daily-author" class="text-[10px] font-black uppercase text-rose-400 tracking-[0.3em] mb-4"></p>
                 <p id="display-daily-text" class="font-roygen italic text-3xl text-white leading-relaxed mb-4"></p>
                 <p id="display-daily-time" class="text-[8px] font-bold text-white/30 uppercase"></p>
             </div>
-            <div class="absolute inset-0 flex z-10"><div onclick="prevStory()" class="w-1/3 h-full"></div><div onclick="nextStory()" class="w-2/3 h-full"></div></div>
+            <div class="absolute inset-0 flex z-10">
+                <div onclick="prevStory()" class="w-1/3 h-full"></div>
+                <div onclick="nextStory()" class="w-2/3 h-full"></div>
+            </div>
             <button onclick="toggleDailyWrite(true)" class="absolute bottom-12 bg-white/10 border border-white/20 text-white px-6 py-3 rounded-full text-xs font-bold backdrop-blur-md z-30">+ New Note</button>
         </div>
+        
         <div id="write-note-mode" class="hidden bg-white w-full max-w-sm rounded-[2.5rem] p-8 m-6 relative z-[160]">
             <h3 class="text-xl font-bold mb-4 font-roygen">Daily Story</h3>
-            <label class="w-full flex flex-col items-center px-4 py-4 bg-rose-50 text-rose-500 rounded-2xl border-2 border-dashed border-rose-200 cursor-pointer mb-4">
-                <i data-lucide="camera" class="w-6 h-6 mb-1"></i>
-                <span id="story-photo-label" class="text-[10px] font-bold uppercase">Add Photo</span>
-                <input type="file" id="daily-photo-input" accept="image/*" class="hidden" onchange="document.getElementById('story-photo-label').innerText = 'Selected ✅';">
-            </label>
+            <div class="mb-4">
+                <label class="w-full flex flex-col items-center px-4 py-4 bg-rose-50 text-rose-500 rounded-2xl border-2 border-dashed border-rose-200 cursor-pointer">
+                    <i data-lucide="camera" class="w-6 h-6 mb-1"></i>
+                    <span id="story-photo-label" class="text-[10px] font-bold uppercase">Add Photo</span>
+                    <input type="file" id="daily-photo-input" accept="image/*" class="hidden" onchange="document.getElementById('story-photo-label').innerText = 'Selected ✅';">
+                </label>
+            </div>
             <textarea id="daily-note-input" class="w-full border-2 p-4 rounded-2xl mb-4 outline-none" rows="3" placeholder="What's happening?"></textarea>
             <button id="post-story-btn" onclick="saveDailyNote()" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold mb-2">Post ❤️</button>
             <button onclick="toggleDailyWrite(false)" class="text-slate-400 text-[10px] font-bold uppercase w-full">Cancel</button>
         </div>
     </div>
 
-    <div id="identity-modal" class="hidden fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-8">
-        <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 text-center shadow-2xl">
-            <h3 class="text-2xl font-bold font-roygen mb-8">Welcome Home ❤️</h3>
+    <div id="identity-modal" class="hidden fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-8 text-center">
+        <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 shadow-2xl">
+            <h3 class="text-2xl font-bold font-roygen mb-2">Welcome Home ❤️</h3>
             <div class="space-y-4">
                 <button onclick="setIdentity('Aashish')" class="w-full bg-sky-500 text-white py-4 rounded-2xl font-bold">I am Aashish</button>
                 <button onclick="setIdentity('Khushi')" class="w-full bg-rose-500 text-white py-4 rounded-2xl font-bold">I am Khushi</button>
@@ -158,129 +164,175 @@
     <div id="mood-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold mb-6 font-roygen">My Status</h3><div class="grid grid-cols-3 gap-4 mb-6"><button onclick="setMood('❤️', 'Thinking of you')" class="text-2xl p-4 bg-slate-50 rounded-2xl">❤️</button><button onclick="setMood('😊', 'Happy')" class="text-2xl p-4 bg-slate-50 rounded-2xl">😊</button><button onclick="setMood('🥺', 'Missing you')" class="text-2xl p-4 bg-slate-50 rounded-2xl">🥺</button></div><button onclick="document.getElementById('mood-modal').classList.add('hidden')" class="text-slate-400 text-xs font-bold uppercase">Close</button></div></div>
 
     <script>
+        // --- Core Config ---
         const _supabase = supabase.createClient('https://hverhbwbfjwrbmuffnwf.supabase.co', 'sb_publishable_x59UvZOhR14OvMuQBkC2TQ_W7BVCfN_');
         const START_DATE = new Date('2025-05-13T00:00:00');
         let myName = localStorage.getItem('userName');
-        let allStories = [], currentStoryIdx = 0, typewriterInterval, holdTimer;
-        let treeGrowth = parseFloat(localStorage.getItem('treeGrowth')) || 1.0; 
-        let treeHealth = parseFloat(localStorage.getItem('treeHealth')) || 100;
+        let allStories = [], currentStoryIdx = 0, typewriterInterval;
 
-        function triggerHaptic(type) { if (navigator.vibrate) { if (type === 'light') navigator.vibrate(15); if (type === 'medium') navigator.vibrate(50); if (type === 'success') navigator.vibrate([40, 30, 40]); } }
-
-        // --- Core: Tree & Environment ---
-        function updateTreeVisuals() {
-            const container = document.getElementById('sakura-tree-container'), trunk = document.getElementById('tree-trunk'), blossoms = document.getElementById('tree-blossoms');
-            container.style.transform = `scale(${0.5 + (treeGrowth * 0.1)})`;
-            const hFactor = treeHealth / 100, tColor = treeHealth < 30 ? "#634e4d" : "#4A2C2A", bColor = treeHealth < 30 ? "#d1c4c9" : "#FFB7C5";
-            trunk.setAttribute('stroke', tColor);
-            let bHTML = '';
-            for(let i = 0; i < Math.floor(treeGrowth * 4); i++) {
-                bHTML += `<circle cx="${100 + Math.sin(i)*50}" cy="${300 - i*30}" r="${15 + treeHealth/10}" fill="${bColor}" opacity="${0.4 + hFactor*0.4}" />`;
-            }
-            blossoms.innerHTML = bHTML;
-            localStorage.setItem('treeGrowth', treeGrowth); localStorage.setItem('treeHealth', treeHealth);
-        }
-        function hydrateTree() { triggerHaptic('light'); treeHealth = Math.min(100, treeHealth + 20); updateTreeVisuals(); }
-
-        function updateEnv() {
-            const h = new Date().getHours(), body = document.body, cel = document.getElementById('env-celestial'), tc = document.getElementById('sakura-tree-container');
-            body.classList.remove('theme-day', 'theme-sunset', 'theme-night'); tc.classList.remove('tree-day', 'tree-night');
-            if (h >= 6 && h < 17) { body.classList.add('theme-day'); tc.classList.add('tree-day'); cel.style.background = "radial-gradient(circle, #fef08a, #facc15)"; }
-            else if (h >= 17 && h < 19) { body.classList.add('theme-sunset'); cel.style.background = "radial-gradient(circle, #fb923c, #f87171)"; }
-            else { body.classList.add('theme-night'); tc.classList.add('tree-night'); cel.style.background = "radial-gradient(circle, #f1f5f9, #cbd5e1)"; }
+        // --- Haptics ---
+        function triggerHaptic(type) {
+            if (!navigator.vibrate) return;
+            if (type === 'light') navigator.vibrate(15);
+            if (type === 'success') navigator.vibrate([40, 30, 40]);
         }
 
-        // --- Posting & Long Press Logic ---
-        function setupLongPress(el, id, table) {
-            el.ontouchstart = () => { holdTimer = setTimeout(() => { triggerHaptic('medium'); confirmDelete(id, table); }, 800); };
-            el.ontouchend = () => clearTimeout(holdTimer);
+        // --- Identity ---
+        function setIdentity(name) {
+            localStorage.setItem('userName', name);
+            myName = name;
+            document.getElementById('identity-modal').classList.add('hidden');
+            highlightMyBubble(); updateTimers();
+        }
+        function highlightMyBubble() {
+            document.getElementById('bubble-Aashish').classList.toggle('ring-2', myName === 'Aashish');
+            document.getElementById('bubble-Khushi').classList.toggle('ring-2', myName === 'Khushi');
         }
 
-        async function confirmDelete(id, table) {
-            if (confirm(`Delete this permanent memory?`)) {
-                const { error } = await _supabase.from(table).delete().eq('id', id);
-                if (!error) { triggerHaptic('success'); table === 'moments' ? fetchMoments() : fetchContent(); }
-            }
-        }
-
-        async function saveDailyNote() {
-            const text = document.getElementById('daily-note-input').value, photo = document.getElementById('daily-photo-input').files[0], btn = document.getElementById('post-story-btn');
-            if(!text && !photo) return;
-            btn.innerText = "Posting..."; btn.disabled = true;
-            try {
-                let imgUrl = null;
-                if (photo) {
-                    const fname = `stories/${Date.now()}-${photo.name.replace(/\s/g, '_')}`;
-                    await _supabase.storage.from('moments').upload(fname, photo);
-                    imgUrl = _supabase.storage.from('moments').getPublicUrl(fname).data.publicUrl;
-                }
-                const { error } = await _supabase.from('daily_notes').insert([{ user_name: myName, note_text: text || "", image_url: imgUrl }]);
-                if (error) throw error;
-                treeGrowth += 0.1; treeHealth = 100; triggerHaptic('success');
-                document.getElementById('daily-note-input').value = ''; document.getElementById('daily-photo-input').value = '';
-                toggleDailyWrite(false); await fetchDailyNote(); showDailyNote();
-            } catch (err) { alert(err.message); } finally { btn.innerText = "Post ❤️"; btn.disabled = false; updateTreeVisuals(); }
-        }
-
-        // --- Fetching & Tabs ---
-        async function fetchMoments() {
-            const { data } = await _supabase.from('moments').select('*').order('created_at', { ascending: false });
-            const list = document.getElementById('moments-list'); list.innerHTML = '';
-            if (data) data.forEach(p => {
-                const div = document.createElement('div'); div.className = 'polaroid';
-                div.innerHTML = `<img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-center text-xs">${p.caption}</p>`;
-                setupLongPress(div, p.id, 'moments'); list.appendChild(div);
+        // --- Music ---
+        let player, isPlaying = false;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-audio', { videoId: 'mb80yhETaD8',
+                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'mb80yhETaD8', 'playsinline': 1 }
             });
+        }
+        var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
+        document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
+
+        function toggleMusic() {
+            if (!isPlaying) { player.playVideo(); isPlaying = true; document.getElementById('music-icon').setAttribute('data-lucide', 'pause'); document.body.classList.add('music-playing-bg'); }
+            else { player.pauseVideo(); isPlaying = false; document.getElementById('music-icon').setAttribute('data-lucide', 'music'); document.body.classList.remove('music-playing-bg'); }
+            lucide.createIcons();
+        }
+
+        // --- CORRECTED POSTING LOGIC ---
+        async function saveDailyNote() {
+            const text = document.getElementById('daily-note-input').value;
+            const photoFile = document.getElementById('daily-photo-input').files[0];
+            const btn = document.getElementById('post-story-btn');
+            
+            if(!text && !photoFile) return;
+            
+            btn.innerText = "Posting...";
+            btn.disabled = true;
+
+            try {
+                let imageUrl = null;
+                if (photoFile) {
+                    const fileName = `stories/${Date.now()}-${photoFile.name.replace(/\s/g, '_')}`;
+                    const { error: uploadError } = await _supabase.storage.from('moments').upload(fileName, photoFile);
+                    if (uploadError) throw uploadError;
+                    imageUrl = _supabase.storage.from('moments').getPublicUrl(fileName).data.publicUrl;
+                }
+                
+                const { error: insertError } = await _supabase.from('daily_notes').insert([
+                    { user_name: myName, note_text: text || "", image_url: imageUrl }
+                ]);
+                if (insertError) throw insertError;
+
+                triggerHaptic('success');
+                document.getElementById('daily-note-input').value = '';
+                document.getElementById('daily-photo-input').value = '';
+                document.getElementById('story-photo-label').innerText = 'Add Photo';
+                toggleDailyWrite(false);
+                await fetchDailyNote(); 
+                showDailyNote();
+            } catch (err) {
+                console.error(err);
+                alert("Could not post: " + err.message);
+            } finally {
+                btn.innerText = "Post ❤️";
+                btn.disabled = false;
+            }
+        }
+
+        // --- Daily Stories Rendering ---
+        async function fetchDailyNote() {
+            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            const { data } = await _supabase.from('daily_notes').select('*').gt('created_at', yesterday).order('created_at', { ascending: true });
+            allStories = data || [];
+        }
+
+        function renderStory() {
+            const story = allStories[currentStoryIdx];
+            const view = document.getElementById('view-note-mode');
+            
+            view.style.backgroundImage = story.image_url ? `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('${story.image_url}')` : 'none';
+            if(!story.image_url) view.style.backgroundColor = '#121212';
+
+            document.getElementById('display-daily-author').innerText = story.user_name;
+            document.getElementById('display-daily-time').innerText = new Date(story.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            document.getElementById('story-progress-bars').innerHTML = allStories.map((_, i) => `<div class="h-1 flex-1 rounded-full ${i <= currentStoryIdx ? 'bg-white' : 'bg-white/20'}"></div>`).join('');
+            
+            runTypewriter(document.getElementById('display-daily-text'), story.note_text ? `"${story.note_text}"` : "");
+        }
+
+        function runTypewriter(el, text) {
+            clearInterval(typewriterInterval);
+            el.innerText = "";
+            let i = 0;
+            typewriterInterval = setInterval(() => {
+                if (i < text.length) { el.innerText += text.charAt(i); i++; }
+                else clearInterval(typewriterInterval);
+            }, 50);
+        }
+
+        function nextStory() { if (currentStoryIdx < allStories.length - 1) { currentStoryIdx++; renderStory(); } else closeDailyNote(); }
+        function prevStory() { if (currentStoryIdx > 0) { currentStoryIdx--; renderStory(); } }
+        function showDailyNote() { if (!allStories.length) { toggleDailyWrite(true); } else { currentStoryIdx = 0; renderStory(); } document.getElementById('daily-note-modal').classList.remove('hidden'); }
+        function closeDailyNote() { document.getElementById('daily-note-modal').classList.add('hidden'); clearInterval(typewriterInterval); }
+        function toggleDailyWrite(isWrite) { document.getElementById('view-note-mode').classList.toggle('hidden', isWrite); document.getElementById('write-note-mode').classList.toggle('hidden', !isWrite); }
+
+        // --- Tab Logic ---
+        function switchTab(t) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(t + '-tab').classList.add('active');
+            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-rose-50', 'text-rose-500'); b.classList.add('text-slate-400'); });
+            document.getElementById('nav-' + t).classList.add('bg-rose-50', 'text-rose-500');
+            if(t === 'story') fetchContent();
         }
 
         async function fetchContent() {
             const { data } = await _supabase.from('stories').select('*').order('created_at', { ascending: false });
-            const list = document.getElementById('story-list'); list.innerHTML = '';
             if (data) {
-                data.filter(i => !i.is_jar).forEach(i => {
-                    const div = document.createElement('div'); div.className = 'bg-white/80 p-8 rounded-[2rem] shadow-sm';
-                    div.innerHTML = `<p class="font-roygen italic text-slate-700">"${i.text}"</p>`;
-                    setupLongPress(div, i.id, 'stories'); list.appendChild(div);
-                });
+                document.getElementById('story-list').innerHTML = data.filter(i => !i.is_jar).map(i => `<div class="bg-white/80 p-8 rounded-[2rem] shadow-sm"><p class="font-roygen italic text-slate-700">"${i.text}"</p></div>`).join('');
                 window.jarMemories = data.filter(i => i.is_jar);
             }
         }
 
-        // --- UI & Rendering ---
-        function runTypewriter(el, text) { clearInterval(typewriterInterval); el.innerText = ""; let i = 0; typewriterInterval = setInterval(() => { if (i < text.length) { el.innerText += text.charAt(i); i++; } else clearInterval(typewriterInterval); }, 50); }
-        function renderStory() {
-            const s = allStories[currentStoryIdx], v = document.getElementById('view-note-mode');
-            v.style.backgroundImage = s.image_url ? `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('${s.image_url}')` : 'none';
-            if(!s.image_url) v.style.backgroundColor = '#121212';
-            document.getElementById('display-daily-author').innerText = s.user_name;
-            runTypewriter(document.getElementById('display-daily-text'), s.note_text ? `"${s.note_text}"` : "");
-            document.getElementById('story-progress-bars').innerHTML = allStories.map((_, i) => `<div class="h-1 flex-1 rounded-full ${i <= currentStoryIdx ? 'bg-white' : 'bg-white/20'}"></div>`).join('');
+        function pickMemory() {
+            const jar = document.getElementById('jar-container');
+            jar.classList.add('shake-jar'); setTimeout(() => jar.classList.remove('shake-jar'), 400);
+            const m = window.jarMemories || [];
+            if (!m.length) return;
+            const r = m[Math.floor(Math.random() * m.length)];
+            document.getElementById('memory-text').innerText = `"${r.text}"`;
+            document.getElementById('memory-date').innerText = new Date(r.created_at).toLocaleDateString();
+            document.getElementById('memory-display').classList.remove('hidden');
         }
 
-        function setIdentity(name) { localStorage.setItem('userName', name); myName = name; document.getElementById('identity-modal').classList.add('hidden'); updateTimers(); highlightMyBubble(); }
-        function highlightMyBubble() { document.getElementById('bubble-Aashish').classList.toggle('ring-2', myName === 'Aashish'); document.getElementById('bubble-Khushi').classList.toggle('ring-2', myName === 'Khushi'); }
+        // --- Timers & Visuals ---
         function updateTimers() {
-            const diff = Math.abs(new Date() - START_DATE);
+            const now = new Date(), diff = Math.abs(now - START_DATE);
             document.getElementById('days').innerText = Math.floor(diff / 86400000);
             document.getElementById('hours').innerText = Math.floor((diff / 3600000) % 24);
             document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60);
             document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
-            document.getElementById('personal-greeting').innerText = `Good ${new Date().getHours() < 12 ? 'Morning' : 'Evening'}, ${myName || 'Love'} ❤️`;
+            document.getElementById('personal-greeting').innerText = `Good ${now.getHours() < 12 ? 'Morning' : now.getHours() < 18 ? 'Afternoon' : 'Evening'}, ${myName || 'Love'} ❤️`;
         }
 
-        async function fetchDailyNote() { const yest = new Date(Date.now() - 24*60*60*1000).toISOString(); const { data } = await _supabase.from('daily_notes').select('*').gt('created_at', yest).order('created_at', { ascending: true }); allStories = data || []; }
-        function showDailyNote() { if (!allStories.length) toggleDailyWrite(true); else { currentStoryIdx = 0; renderStory(); } document.getElementById('daily-note-modal').classList.remove('hidden'); }
-        function nextStory() { if (currentStoryIdx < allStories.length - 1) { currentStoryIdx++; renderStory(); } else closeDailyNote(); }
-        function prevStory() { if (currentStoryIdx > 0) { currentStoryIdx--; renderStory(); } }
-        function closeDailyNote() { document.getElementById('daily-note-modal').classList.add('hidden'); clearInterval(typewriterInterval); }
-        function toggleDailyWrite(isW) { document.getElementById('view-note-mode').classList.toggle('hidden', isW); document.getElementById('write-note-mode').classList.toggle('hidden', !isW); }
-        function switchTab(t) { document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(t + '-tab').classList.add('active'); document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-rose-50', 'text-rose-500'); b.classList.add('text-slate-400'); }); document.getElementById('nav-' + t).classList.add('bg-rose-50', 'text-rose-500'); if(t === 'story') fetchContent(); if(t === 'moments') fetchMoments(); }
+        function createFlower() {
+            const d = document.createElement('div'); d.className = 'flower-bg';
+            d.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="#FFB7C5"><path d="M12,2C12,2 15,7 18,10C21,13 22,16 20,19C18,22 14,21 12,18C10,21 6,22 4,19C2,16 3,13 6,10C9,7 12,2 12,2Z" /></svg>`;
+            d.style.left = Math.random() * 100 + 'vw';
+            document.getElementById('flower-container').appendChild(d);
+            setTimeout(() => d.remove(), 15000);
+        }
 
         // --- Init ---
         setInterval(updateTimers, 1000);
-        setInterval(() => { updateEnv(); treeHealth = Math.max(0, treeHealth - 0.5); updateTreeVisuals(); }, 30000);
-        if(!myName) document.getElementById('identity-modal').classList.remove('hidden');
-        updateTimers(); updateEnv(); updateTreeVisuals(); fetchContent(); fetchDailyNote(); fetchMoments(); highlightMyBubble(); lucide.createIcons();
+        setInterval(createFlower, 3000);
+        updateTimers(); fetchContent(); fetchDailyNote(); highlightMyBubble(); lucide.createIcons();
     </script>
 </body>
 </html>
