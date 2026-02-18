@@ -90,18 +90,18 @@
 
         <div id="garden-tab" class="tab-content text-center">
             <h2 class="text-4xl mb-4 text-slate-800 font-roygen italic font-bold">Our Garden</h2>
-            <p id="tree-status" class="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-10">Sapling Stage</p>
-            <div class="relative flex justify-center items-end h-80 mb-10 overflow-hidden">
-                <div class="absolute bottom-4 w-40 h-6 bg-black/5 rounded-full blur-md"></div>
-                <div id="tree-visual" onclick="rustleTree()" class="relative transition-all duration-1000 ease-out origin-bottom cursor-pointer active:scale-95">
-                    <i data-lucide="seedling" id="tree-icon" class="text-rose-400 w-16 h-16 transition-all duration-1000"></i>
+            <p id="tree-status" class="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-10">A Distant Dream</p>
+            <div class="relative flex justify-center items-center h-80 mb-10">
+                <div class="absolute bottom-10 w-64 h-20 bg-rose-200/20 rounded-[100%] blur-xl"></div>
+                <div id="tree-visual" onclick="rustleTree()" class="relative transition-all duration-1000 ease-out cursor-pointer active:scale-95 z-10">
+                    <img id="sakura-image" src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/262406_tiny.jpg?raw=true" class="w-64 h-64 object-contain rounded-3xl shadow-2xl transition-all duration-1000">
                 </div>
             </div>
             <div class="space-y-4">
-                <button id="water-btn" onclick="waterTree()" class="bg-sky-400 text-white p-5 rounded-full shadow-lg active:scale-90 transition-all disabled:opacity-50 disabled:grayscale">
+                <button id="water-btn" onclick="waterTree()" class="bg-white/80 border border-rose-100 text-rose-400 p-5 rounded-full shadow-lg active:scale-90 transition-all disabled:opacity-50">
                     <i data-lucide="droplet" class="w-6 h-6"></i>
                 </button>
-                <p id="water-message" class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Tap to water our love</p>
+                <p id="water-message" class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Tend to the Eternal Sakura</p>
             </div>
         </div>
 
@@ -240,8 +240,9 @@
         function rustleTree() {
             triggerHaptic('light');
             const tree = document.getElementById('tree-visual');
-            tree.classList.add('animate-bounce');
-            setTimeout(() => tree.classList.remove('animate-bounce'), 500);
+            tree.style.transition = "transform 0.1s";
+            tree.style.transform += " rotate(2deg)";
+            setTimeout(() => { tree.style.transform = tree.style.transform.replace(" rotate(2deg)", ""); }, 100);
         }
 
         async function waterTree() {
@@ -278,35 +279,31 @@
             const { count } = await _supabase.from('stories').select('*', { count: 'exact', head: true });
             const points = (daysTogether * 3) + ((count || 0) * 5) + extraBoost;
             
-            const icon = document.getElementById('tree-icon');
-            const visual = document.getElementById('tree-visual');
+            const treeImg = document.getElementById('sakura-image');
             const status = document.getElementById('tree-status');
+            const visual = document.getElementById('tree-visual');
 
-            if (points < 100) {
-                status.innerText = "Tiny Sapling";
-                icon.setAttribute('data-lucide', 'seedling');
-                visual.style.transform = `scale(${0.8 + (points/200)})`;
-            } else if (points < 500) {
-                status.innerText = "Growing Sakura";
-                icon.setAttribute('data-lucide', 'sprout');
-                icon.classList.add('text-rose-300');
-                visual.style.transform = `scale(${1.2 + (points/500)})`;
-            } else if (points < 2000) {
-                status.innerText = "Sakura in Bloom";
-                icon.setAttribute('data-lucide', 'tree-pine');
-                icon.classList.add('text-rose-400');
-                visual.style.transform = `scale(${1.8 + (points/1500)})`;
-            } else {
-                status.innerText = "Enormous Eternal Sakura";
-                icon.setAttribute('data-lucide', 'palmtree');
-                icon.classList.add('text-rose-500', 'drop-shadow-2xl');
-                visual.style.transform = `scale(2.8)`;
-            }
-            lucide.createIcons();
+            let scale = 0.7 + (points / 2500);
+            if (scale > 1.3) scale = 1.3;
+
+            let blur = 3 - (points / 300);
+            if (blur < 0) blur = 0;
+
+            let saturation = 0.5 + (points / 1200);
+            if (saturation > 1.4) saturation = 1.4;
+
+            visual.style.transform = `scale(${scale})`;
+            treeImg.style.filter = `blur(${blur}px) saturate(${saturation})`;
+            
+            if (points < 100) status.innerText = "A Distant Dream";
+            else if (points < 500) status.innerText = "The First Bloom";
+            else if (points < 1500) status.innerText = "Eternal Sakura";
+            else status.innerText = "The Great Sakura in Full Bloom";
+
             checkWaterButton();
         }
 
-        // --- Stories & Content ---
+        // --- Stories ---
         let allStories = [], currentStoryIdx = 0;
         async function fetchDailyNote() {
             const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -356,7 +353,7 @@
         function toggleDailyWrite(isWrite) { triggerHaptic('light'); document.getElementById('view-note-mode').classList.toggle('hidden', isWrite); document.getElementById('write-note-mode').classList.toggle('hidden', !isWrite); }
         function closeDailyNote() { document.getElementById('daily-note-modal').classList.add('hidden'); }
 
-        // --- Core ---
+        // --- Tabs ---
         function switchTab(t) {
             triggerHaptic('light');
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
