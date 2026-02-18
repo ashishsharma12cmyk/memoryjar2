@@ -54,9 +54,11 @@
         @keyframes musicVibe { 0%, 100% { background-color: #E9DCC9; } 50% { background-color: #F8E3E3; } }
         .music-playing-bg { animation: musicVibe 8s ease-in-out infinite; }
 
-        .polaroid { background: white; padding: 12px 12px 30px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: rotate(-1deg); margin-bottom: 2rem; color: #475569; }
+        .polaroid { background: white; padding: 12px 12px 30px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: rotate(-1deg); margin-bottom: 2rem; color: #475569; cursor: pointer; -webkit-tap-highlight-color: transparent; }
         .polaroid:nth-child(even) { transform: rotate(1deg); }
-        #story-content { text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .story-card { background: rgba(255,255,255,0.8); padding: 2rem; border-radius: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        
+        #story-content { text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
     </style>
 </head>
 <body class="pb-32">
@@ -153,6 +155,7 @@
 
         <div id="moments-tab" class="tab-content text-center">
             <h2 class="text-4xl mb-8 text-slate-800 font-roygen italic font-bold">Our Moments</h2>
+            <p class="text-[9px] text-slate-400 uppercase mb-6 font-bold tracking-widest">Hold to delete a photo</p>
             <label class="bg-rose-500 text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg cursor-pointer inline-flex items-center gap-2 mb-10">
                 <i data-lucide="camera" class="w-4 h-4"></i> Add Photo
                 <input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="uploadPhoto(this)">
@@ -162,6 +165,7 @@
 
         <div id="story-tab" class="tab-content">
             <h2 class="text-4xl mb-8 text-slate-800 font-roygen italic font-bold text-center">Our Story</h2>
+            <p class="text-[9px] text-slate-400 uppercase mb-6 font-bold tracking-widest text-center">Hold to delete a story</p>
             <div id="story-list" class="space-y-6"></div>
             <button onclick="document.getElementById('story-modal').classList.remove('hidden')" class="fixed bottom-24 right-8 bg-rose-500 text-white p-5 rounded-full shadow-2xl z-40"><i data-lucide="pen-line"></i></button>
         </div>
@@ -197,7 +201,7 @@
             <button onclick="toggleDailyWrite(true)" class="absolute bottom-12 bg-white/10 border border-white/20 text-white px-6 py-3 rounded-full text-xs font-bold backdrop-blur-md z-30">+ New Note</button>
         </div>
         <div id="write-note-mode" class="hidden bg-white w-full max-w-sm rounded-[2.5rem] p-8 m-6 relative z-[160]">
-            <h3 class="text-xl font-bold mb-4 font-roygen">Daily Story</h3>
+            <h3 class="text-xl font-bold mb-4 font-roygen text-slate-800">Daily Story</h3>
             <div class="mb-4">
                 <label class="w-full flex flex-col items-center px-4 py-4 bg-rose-50 text-rose-500 rounded-2xl border-2 border-dashed border-rose-200 cursor-pointer">
                     <i data-lucide="camera" class="w-6 h-6 mb-1"></i>
@@ -205,7 +209,7 @@
                     <input type="file" id="daily-photo-input" accept="image/*" class="hidden" onchange="document.getElementById('story-photo-label').innerText = 'Selected ✅'; triggerHaptic('light');">
                 </label>
             </div>
-            <textarea id="daily-note-input" class="w-full border-2 p-4 rounded-2xl mb-4 outline-none" rows="3"></textarea>
+            <textarea id="daily-note-input" class="w-full border-2 p-4 rounded-2xl mb-4 outline-none text-slate-700" rows="3"></textarea>
             <button id="post-story-btn" onclick="saveDailyNote()" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold mb-2">Post ❤️</button>
             <button onclick="toggleDailyWrite(false)" class="text-slate-400 text-[10px] font-bold uppercase w-full">Cancel</button>
         </div>
@@ -226,11 +230,11 @@
         </div>
     </div>
 
-    <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">Drop a Memory</h3><textarea id="jar-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="3"></textarea><button onclick="saveNote(true)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Add ❤️</button></div></div>
-    <div id="story-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">New Story</h3><textarea id="story-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="4"></textarea><button onclick="saveNote(false)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Post ❤️</button></div></div>
+    <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">Drop a Memory</h3><textarea id="jar-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="3"></textarea><button id="save-jar-btn" onclick="saveNote(true)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Add ❤️</button></div></div>
+    <div id="story-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">New Story</h3><textarea id="story-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="4"></textarea><button id="save-story-btn" onclick="saveNote(false)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Post ❤️</button></div></div>
 
     <script>
-        // --- Setup ---
+        // --- Setup & Config ---
         const _supabase = supabase.createClient('https://hverhbwbfjwrbmuffnwf.supabase.co', 'sb_publishable_x59UvZOhR14OvMuQBkC2TQ_W7BVCfN_');
         const START_DATE = new Date('2025-05-13T00:00:00');
         let myName = localStorage.getItem('userName');
@@ -241,7 +245,25 @@
             if (type === 'light') navigator.vibrate(15);
             if (type === 'medium') navigator.vibrate(40);
             if (type === 'success') navigator.vibrate([40, 30, 40]);
+            if (type === 'warning') navigator.vibrate([60, 100, 60]);
         }
+
+        // --- Long Press Logic ---
+        let pressTimer;
+        function setupLongPress(element, callback) {
+            element.addEventListener('mousedown', (e) => startPress(e, callback));
+            element.addEventListener('touchstart', (e) => startPress(e, callback));
+            element.addEventListener('mouseup', cancelPress);
+            element.addEventListener('mouseleave', cancelPress);
+            element.addEventListener('touchend', cancelPress);
+        }
+        function startPress(e, callback) {
+            pressTimer = setTimeout(() => {
+                triggerHaptic('warning');
+                callback();
+            }, 800);
+        }
+        function cancelPress() { clearTimeout(pressTimer); }
 
         function setIdentity(name) {
             triggerHaptic('medium');
@@ -311,21 +333,19 @@
             status.innerText = pts < 200 ? "Young Sapling" : pts < 1000 ? "Sakura in Bloom" : "Eternal Sakura";
         }
 
-        // --- Core ---
-        function switchTab(t) {
-            triggerHaptic('light');
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(t + '-tab').classList.add('active');
-            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-rose-50', 'text-rose-500'); b.classList.add('text-slate-400'); });
-            document.getElementById('nav-' + t).classList.add('bg-rose-50', 'text-rose-500');
-            if(t==='garden') { updateGardenEnv(); updateTreeGrowth(); }
-            if(t==='story') fetchContent(); if(t==='moments') fetchMoments();
+        // --- Daily Notes ---
+        let allStories = [], currentStoryIdx = 0;
+        async function fetchDailyNote() {
+            const yesterday = new Date(Date.now() - 24*60*60*1000).toISOString();
+            const { data } = await _supabase.from('daily_notes').select('*').gt('created_at', yesterday).order('created_at', { ascending: true });
+            allStories = data || [];
         }
-
         async function saveDailyNote() {
             const text = document.getElementById('daily-note-input').value;
             const photo = document.getElementById('daily-photo-input').files[0];
+            const btn = document.getElementById('post-story-btn');
             if(!text && !photo) return;
+            btn.disabled = true; btn.innerText = "Posting...";
             let imgUrl = null;
             if (photo) {
                 const name = `stories/${Date.now()}`;
@@ -334,63 +354,45 @@
             }
             await _supabase.from('daily_notes').insert([{ user_name: myName, note_text: text, image_url: imgUrl }]);
             triggerHaptic('success'); document.getElementById('write-note-mode').classList.add('hidden');
-            await fetchDailyNote(); showDailyNote();
+            await fetchDailyNote(); showDailyNote(); updateTreeGrowth(5);
+            btn.disabled = false; btn.innerText = "Post ❤️";
         }
 
-        // --- Logic Boilerplate ---
-        function updateTimers() {
-            const diff = Math.abs(new Date() - START_DATE);
-            document.getElementById('days').innerText = Math.floor(diff / 86400000);
-            document.getElementById('hours').innerText = Math.floor((diff / 3600000) % 24);
-            document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60);
-            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
-            document.getElementById('personal-greeting').innerText = `Hello, ${myName || 'Love'} ❤️`;
-        }
-
-        async function fetchMood() {
-            const { data } = await _supabase.from('status').select('*');
-            if(data) data.forEach(s => {
-                const em = document.getElementById(`mood-emoji-${s.user_name}`), tx = document.getElementById(`mood-text-${s.user_name}`);
-                if(em && tx) { em.innerText = s.emoji; tx.innerText = s.text; }
+        // --- Core ---
+        function switchTab(t) {
+            triggerHaptic('light');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(t + '-tab').classList.add('active');
+            document.querySelectorAll('nav button').forEach(b => { 
+                b.classList.remove('bg-rose-50', 'text-rose-500'); 
+                b.classList.add('text-slate-400'); 
             });
+            document.getElementById('nav-' + t).classList.add('bg-rose-50', 'text-rose-500');
+            if(t==='garden') { updateGardenEnv(); updateTreeGrowth(); }
+            if(t==='story') fetchContent(); if(t==='moments') fetchMoments();
         }
-
-        async function setMood(emoji, text) { triggerHaptic('medium'); await _supabase.from('status').upsert([{ user_name: myName, emoji, text }]); document.getElementById('mood-modal').classList.add('hidden'); fetchMood(); }
-        function openMoodModal(user) { if (user !== myName) return; triggerHaptic('light'); document.getElementById('mood-modal').classList.remove('hidden'); }
-        
-        let allStories = [], currentStoryIdx = 0;
-        async function fetchDailyNote() {
-            const yesterday = new Date(Date.now() - 24*60*60*1000).toISOString();
-            const { data } = await _supabase.from('daily_notes').select('*').gt('created_at', yesterday).order('created_at', { ascending: true });
-            allStories = data || [];
-        }
-
-        function showDailyNote() { 
-            if (allStories.length === 0) { toggleDailyWrite(true); document.getElementById('daily-note-modal').classList.remove('hidden'); return; }
-            currentStoryIdx = allStories.length - 1; renderStory(); document.getElementById('daily-note-modal').classList.remove('hidden'); 
-        }
-
-        function renderStory() {
-            const story = allStories[currentStoryIdx];
-            const view = document.getElementById('view-note-mode');
-            view.style.backgroundImage = story.image_url ? `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${story.image_url}')` : 'none';
-            view.style.backgroundColor = story.image_url ? 'transparent' : 'black';
-            document.getElementById('display-daily-text').innerText = story.note_text ? `"${story.note_text}"` : "";
-            document.getElementById('display-daily-author').innerText = story.user_name;
-            document.getElementById('display-daily-time').innerText = new Date(story.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            document.getElementById('story-progress-bars').innerHTML = allStories.map((_, i) => `<div class="h-1 flex-1 rounded-full ${i <= currentStoryIdx ? 'bg-rose-400' : 'bg-white/20'}"></div>`).join('');
-        }
-
-        function nextStory() { triggerHaptic('light'); if (currentStoryIdx > 0) { currentStoryIdx--; renderStory(); } else closeDailyNote(); }
-        function prevStory() { triggerHaptic('light'); if (currentStoryIdx < allStories.length - 1) { currentStoryIdx++; renderStory(); } }
-        function toggleDailyWrite(isWrite) { document.getElementById('view-note-mode').classList.toggle('hidden', isWrite); document.getElementById('write-note-mode').classList.toggle('hidden', !isWrite); }
-        function closeDailyNote() { document.getElementById('daily-note-modal').classList.add('hidden'); }
 
         async function fetchMoments() {
             const { data } = await _supabase.from('moments').select('*').order('created_at', { ascending: false });
-            let h = '';
-            if (data) data.forEach(p => { h += `<div class="polaroid"><img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-center text-xs">${p.caption}</p></div>`; });
-            document.getElementById('moments-list').innerHTML = h || '<p class="text-slate-400">No moments yet.</p>';
+            const list = document.getElementById('moments-list');
+            list.innerHTML = '';
+            if (data && data.length > 0) {
+                data.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = 'polaroid animate-in fade-in slide-in-from-bottom-4';
+                    div.innerHTML = `<img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-center text-xs">${p.caption}</p>`;
+                    setupLongPress(div, async () => {
+                        if (confirm("Delete this moment forever?")) {
+                            await _supabase.from('moments').delete().eq('id', p.id);
+                            div.remove();
+                            triggerHaptic('success');
+                        }
+                    });
+                    list.appendChild(div);
+                });
+            } else {
+                list.innerHTML = '<p class="text-slate-400">No moments yet.</p>';
+            }
         }
 
         async function uploadPhoto(input) {
@@ -404,41 +406,74 @@
 
         async function fetchContent() {
             const { data } = await _supabase.from('stories').select('*').order('created_at', { ascending: false });
+            const list = document.getElementById('story-list');
+            list.innerHTML = '';
             if (data) {
-                document.getElementById('story-list').innerHTML = data.filter(i => !i.is_jar).map(i => `<div class="bg-white/80 p-8 rounded-[2rem] shadow-sm"><p class="font-roygen italic text-slate-700">"${i.text}"</p></div>`).join('');
+                const stories = data.filter(i => !i.is_jar);
+                stories.forEach(i => {
+                    const div = document.createElement('div');
+                    div.className = 'story-card animate-in fade-in slide-in-from-bottom-4';
+                    div.innerHTML = `<p class="font-roygen italic text-slate-700">"${i.text}"</p>`;
+                    setupLongPress(div, async () => {
+                        if (confirm("Delete this story?")) {
+                            await _supabase.from('stories').delete().eq('id', i.id);
+                            div.remove();
+                            triggerHaptic('success');
+                        }
+                    });
+                    list.appendChild(div);
+                });
                 window.jarMemories = data.filter(i => i.is_jar);
             }
         }
 
         async function saveNote(isJar) {
             const el = document.getElementById(isJar ? 'jar-input' : 'story-input');
+            const btn = document.getElementById(isJar ? 'save-jar-btn' : 'save-story-btn');
+            if(!el.value) return;
+            btn.disabled = true;
             await _supabase.from('stories').insert([{ text: el.value, is_jar: isJar }]);
-            triggerHaptic('success'); document.getElementById(isJar ? 'jar-modal' : 'story-modal').classList.add('hidden');
-            el.value = ''; fetchContent();
+            triggerHaptic('success');
+            document.getElementById(isJar ? 'jar-modal' : 'story-modal').classList.add('hidden');
+            el.value = ''; btn.disabled = false; fetchContent();
         }
 
+        function renderStory() {
+            if (allStories.length === 0) return;
+            const story = allStories[currentStoryIdx];
+            const view = document.getElementById('view-note-mode');
+            view.style.backgroundImage = story.image_url ? `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url('${story.image_url}')` : 'none';
+            view.style.backgroundColor = story.image_url ? 'transparent' : 'black';
+            document.getElementById('display-daily-text').innerText = story.note_text ? `"${story.note_text}"` : "";
+            document.getElementById('display-daily-author').innerText = story.user_name;
+            document.getElementById('display-daily-time').innerText = new Date(story.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            document.getElementById('story-progress-bars').innerHTML = allStories.map((_, i) => `<div class="h-1 flex-1 rounded-full ${i <= currentStoryIdx ? 'bg-rose-400' : 'bg-white/20'}"></div>`).join('');
+        }
+
+        function updateTimers() {
+            const diff = Math.abs(new Date() - START_DATE);
+            document.getElementById('days').innerText = Math.floor(diff / 86400000);
+            document.getElementById('hours').innerText = Math.floor((diff / 3600000) % 24);
+            document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60);
+            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
+            document.getElementById('personal-greeting').innerText = `Hello, ${myName || 'Love'} ❤️`;
+        }
+        async function fetchMood() {
+            const { data } = await _supabase.from('status').select('*');
+            if(data) data.forEach(s => {
+                const em = document.getElementById(`mood-emoji-${s.user_name}`), tx = document.getElementById(`mood-text-${s.user_name}`);
+                if(em && tx) { em.innerText = s.emoji; tx.innerText = s.text; }
+            });
+        }
+        async function setMood(emoji, text) { triggerHaptic('medium'); await _supabase.from('status').upsert([{ user_name: myName, emoji, text }]); document.getElementById('mood-modal').classList.add('hidden'); fetchMood(); }
+        function openMoodModal(user) { if (user !== myName) return; triggerHaptic('light'); document.getElementById('mood-modal').classList.remove('hidden'); }
+        function nextStory() { triggerHaptic('light'); if (currentStoryIdx > 0) { currentStoryIdx--; renderStory(); } else closeDailyNote(); }
+        function prevStory() { triggerHaptic('light'); if (currentStoryIdx < allStories.length - 1) { currentStoryIdx++; renderStory(); } }
+        function toggleDailyWrite(isWrite) { document.getElementById('view-note-mode').classList.toggle('hidden', isWrite); document.getElementById('write-note-mode').classList.toggle('hidden', !isWrite); }
+        function closeDailyNote() { document.getElementById('daily-note-modal').classList.add('hidden'); }
         function pickMemory() { triggerHaptic('medium'); const m = window.jarMemories || []; if (!m.length) return; const r = m[Math.floor(Math.random() * m.length)]; document.getElementById('memory-text').innerText = `"${r.text}"`; document.getElementById('memory-date').innerText = new Date(r.created_at).toLocaleDateString(); document.getElementById('memory-display').classList.remove('hidden'); }
         
         let player, isPlaying = false;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-audio', { height: '0', width: '0', videoId: 'mb80yhETaD8',
-                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'mb80yhETaD8', 'playsinline': 1 }
-            });
-        }
-        var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
-        document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
-
-        function toggleMusic() {
-            triggerHaptic('light');
-            if (!isPlaying) { player.playVideo(); isPlaying = true; document.getElementById('music-icon').setAttribute('data-lucide', 'pause'); }
-            else { player.pauseVideo(); isPlaying = false; document.getElementById('music-icon').setAttribute('data-lucide', 'music'); }
-            lucide.createIcons();
-        }
-
-        // --- Init ---
-        setInterval(updateTimers, 1000); setInterval(createPetal, 1500); 
-        setInterval(() => { fetchMood(); fetchDailyNote(); }, 5000);
-        updateTimers(); fetchContent(); fetchMood(); fetchDailyNote(); highlightMyBubble(); lucide.createIcons();
-    </script>
-</body>
-</html>
+                playerVars: { 'autoplay':
