@@ -14,39 +14,8 @@
         .font-roygen { font-family: 'Playfair Display', serif; }
         body { font-family: 'Inter', sans-serif; background-color: #E9DCC9; transition: background-color 3s ease; overflow-x: hidden; touch-action: pan-y; }
 
-        /* Garden Transitions */
-        .garden-day { background: linear-gradient(to bottom, #F8E3E3, #E9DCC9); color: #1e293b; }
-        .garden-night { background: linear-gradient(to bottom, #1a1a2e, #16213e); color: white; }
-
-        /* Sakura Sway Animation */
-        @keyframes treeSway {
-            0%, 100% { transform: rotate(-1deg); }
-            50% { transform: rotate(1.5deg); }
-        }
-        .anime-tree { 
-            animation: treeSway 5s ease-in-out infinite; 
-            transform-origin: bottom center;
-            filter: drop-shadow(0 0 15px rgba(255, 183, 197, 0.4));
-        }
-
-        /* Falling Petals */
-        .petal {
-            position: absolute;
-            background-color: #ffb7c5;
-            border-radius: 100% 0 100% 0;
-            opacity: 0.6;
-            pointer-events: none;
-            animation: petalFall linear infinite;
-        }
-        @keyframes petalFall {
-            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.8; }
-            100% { transform: translateY(80vh) translateX(50px) rotate(360deg); opacity: 0; }
-        }
-
-        /* Night Stars */
-        .star { position: absolute; background: white; border-radius: 50%; opacity: 0; animation: twinkle 3s infinite; }
-        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .flower-bg { position: fixed; pointer-events: none; z-index: 0; opacity: 0.6; animation: float 20s linear infinite; }
+        @keyframes float { 0% { transform: translateY(110vh) rotate(0deg); } 100% { transform: translateY(-20vh) rotate(360deg); } }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -54,11 +23,10 @@
         @keyframes musicVibe { 0%, 100% { background-color: #E9DCC9; } 50% { background-color: #F8E3E3; } }
         .music-playing-bg { animation: musicVibe 8s ease-in-out infinite; }
 
-        .polaroid { background: white; padding: 12px 12px 30px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: rotate(-1deg); margin-bottom: 2rem; color: #475569; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .polaroid { background: white; padding: 12px 12px 30px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: rotate(-1deg); margin-bottom: 2rem; }
         .polaroid:nth-child(even) { transform: rotate(1deg); }
-        .story-card { background: rgba(255,255,255,0.8); padding: 2rem; border-radius: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02); cursor: pointer; -webkit-tap-highlight-color: transparent; }
         
-        #story-content { text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+        #story-content { text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body class="pb-32">
@@ -68,14 +36,15 @@
     </div>
 
     <div id="player-container" class="hidden"><div id="youtube-audio"></div></div>
-    
+    <div id="flower-container" class="fixed inset-0 pointer-events-none"></div>
+
     <button onclick="toggleMusic()" id="music-btn" class="fixed bottom-28 left-6 bg-white/90 p-4 rounded-full shadow-2xl border border-rose-100 z-50 flex items-center justify-center">
         <i id="music-icon" data-lucide="music" class="text-rose-400 w-5 h-5"></i>
         <span id="music-label" class="absolute -top-2 -right-2 bg-rose-500 text-white text-[7px] px-2 py-1 rounded-full font-black tracking-tighter uppercase">Our Song</span>
     </button>
 
     <header class="bg-white/90 p-8 rounded-b-[3rem] shadow-sm text-center relative z-10">
-        <div onclick="showDailyNote()" class="absolute top-6 left-6 cursor-pointer">
+        <div onclick="showDailyNote()" class="absolute top-6 left-6 cursor-pointer group">
             <div id="daily-bubble" class="w-12 h-12 rounded-full border-2 border-rose-400 p-0.5 transition-all">
                 <div class="w-full h-full rounded-full bg-rose-100 flex items-center justify-center"><i data-lucide="message-circle-heart" class="text-rose-500 w-5 h-5"></i></div>
             </div>
@@ -105,7 +74,6 @@
     </header>
 
     <main class="p-6 max-w-md mx-auto relative z-10">
-        
         <div id="jar-tab" class="tab-content active text-center">
             <h2 class="text-4xl mb-8 text-slate-800 font-roygen italic font-bold">Memory Jar</h2>
             <div onclick="pickMemory()" class="bg-white/80 rounded-[2.5rem] p-12 cursor-pointer shadow-xl border-2 border-white active:scale-95 mb-6">
@@ -113,49 +81,14 @@
                 <p class="font-bold text-rose-500 uppercase tracking-widest text-[10px]">Shake the Jar</p>
             </div>
             <button onclick="document.getElementById('jar-modal').classList.remove('hidden')" class="bg-white text-rose-500 px-6 py-2 rounded-full text-xs font-bold shadow-sm mb-8 border border-rose-100">+ Add Note</button>
-            <div id="memory-display" class="hidden bg-white p-10 rounded-[2rem] shadow-2xl text-slate-700">
-                <p id="memory-text" class="text-2xl leading-relaxed italic font-roygen"></p>
+            <div id="memory-display" class="hidden bg-white p-10 rounded-[2rem] shadow-2xl">
+                <p id="memory-text" class="text-2xl leading-relaxed italic text-slate-700 font-roygen"></p>
                 <p id="memory-date" class="text-[10px] font-bold text-rose-300 mt-6 text-right uppercase"></p>
-            </div>
-        </div>
-
-        <div id="garden-tab" class="tab-content text-center min-h-[60vh] rounded-[3rem] transition-colors duration-[3000ms]">
-            <h2 class="text-4xl pt-8 mb-2 font-roygen italic font-bold">Our Garden</h2>
-            <p id="tree-status" class="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-4">Growing Love</p>
-            
-            <div id="garden-container" class="relative flex justify-center items-end h-[350px] mb-8 overflow-hidden">
-                <div id="stars-container" class="absolute inset-0 hidden"></div>
-                <div class="absolute bottom-10 w-48 h-10 bg-rose-200/20 rounded-[100%] blur-3xl"></div>
-                
-                <div id="tree-visual" onclick="rustleTree()" class="anime-tree relative z-10 cursor-pointer active:scale-95 transition-transform duration-1000">
-                    <svg width="240" height="280" viewBox="0 0 200 240">
-                        <path d="M90 240 Q100 180 100 150 T110 80" stroke="#4a3728" stroke-width="12" fill="none" stroke-linecap="round"/>
-                        <path d="M100 160 Q130 140 150 150" stroke="#4a3728" stroke-width="6" fill="none" stroke-linecap="round"/>
-                        <path d="M100 120 Q70 100 50 110" stroke="#4a3728" stroke-width="5" fill="none" stroke-linecap="round"/>
-                        <g fill="#ffb7c5">
-                            <circle cx="100" cy="80" r="45" opacity="0.9"/>
-                            <circle cx="140" cy="110" r="35" opacity="0.8"/>
-                            <circle cx="70" cy="90" r="30" opacity="0.8"/>
-                            <circle cx="110" cy="40" r="25" opacity="0.7"/>
-                            <circle cx="150" cy="150" r="20" opacity="0.6"/>
-                            <circle cx="90" cy="70" r="15" fill="#ffe4e8"/>
-                            <circle cx="130" cy="100" r="10" fill="#ffe4e8"/>
-                        </g>
-                    </svg>
-                </div>
-            </div>
-
-            <div class="space-y-4">
-                <button id="water-btn" onclick="waterTree()" class="bg-white/20 backdrop-blur-md border border-white/30 p-5 rounded-full shadow-xl active:scale-90">
-                    <i data-lucide="droplet" class="text-sky-400 w-6 h-6"></i>
-                </button>
-                <p id="water-message" class="text-[9px] font-bold uppercase tracking-widest">Hydrate the Sakura</p>
             </div>
         </div>
 
         <div id="moments-tab" class="tab-content text-center">
             <h2 class="text-4xl mb-8 text-slate-800 font-roygen italic font-bold">Our Moments</h2>
-            <p class="text-[9px] text-slate-400 uppercase mb-6 font-bold tracking-widest">Hold to delete a photo</p>
             <label class="bg-rose-500 text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg cursor-pointer inline-flex items-center gap-2 mb-10">
                 <i data-lucide="camera" class="w-4 h-4"></i> Add Photo
                 <input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="uploadPhoto(this)">
@@ -165,7 +98,6 @@
 
         <div id="story-tab" class="tab-content">
             <h2 class="text-4xl mb-8 text-slate-800 font-roygen italic font-bold text-center">Our Story</h2>
-            <p class="text-[9px] text-slate-400 uppercase mb-6 font-bold tracking-widest text-center">Hold to delete a story</p>
             <div id="story-list" class="space-y-6"></div>
             <button onclick="document.getElementById('story-modal').classList.remove('hidden')" class="fixed bottom-24 right-8 bg-rose-500 text-white p-5 rounded-full shadow-2xl z-40"><i data-lucide="pen-line"></i></button>
         </div>
@@ -173,7 +105,6 @@
 
     <nav class="fixed bottom-8 left-6 right-6 bg-white/90 p-2 flex justify-around rounded-full shadow-2xl z-30">
         <button onclick="switchTab('jar')" id="nav-jar" class="flex-1 flex flex-col items-center py-3 rounded-full text-rose-500 bg-rose-50"><i data-lucide="archive" class="w-4 h-4"></i></button>
-        <button onclick="switchTab('garden')" id="nav-garden" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="sprout" class="w-4 h-4"></i></button>
         <button onclick="switchTab('moments')" id="nav-moments" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="camera" class="w-4 h-4"></i></button>
         <button onclick="switchTab('story')" id="nav-story" class="flex-1 flex flex-col items-center py-3 rounded-full text-slate-400"><i data-lucide="book-open" class="w-4 h-4"></i></button>
     </nav>
@@ -181,9 +112,10 @@
     <div id="identity-modal" class="hidden fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-8 text-center">
         <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 shadow-2xl">
             <h3 class="text-2xl font-bold font-roygen mb-2">Welcome Home ❤️</h3>
-            <div class="space-y-4 mt-6">
-                <button onclick="setIdentity('Aashish')" class="w-full bg-sky-500 text-white py-4 rounded-2xl font-bold">I am Aashish</button>
-                <button onclick="setIdentity('Khushi')" class="w-full bg-rose-500 text-white py-4 rounded-2xl font-bold">I am Khushi</button>
+            <p class="text-xs text-slate-400 mb-8 uppercase tracking-widest">Who is opening the app?</p>
+            <div class="space-y-4">
+                <button onclick="setIdentity('Aashish')" class="w-full bg-sky-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-sky-100">I am Aashish</button>
+                <button onclick="setIdentity('Khushi')" class="w-full bg-rose-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-rose-100">I am Khushi</button>
             </div>
         </div>
     </div>
@@ -200,8 +132,9 @@
             <div class="absolute inset-0 flex z-10"><div onclick="prevStory()" class="w-1/3 h-full"></div><div onclick="nextStory()" class="w-2/3 h-full"></div></div>
             <button onclick="toggleDailyWrite(true)" class="absolute bottom-12 bg-white/10 border border-white/20 text-white px-6 py-3 rounded-full text-xs font-bold backdrop-blur-md z-30">+ New Note</button>
         </div>
+        
         <div id="write-note-mode" class="hidden bg-white w-full max-w-sm rounded-[2.5rem] p-8 m-6 relative z-[160]">
-            <h3 class="text-xl font-bold mb-4 font-roygen text-slate-800">Daily Story</h3>
+            <h3 class="text-xl font-bold mb-4 font-roygen">Daily Story</h3>
             <div class="mb-4">
                 <label class="w-full flex flex-col items-center px-4 py-4 bg-rose-50 text-rose-500 rounded-2xl border-2 border-dashed border-rose-200 cursor-pointer">
                     <i data-lucide="camera" class="w-6 h-6 mb-1"></i>
@@ -209,7 +142,7 @@
                     <input type="file" id="daily-photo-input" accept="image/*" class="hidden" onchange="document.getElementById('story-photo-label').innerText = 'Selected ✅'; triggerHaptic('light');">
                 </label>
             </div>
-            <textarea id="daily-note-input" class="w-full border-2 p-4 rounded-2xl mb-4 outline-none text-slate-700" rows="3"></textarea>
+            <textarea id="daily-note-input" class="w-full border-2 p-4 rounded-2xl mb-4 outline-none" rows="3" placeholder="What's happening?"></textarea>
             <button id="post-story-btn" onclick="saveDailyNote()" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold mb-2">Post ❤️</button>
             <button onclick="toggleDailyWrite(false)" class="text-slate-400 text-[10px] font-bold uppercase w-full">Cancel</button>
         </div>
@@ -217,29 +150,24 @@
 
     <div id="mood-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-6 text-center">
         <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
-            <h3 class="text-xl font-bold mb-6 font-roygen text-slate-800">My Status</h3>
+            <h3 id="mood-title" class="text-xl font-bold mb-6 font-roygen">My Status</h3>
             <div class="grid grid-cols-3 gap-4 mb-6">
-                <button onclick="setMood('❤️', 'Thinking of you')" class="text-2xl p-4 bg-slate-50 rounded-2xl">❤️</button>
-                <button onclick="setMood('😊', 'Happy')" class="text-2xl p-4 bg-slate-50 rounded-2xl">😊</button>
-                <button onclick="setMood('🥺', 'Missing you')" class="text-2xl p-4 bg-slate-50 rounded-2xl">🥺</button>
-                <button onclick="setMood('😴', 'Sleeping')" class="text-2xl p-4 bg-slate-50 rounded-2xl">😴</button>
-                <button onclick="setMood('✨', 'Inspired')" class="text-2xl p-4 bg-slate-50 rounded-2xl">✨</button>
-                <button onclick="setMood('🏃‍♂️', 'At Gym')" class="text-2xl p-4 bg-slate-50 rounded-2xl">🏃‍♂️</button>
+                <button onclick="setMood('❤️', 'Thinking of you')" class="text-2xl p-4 bg-slate-50 rounded-2xl active:scale-90 transition-transform">❤️</button>
+                <button onclick="setMood('😊', 'Happy')" class="text-2xl p-4 bg-slate-50 rounded-2xl active:scale-90 transition-transform">😊</button>
+                <button onclick="setMood('🥺', 'Missing you')" class="text-2xl p-4 bg-slate-50 rounded-2xl active:scale-90 transition-transform">🥺</button>
+                <button onclick="setMood('😴', 'Sleeping')" class="text-2xl p-4 bg-slate-50 rounded-2xl active:scale-90 transition-transform">😴</button>
+                <button onclick="setMood('✨', 'Inspired')" class="text-2xl p-4 bg-slate-50 rounded-2xl active:scale-90 transition-transform">✨</button>
+                <button onclick="setMood('🏃‍♂️', 'At Gym')" class="text-2xl p-4 bg-slate-50 rounded-2xl active:scale-90 transition-transform">🏃‍♂️</button>
             </div>
             <button onclick="document.getElementById('mood-modal').classList.add('hidden')" class="text-slate-400 text-xs font-bold uppercase">Close</button>
         </div>
     </div>
 
-    <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">Drop a Memory</h3><textarea id="jar-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="3"></textarea><button id="save-jar-btn" onclick="saveNote(true)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Add ❤️</button></div></div>
-    <div id="story-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">New Story</h3><textarea id="story-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="4"></textarea><button id="save-story-btn" onclick="saveNote(false)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Post ❤️</button></div></div>
+    <div id="jar-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">Drop a Memory</h3><textarea id="jar-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="3"></textarea><button onclick="saveNote(true)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Add ❤️</button></div></div>
+    <div id="story-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6 text-center"><div class="bg-white w-full max-w-sm rounded-[2rem] p-8"><h3 class="text-xl font-bold text-rose-500 mb-4 font-roygen">New Story</h3><textarea id="story-input" class="w-full border-2 p-4 rounded-2xl mb-4" rows="4"></textarea><button onclick="saveNote(false)" class="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Post ❤️</button></div></div>
 
     <script>
-        // --- Setup & Config ---
-        const _supabase = supabase.createClient('https://hverhbwbfjwrbmuffnwf.supabase.co', 'sb_publishable_x59UvZOhR14OvMuQBkC2TQ_W7BVCfN_');
-        const START_DATE = new Date('2025-05-13T00:00:00');
-        let myName = localStorage.getItem('userName');
-        if (!myName) document.getElementById('identity-modal').classList.remove('hidden');
-
+        // --- Haptics Utility ---
         function triggerHaptic(type) {
             if (!navigator.vibrate) return;
             if (type === 'light') navigator.vibrate(15);
@@ -248,215 +176,58 @@
             if (type === 'warning') navigator.vibrate([60, 100, 60]);
         }
 
-        // --- Long Press Logic ---
-        let pressTimer;
-        function setupLongPress(element, callback) {
-            element.addEventListener('mousedown', (e) => startPress(e, callback));
-            element.addEventListener('touchstart', (e) => startPress(e, callback));
-            element.addEventListener('mouseup', cancelPress);
-            element.addEventListener('mouseleave', cancelPress);
-            element.addEventListener('touchend', cancelPress);
-        }
-        function startPress(e, callback) {
-            pressTimer = setTimeout(() => {
-                triggerHaptic('warning');
-                callback();
-            }, 800);
-        }
-        function cancelPress() { clearTimeout(pressTimer); }
+        // --- Identity & Initialization ---
+        let myName = localStorage.getItem('userName');
+        if (!myName) document.getElementById('identity-modal').classList.remove('hidden');
 
         function setIdentity(name) {
             triggerHaptic('medium');
             localStorage.setItem('userName', name);
             myName = name;
             document.getElementById('identity-modal').classList.add('hidden');
-            highlightMyBubble(); updateTimers();
+            highlightMyBubble();
+            updateTimers();
         }
 
         function highlightMyBubble() {
             document.getElementById('bubble-Aashish').classList.toggle('ring-2', myName === 'Aashish');
+            document.getElementById('bubble-Aashish').classList.toggle('ring-sky-400', myName === 'Aashish');
             document.getElementById('bubble-Khushi').classList.toggle('ring-2', myName === 'Khushi');
+            document.getElementById('bubble-Khushi').classList.toggle('ring-rose-400', myName === 'Khushi');
         }
 
-        // --- Garden & Tree ---
-        function updateGardenEnv() {
-            const hr = new Date().getHours();
-            const g = document.getElementById('garden-tab');
-            const s = document.getElementById('stars-container');
-            const isNight = hr >= 19 || hr < 6;
-            g.classList.toggle('garden-night', isNight);
-            g.classList.toggle('garden-day', !isNight);
-            s.classList.toggle('hidden', !isNight);
-            if (isNight && s.innerHTML === "") {
-                for(let i=0; i<40; i++) {
-                    let d = document.createElement('div'); d.className='star';
-                    d.style.left=Math.random()*100+'%'; d.style.top=Math.random()*100+'%';
-                    d.style.width=Math.random()*3+'px'; d.style.height=d.style.width;
-                    d.style.animationDelay=Math.random()*3+'s'; s.appendChild(d);
-                }
-            }
-        }
+        const _supabase = supabase.createClient('https://hverhbwbfjwrbmuffnwf.supabase.co', 'sb_publishable_x59UvZOhR14OvMuQBkC2TQ_W7BVCfN_');
+        const START_DATE = new Date('2025-05-13T00:00:00');
 
-        function createPetal() {
-            const container = document.getElementById('garden-container');
-            if (document.getElementById('garden-tab').classList.contains('hidden')) return;
-            const p = document.createElement('div'); p.className='petal';
-            const size = Math.random()*6+4+'px'; p.style.width=size; p.style.height=size;
-            p.style.left = Math.random()*100+'%'; p.style.animationDuration = Math.random()*4+4+'s';
-            container.appendChild(p); setTimeout(() => p.remove(), 6000);
-        }
-
-        function rustleTree() {
-            triggerHaptic('medium');
-            document.getElementById('tree-visual').style.transform = "scale(1.1) rotate(5deg)";
-            for(let i=0; i<8; i++) setTimeout(createPetal, i*100);
-            setTimeout(() => document.getElementById('tree-visual').style.transform = "scale(1)", 500);
-        }
-
-        async function waterTree() {
-            const today = new Date().toDateString();
-            if (localStorage.getItem('lastWatered') === today) { triggerHaptic('light'); return; }
-            triggerHaptic('success'); localStorage.setItem('lastWatered', today);
-            document.getElementById('water-btn').classList.add('animate-ping');
-            for(let i=0; i<15; i++) setTimeout(createPetal, i*200);
-            setTimeout(() => { document.getElementById('water-btn').classList.remove('animate-ping'); updateTreeGrowth(10); }, 1500);
-        }
-
-        async function updateTreeGrowth(extra = 0) {
-            const days = Math.floor(Math.abs(new Date() - START_DATE) / 86400000);
-            const { count } = await _supabase.from('stories').select('*', { count: 'exact', head: true });
-            const pts = (days * 3) + ((count || 0) * 5) + extra;
-            const visual = document.getElementById('tree-visual');
-            const status = document.getElementById('tree-status');
-            let scale = 0.8 + (pts / 2000);
-            visual.style.transform = `scale(${Math.min(scale, 1.4)})`;
-            status.innerText = pts < 200 ? "Young Sapling" : pts < 1000 ? "Sakura in Bloom" : "Eternal Sakura";
-        }
-
-        // --- Daily Notes ---
-        let allStories = [], currentStoryIdx = 0;
-        async function fetchDailyNote() {
-            const yesterday = new Date(Date.now() - 24*60*60*1000).toISOString();
-            const { data } = await _supabase.from('daily_notes').select('*').gt('created_at', yesterday).order('created_at', { ascending: true });
-            allStories = data || [];
-        }
-        async function saveDailyNote() {
-            const text = document.getElementById('daily-note-input').value;
-            const photo = document.getElementById('daily-photo-input').files[0];
-            const btn = document.getElementById('post-story-btn');
-            if(!text && !photo) return;
-            btn.disabled = true; btn.innerText = "Posting...";
-            let imgUrl = null;
-            if (photo) {
-                const name = `stories/${Date.now()}`;
-                await _supabase.storage.from('moments').upload(name, photo);
-                imgUrl = _supabase.storage.from('moments').getPublicUrl(name).data.publicUrl;
-            }
-            await _supabase.from('daily_notes').insert([{ user_name: myName, note_text: text, image_url: imgUrl }]);
-            triggerHaptic('success'); document.getElementById('write-note-mode').classList.add('hidden');
-            await fetchDailyNote(); showDailyNote(); updateTreeGrowth(5);
-            btn.disabled = false; btn.innerText = "Post ❤️";
-        }
-
-        // --- Core ---
-        function switchTab(t) {
-            triggerHaptic('light');
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(t + '-tab').classList.add('active');
-            document.querySelectorAll('nav button').forEach(b => { 
-                b.classList.remove('bg-rose-50', 'text-rose-500'); 
-                b.classList.add('text-slate-400'); 
+        // --- Music ---
+        let player, isPlaying = false;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-audio', { height: '0', width: '0', videoId: 'mb80yhETaD8',
+                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'mb80yhETaD8', 'playsinline': 1 },
+                events: { 'onStateChange': (e) => { if (e.data === YT.PlayerState.ENDED) player.playVideo(); } }
             });
-            document.getElementById('nav-' + t).classList.add('bg-rose-50', 'text-rose-500');
-            if(t==='garden') { updateGardenEnv(); updateTreeGrowth(); }
-            if(t==='story') fetchContent(); if(t==='moments') fetchMoments();
+        }
+        var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
+        document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
+
+        function toggleMusic() {
+            triggerHaptic('light');
+            if (!isPlaying) { player.playVideo(); isPlaying = true; document.getElementById('music-icon').setAttribute('data-lucide', 'pause'); document.body.classList.add('music-playing-bg'); }
+            else { player.pauseVideo(); isPlaying = false; document.getElementById('music-icon').setAttribute('data-lucide', 'music'); document.body.classList.remove('music-playing-bg'); }
+            lucide.createIcons();
         }
 
-        async function fetchMoments() {
-            const { data } = await _supabase.from('moments').select('*').order('created_at', { ascending: false });
-            const list = document.getElementById('moments-list');
-            list.innerHTML = '';
-            if (data && data.length > 0) {
-                data.forEach(p => {
-                    const div = document.createElement('div');
-                    div.className = 'polaroid animate-in fade-in slide-in-from-bottom-4';
-                    div.innerHTML = `<img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-center text-xs">${p.caption}</p>`;
-                    setupLongPress(div, async () => {
-                        if (confirm("Delete this moment forever?")) {
-                            await _supabase.from('moments').delete().eq('id', p.id);
-                            div.remove();
-                            triggerHaptic('success');
-                        }
-                    });
-                    list.appendChild(div);
-                });
-            } else {
-                list.innerHTML = '<p class="text-slate-400">No moments yet.</p>';
-            }
+        // --- Mood ---
+        function openMoodModal(user) { 
+            if (user !== myName) { triggerHaptic('warning'); return; }
+            triggerHaptic('light');
+            document.getElementById('mood-modal').classList.remove('hidden'); 
         }
-
-        async function uploadPhoto(input) {
-            if (!input.files[0]) return;
-            const file = input.files[0], name = `moments/${Date.now()}`;
-            await _supabase.storage.from('moments').upload(name, file);
-            const url = _supabase.storage.from('moments').getPublicUrl(name).data.publicUrl;
-            await _supabase.from('moments').insert([{ image_url: url, caption: prompt("Caption?") || "Memory" }]);
-            triggerHaptic('success'); fetchMoments();
-        }
-
-        async function fetchContent() {
-            const { data } = await _supabase.from('stories').select('*').order('created_at', { ascending: false });
-            const list = document.getElementById('story-list');
-            list.innerHTML = '';
-            if (data) {
-                const stories = data.filter(i => !i.is_jar);
-                stories.forEach(i => {
-                    const div = document.createElement('div');
-                    div.className = 'story-card animate-in fade-in slide-in-from-bottom-4';
-                    div.innerHTML = `<p class="font-roygen italic text-slate-700">"${i.text}"</p>`;
-                    setupLongPress(div, async () => {
-                        if (confirm("Delete this story?")) {
-                            await _supabase.from('stories').delete().eq('id', i.id);
-                            div.remove();
-                            triggerHaptic('success');
-                        }
-                    });
-                    list.appendChild(div);
-                });
-                window.jarMemories = data.filter(i => i.is_jar);
-            }
-        }
-
-        async function saveNote(isJar) {
-            const el = document.getElementById(isJar ? 'jar-input' : 'story-input');
-            const btn = document.getElementById(isJar ? 'save-jar-btn' : 'save-story-btn');
-            if(!el.value) return;
-            btn.disabled = true;
-            await _supabase.from('stories').insert([{ text: el.value, is_jar: isJar }]);
-            triggerHaptic('success');
-            document.getElementById(isJar ? 'jar-modal' : 'story-modal').classList.add('hidden');
-            el.value = ''; btn.disabled = false; fetchContent();
-        }
-
-        function renderStory() {
-            if (allStories.length === 0) return;
-            const story = allStories[currentStoryIdx];
-            const view = document.getElementById('view-note-mode');
-            view.style.backgroundImage = story.image_url ? `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url('${story.image_url}')` : 'none';
-            view.style.backgroundColor = story.image_url ? 'transparent' : 'black';
-            document.getElementById('display-daily-text').innerText = story.note_text ? `"${story.note_text}"` : "";
-            document.getElementById('display-daily-author').innerText = story.user_name;
-            document.getElementById('display-daily-time').innerText = new Date(story.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            document.getElementById('story-progress-bars').innerHTML = allStories.map((_, i) => `<div class="h-1 flex-1 rounded-full ${i <= currentStoryIdx ? 'bg-rose-400' : 'bg-white/20'}"></div>`).join('');
-        }
-
-        function updateTimers() {
-            const diff = Math.abs(new Date() - START_DATE);
-            document.getElementById('days').innerText = Math.floor(diff / 86400000);
-            document.getElementById('hours').innerText = Math.floor((diff / 3600000) % 24);
-            document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60);
-            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
-            document.getElementById('personal-greeting').innerText = `Hello, ${myName || 'Love'} ❤️`;
+        async function setMood(emoji, text) {
+            triggerHaptic('medium');
+            await _supabase.from('status').upsert([{ user_name: myName, emoji, text }]);
+            document.getElementById('mood-modal').classList.add('hidden');
+            fetchMood();
         }
         async function fetchMood() {
             const { data } = await _supabase.from('status').select('*');
@@ -465,15 +236,120 @@
                 if(em && tx) { em.innerText = s.emoji; tx.innerText = s.text; }
             });
         }
-        async function setMood(emoji, text) { triggerHaptic('medium'); await _supabase.from('status').upsert([{ user_name: myName, emoji, text }]); document.getElementById('mood-modal').classList.add('hidden'); fetchMood(); }
-        function openMoodModal(user) { if (user !== myName) return; triggerHaptic('light'); document.getElementById('mood-modal').classList.remove('hidden'); }
+
+        // --- Daily Stories with Photos ---
+        let allStories = [], currentStoryIdx = 0;
+        async function fetchDailyNote() {
+            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            const { data } = await _supabase.from('daily_notes').select('*').gt('created_at', yesterday).order('created_at', { ascending: true });
+            allStories = data || [];
+        }
+
+        async function saveDailyNote() {
+            const text = document.getElementById('daily-note-input').value;
+            const photoFile = document.getElementById('daily-photo-input').files[0];
+            const btn = document.getElementById('post-story-btn');
+            if(!text && !photoFile) return;
+            
+            btn.innerText = "Posting...";
+            let imageUrl = null;
+            if (photoFile) {
+                const name = `stories/${Date.now()}-${photoFile.name}`;
+                await _supabase.storage.from('moments').upload(name, photoFile);
+                imageUrl = _supabase.storage.from('moments').getPublicUrl(name).data.publicUrl;
+            }
+
+            await _supabase.from('daily_notes').insert([{ user_name: myName, note_text: text, image_url: imageUrl }]);
+            triggerHaptic('success');
+            document.getElementById('daily-note-input').value = '';
+            document.getElementById('daily-photo-input').value = '';
+            document.getElementById('story-photo-label').innerText = 'Add Photo';
+            toggleDailyWrite(false);
+            await fetchDailyNote(); showDailyNote();
+        }
+
+        function renderStory() {
+            const story = allStories[currentStoryIdx];
+            const view = document.getElementById('view-note-mode');
+            if(story.image_url) {
+                view.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${story.image_url}')`;
+            } else {
+                view.style.backgroundImage = 'none';
+                view.style.backgroundColor = 'black';
+            }
+            document.getElementById('display-daily-text').innerText = story.note_text ? `"${story.note_text}"` : "";
+            document.getElementById('display-daily-author').innerText = story.user_name;
+            document.getElementById('display-daily-time').innerText = new Date(story.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            document.getElementById('story-progress-bars').innerHTML = allStories.map((_, i) => `<div class="h-1 flex-1 rounded-full ${i <= currentStoryIdx ? 'bg-rose-400' : 'bg-white/20'}"></div>`).join('');
+        }
+
         function nextStory() { triggerHaptic('light'); if (currentStoryIdx > 0) { currentStoryIdx--; renderStory(); } else closeDailyNote(); }
         function prevStory() { triggerHaptic('light'); if (currentStoryIdx < allStories.length - 1) { currentStoryIdx++; renderStory(); } }
-        function toggleDailyWrite(isWrite) { document.getElementById('view-note-mode').classList.toggle('hidden', isWrite); document.getElementById('write-note-mode').classList.toggle('hidden', !isWrite); }
+        function showDailyNote() { if (allStories.length === 0) { toggleDailyWrite(true); document.getElementById('daily-note-modal').classList.remove('hidden'); return; } currentStoryIdx = allStories.length - 1; renderStory(); document.getElementById('daily-note-modal').classList.remove('hidden'); }
+        function toggleDailyWrite(isWrite) { triggerHaptic('light'); document.getElementById('view-note-mode').classList.toggle('hidden', isWrite); document.getElementById('write-note-mode').classList.toggle('hidden', !isWrite); }
         function closeDailyNote() { document.getElementById('daily-note-modal').classList.add('hidden'); }
+
+        // --- Tab Core ---
+        function switchTab(t) {
+            triggerHaptic('light');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(t + '-tab').classList.add('active');
+            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-rose-50', 'text-rose-500'); b.classList.add('text-slate-400'); });
+            document.getElementById('nav-' + t).classList.add('bg-rose-50', 'text-rose-500');
+            if(t === 'story') fetchContent(); if(t === 'moments') fetchMoments();
+        }
+
+        async function uploadPhoto(input) {
+            if (!input.files[0]) return;
+            const file = input.files[0], name = `moments/${Date.now()}-${file.name}`;
+            await _supabase.storage.from('moments').upload(name, file);
+            const url = _supabase.storage.from('moments').getPublicUrl(name).data.publicUrl;
+            await _supabase.from('moments').insert([{ image_url: url, caption: prompt("Add a caption?") || "Memory" }]);
+            triggerHaptic('success');
+            fetchMoments();
+        }
+
+        async function fetchMoments() {
+            const { data } = await _supabase.from('moments').select('*').order('created_at', { ascending: false });
+            let h = `<div class="polaroid"><img src="https://github.com/ashishsharma12cmyk/memoryjar2/blob/main/images/1000022361.jpg?raw=true" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-center text-xs">Our lifting journey ❤️</p></div>`;
+            if (data) data.forEach(p => { h += `<div class="polaroid"><img src="${p.image_url}" class="w-full h-auto rounded-sm mb-2"><p class="font-roygen italic text-slate-500 text-center text-xs">${p.caption}</p></div>`; });
+            document.getElementById('moments-list').innerHTML = h;
+        }
+
+        async function fetchContent() {
+            const { data } = await _supabase.from('stories').select('*').order('created_at', { ascending: false });
+            if (data) {
+                document.getElementById('story-list').innerHTML = data.filter(i => !i.is_jar).map(i => `<div class="bg-white/80 p-8 rounded-[2rem] shadow-sm"><p class="font-roygen italic text-slate-700">"${i.text}"</p></div>`).join('');
+                window.jarMemories = data.filter(i => i.is_jar);
+            }
+        }
+
+        async function saveNote(isJar) {
+            const el = document.getElementById(isJar ? 'jar-input' : 'story-input');
+            if(!el.value) return;
+            await _supabase.from('stories').insert([{ text: el.value, is_jar: isJar }]);
+            triggerHaptic('success');
+            document.getElementById(isJar ? 'jar-modal' : 'story-modal').classList.add('hidden');
+            el.value = ''; fetchContent();
+        }
+
         function pickMemory() { triggerHaptic('medium'); const m = window.jarMemories || []; if (!m.length) return; const r = m[Math.floor(Math.random() * m.length)]; document.getElementById('memory-text').innerText = `"${r.text}"`; document.getElementById('memory-date').innerText = new Date(r.created_at).toLocaleDateString(); document.getElementById('memory-display').classList.remove('hidden'); }
-        
-        let player, isPlaying = false;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-audio', { height: '0', width: '0', videoId: 'mb80yhETaD8',
-                playerVars: { 'autoplay':
+
+        function updateTimers() {
+            const now = new Date(), diff = Math.abs(now - START_DATE);
+            document.getElementById('days').innerText = Math.floor(diff / 86400000);
+            document.getElementById('hours').innerText = Math.floor((diff / 3600000) % 24);
+            document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60);
+            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
+            const hr = now.getHours();
+            document.getElementById('personal-greeting').innerText = `${hr < 12 ? "Good Morning" : hr < 18 ? "Good Afternoon" : "Good Evening"}, ${myName || 'Love'} ❤️`;
+        }
+
+        function createFlower() { const d = document.createElement('div'); d.className = 'flower-bg'; d.innerHTML = `<svg width="20" height="20" viewBox="0 0 100 100"><circle cx="50" cy="50" r="12" fill="#FBBF24" /><g fill="white"><ellipse cx="50" cy="20" rx="8" ry="18" /><ellipse cx="50" cy="80" rx="8" ry="18" /><ellipse cx="20" cy="50" rx="18" ry="8" /><ellipse cx="80" cy="50" rx="18" ry="8" /></g></svg>`; d.style.left = Math.random() * 100 + 'vw'; document.getElementById('flower-container').appendChild(d); setTimeout(() => d.remove(), 20000); }
+
+        // --- Init ---
+        setInterval(updateTimers, 1000); setInterval(createFlower, 4000); setInterval(() => { fetchMood(); fetchDailyNote(); }, 5000);
+        updateTimers(); fetchContent(); fetchMoments(); fetchMood(); fetchDailyNote(); highlightMyBubble(); lucide.createIcons();
+    </script>
+</body>
+</html>
