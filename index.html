@@ -19,6 +19,7 @@
         @keyframes vibeFlow { 0%, 100% { background-color: #E9DCC9; } 33% { background-color: #D4A373; } 66% { background-color: #CCD5AE; } }
         .music-vibe-active { animation: vibeFlow 10s ease-in-out infinite !important; }
 
+        /* Floating Daisy Animation */
         .daisy-bg { position: fixed; pointer-events: none; z-index: 5; opacity: 0.6; animation: daisyFloat 20s linear infinite; }
         @keyframes daisyFloat { 0% { transform: translateY(110vh) rotate(0deg); } 100% { transform: translateY(-20vh) rotate(360deg); } }
 
@@ -90,10 +91,7 @@
 
         <div id="moments-tab" class="tab-content text-center">
             <h2 class="text-3xl mb-6 font-roygen italic font-bold">Our Moments</h2>
-            <label class="bg-rose-500 text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg cursor-pointer inline-flex items-center gap-2 mb-8 active:scale-95">
-                <i data-lucide="camera" class="w-4 h-4"></i> Add Photo
-                <input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="uploadPhoto(this)">
-            </label>
+            <label class="bg-rose-500 text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg cursor-pointer inline-flex items-center gap-2 mb-8 active:scale-95"><i data-lucide="camera" class="w-4 h-4"></i> Add Photo<input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="uploadPhoto(this)"></label>
             <div id="moments-list" class="space-y-8"></div>
         </div>
 
@@ -105,19 +103,9 @@
 
         <div id="garden-tab" class="tab-content text-center">
             <h2 class="text-3xl mb-4 font-roygen italic font-bold">Our Garden</h2>
-            <div class="bg-white/50 rounded-3xl p-6 mb-8 border border-white">
-                <p class="text-[10px] font-black text-rose-400 uppercase tracking-[0.2em] mb-2">Khushi's Birthday</p>
-                <div id="bday-countdown" class="text-xl font-black text-slate-800 tracking-tighter">Calculating...</div>
-            </div>
-            <div id="sakura-tree-container" class="mx-auto w-64 h-80 transition-all duration-1000">
-                <svg viewBox="0 0 200 400" class="w-full h-full">
-                    <path id="tree-trunk" d="M100 400 Q95 350 110 300 T100 200 T110 100" stroke="#4A2C2A" stroke-width="8" fill="none" />
-                    <g id="tree-blossoms"></g>
-                </svg>
-            </div>
-            <button onclick="hydrateTree()" class="bg-blue-400 text-white px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-2 mx-auto mt-8 active:scale-110 transition-transform">
-                <i data-lucide="droplets"></i> Hydrate Tree
-            </button>
+            <div class="bg-white/50 rounded-3xl p-6 mb-8 border border-white"><p class="text-[10px] font-black text-rose-400 uppercase mb-2">Khushi's Birthday</p><div id="bday-countdown" class="text-xl font-black text-slate-800">Calculating...</div></div>
+            <div id="sakura-tree-container" class="mx-auto w-64 h-80"><svg viewBox="0 0 200 400" class="w-full h-full"><path id="tree-trunk" d="M100 400 Q95 350 110 300 T100 200 T110 100" stroke="#4A2C2A" stroke-width="8" fill="none" /><g id="tree-blossoms"></g></svg></div>
+            <button onclick="hydrateTree()" class="bg-blue-400 text-white px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-2 mx-auto mt-8 active:scale-110 transition-transform"><i data-lucide="droplets"></i> Hydrate Tree</button>
         </div>
     </main>
 
@@ -128,27 +116,28 @@
         <button onclick="switchTab('garden')" id="nav-garden" class="flex-1 flex flex-col items-center py-2 rounded-full text-slate-400"><i data-lucide="leaf" class="w-5 h-5"></i></button>
     </nav>
 
-    <div id="identity-modal" class="hidden fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-8">
-        <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 text-center shadow-2xl">
-            <h3 class="text-2xl font-bold font-roygen mb-8">Who are you? ❤️</h3>
-            <div class="space-y-4">
-                <button onclick="setIdentity('Aashish')" class="w-full bg-sky-500 text-white py-4 rounded-2xl font-bold shadow-lg">I am Aashish</button>
-                <button onclick="setIdentity('Khushi')" class="w-full bg-rose-500 text-white py-4 rounded-2xl font-bold shadow-lg">I am Khushi</button>
-            </div>
-        </div>
-    </div>
-
     <div id="mood-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-6 text-center">
         <div class="bg-white w-full max-w-sm rounded-[2rem] p-8">
             <h3 class="text-xl font-bold mb-6 font-roygen">My Mood</h3>
             <div class="grid grid-cols-3 gap-3 mb-6">
                 <button onclick="setMood('😊', 'Happy')" class="text-2xl p-3 bg-slate-50 rounded-2xl active:scale-90">😊</button>
                 <button onclick="setMood('🥺', 'Sad')" class="text-2xl p-3 bg-slate-50 rounded-2xl active:scale-90">🥺</button>
+                <button onclick="setMood('🫂', 'Missing you')" class="text-2xl p-3 bg-slate-50 rounded-2xl active:scale-90">🫂</button>
                 <button onclick="setMood('❤️', 'Thinking about you')" class="text-2xl p-3 bg-slate-50 rounded-2xl active:scale-90">❤️</button>
                 <button onclick="setMood('😴', 'Sleeping')" class="text-2xl p-3 bg-slate-50 rounded-2xl active:scale-90">😴</button>
                 <button onclick="setMood('✨', 'Inspired')" class="text-2xl p-3 bg-slate-50 rounded-2xl active:scale-90">✨</button>
             </div>
             <button onclick="document.getElementById('mood-modal').classList.add('hidden')" class="text-slate-400 text-xs font-bold uppercase">Close</button>
+        </div>
+    </div>
+
+    <div id="identity-modal" class="hidden fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-8">
+        <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 text-center shadow-2xl">
+            <h3 class="text-2xl font-bold font-roygen mb-8">Who are you? ❤️</h3>
+            <div class="space-y-4">
+                <button onclick="setIdentity('Aashish')" class="w-full bg-sky-500 text-white py-4 rounded-2xl font-bold">I am Aashish</button>
+                <button onclick="setIdentity('Khushi')" class="w-full bg-rose-500 text-white py-4 rounded-2xl font-bold">I am Khushi</button>
+            </div>
         </div>
     </div>
 
@@ -167,8 +156,7 @@
         <div id="write-note-mode" class="hidden bg-white w-full max-w-sm rounded-[2.5rem] p-8 m-6">
             <h3 class="text-xl font-bold mb-4 font-roygen">Daily Story</h3>
             <label class="w-full flex flex-col items-center px-4 py-4 bg-rose-50 text-rose-500 rounded-2xl border-2 border-dashed border-rose-200 cursor-pointer mb-4">
-                <i data-lucide="camera" class="w-6 h-6 mb-1"></i>
-                <span id="story-photo-label" class="text-[10px] font-bold">Add Photo</span>
+                <i data-lucide="camera" class="w-6 h-6 mb-1"></i><span id="story-photo-label" class="text-[10px] font-bold">Add Photo</span>
                 <input type="file" id="daily-photo-input" accept="image/*" class="hidden" onchange="document.getElementById('story-photo-label').innerText = 'Selected ✅'">
             </label>
             <textarea id="daily-note-input" class="w-full border-2 p-4 rounded-2xl mb-4 outline-none" rows="3" placeholder="Write something..."></textarea>
@@ -185,8 +173,7 @@
         const START_DATE = new Date('2025-05-13T00:00:00');
         const KHUSHI_BDAY = "October 25";
         let myName = localStorage.getItem('userName');
-        let allStories = [], currentStoryIdx = 0, typewriterInterval, holdTimer;
-        let isMusicPlaying = false;
+        let isMusicPlaying = false, holdTimer, allStories = [], currentStoryIdx = 0, typewriterInterval;
         let treeGrowth = parseFloat(localStorage.getItem('treeGrowth')) || 1.0; 
         let treeHealth = parseFloat(localStorage.getItem('treeHealth')) || 100;
 
@@ -194,212 +181,55 @@
 
         // --- Daisy Animation ---
         function createDaisy() {
-            const d = document.createElement('div');
-            d.className = 'daisy-bg';
-            d.innerHTML = `<svg width="25" height="25" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="15" fill="#facc15" />
-                <path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(0 50 50)" />
-                <path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(45 50 50)" />
-                <path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(90 50 50)" />
-                <path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(135 50 50)" />
-                <path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(180 50 50)" />
-                <path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(225 50 50)" />
-                <path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(270 50 50)" />
-                <path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(315 50 50)" />
-                <circle cx="50" cy="50" r="5" fill="#ef4444" />
-            </svg>`;
-            d.style.left = Math.random() * 100 + 'vw';
-            document.getElementById('daisy-container').appendChild(d);
-            setTimeout(() => d.remove(), 20000);
+            const d = document.createElement('div'); d.className = 'daisy-bg';
+            d.innerHTML = `<svg width="25" height="25" viewBox="0 0 100 100"><circle cx="50" cy="50" r="15" fill="#facc15" /><path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(0 50 50)" /><path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(45 50 50)" /><path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(90 50 50)" /><path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(135 50 50)" /><path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(180 50 50)" /><path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(225 50 50)" /><path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(270 50 50)" /><path d="M50 20 Q55 5 60 20 T50 35 T40 20 T50 20" fill="white" transform="rotate(315 50 50)" /><circle cx="50" cy="50" r="5" fill="#ef4444" /></svg>`;
+            d.style.left = Math.random() * 100 + 'vw'; document.getElementById('daisy-container').appendChild(d); setTimeout(() => d.remove(), 20000);
         }
 
-        // --- Music ---
+        // --- Music Player ---
         var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
         document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
         let player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-audio', { height: '0', width: '0', videoId: 'mb80yhETaD8', 
-                playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': 'mb80yhETaD8' }
-            });
-        }
+        function onYouTubeIframeAPIReady() { player = new YT.Player('youtube-audio', { videoId: 'mb80yhETaD8', playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': 'mb80yhETaD8' } }); }
         function toggleMusic() {
-            triggerHaptic('light');
-            const bubble = document.getElementById('music-bubble');
-            const body = document.getElementById('main-body');
-            const icon = document.getElementById('music-bubble-icon');
-            if (!isMusicPlaying) {
-                player.playVideo(); isMusicPlaying = true;
-                bubble.classList.add('animate-pulse', 'border-rose-500');
-                body.classList.add('music-vibe-active');
-                icon.setAttribute('data-lucide', 'pause');
-            } else {
-                player.pauseVideo(); isMusicPlaying = false;
-                bubble.classList.remove('animate-pulse', 'border-rose-500');
-                body.classList.remove('music-vibe-active');
-                icon.setAttribute('data-lucide', 'music');
-            }
+            triggerHaptic('light'); const bubble = document.getElementById('music-bubble'), body = document.getElementById('main-body'), icon = document.getElementById('music-bubble-icon');
+            if (!isMusicPlaying) { player.playVideo(); isMusicPlaying = true; bubble.classList.add('animate-pulse', 'border-rose-500'); body.classList.add('music-vibe-active'); icon.setAttribute('data-lucide', 'pause'); } 
+            else { player.pauseVideo(); isMusicPlaying = false; bubble.classList.remove('animate-pulse', 'border-rose-500'); body.classList.remove('music-vibe-active'); icon.setAttribute('data-lucide', 'music'); }
             lucide.createIcons();
         }
 
-        // --- Identity & Core ---
+        // --- Core logic (Greeting, Identity, Tabs) ---
         function setIdentity(name) { triggerHaptic('medium'); localStorage.setItem('userName', name); myName = name; document.getElementById('identity-modal').classList.add('hidden'); init(); }
-        function init() {
-            if (!myName) { document.getElementById('identity-modal').classList.remove('hidden'); return; }
-            highlightMyBubble(); updateTimers(); updateEnv(); updateTreeVisuals(); updateBdayCountdown();
-            fetchContent(); fetchMoments(); fetchMood(); fetchDailyNote();
-            lucide.createIcons();
-        }
+        function init() { if (!myName) { document.getElementById('identity-modal').classList.remove('hidden'); return; } highlightMyBubble(); updateTimers(); updateEnv(); updateTreeVisuals(); updateBdayCountdown(); fetchContent(); fetchMoments(); fetchMood(); fetchDailyNote(); lucide.createIcons(); }
+        function highlightMyBubble() { document.getElementById('bubble-Aashish').classList.toggle('ring-2', myName === 'Aashish'); document.getElementById('bubble-Khushi').classList.toggle('ring-2', myName === 'Khushi'); }
+        function updateTimers() { const now = new Date(); const diff = Math.abs(now - START_DATE); document.getElementById('days').innerText = Math.floor(diff / 86400000); document.getElementById('hours').innerText = Math.floor((diff / 3600000) % 24); document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60); document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60); const h = now.getHours(); let g = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; document.getElementById('personal-greeting').innerText = `${g}, ${myName} ❤️`; }
+        function updateBdayCountdown() { const now = new Date(); let b = new Date(`${KHUSHI_BDAY}, ${now.getFullYear()}`); if (now > b) b.setFullYear(now.getFullYear() + 1); const d = b - now; document.getElementById('bday-countdown').innerText = `${Math.floor(d / 86400000)} Days & ${Math.floor((d % 86400000) / 3600000)} Hours Left`; }
+        function switchTab(t) { triggerHaptic('light'); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(t + '-tab').classList.add('active'); document.querySelectorAll('nav button').forEach(b => { b.classList.remove('text-rose-500', 'bg-rose-50'); b.classList.add('text-slate-400'); }); document.getElementById('nav-' + t).classList.add('text-rose-500', 'bg-rose-50'); if (t === 'story') fetchContent(); if (t === 'moments') fetchMoments(); }
 
-        function highlightMyBubble() {
-            document.getElementById('bubble-Aashish').classList.toggle('ring-2', myName === 'Aashish');
-            document.getElementById('bubble-Aashish').classList.toggle('ring-sky-400', myName === 'Aashish');
-            document.getElementById('bubble-Khushi').classList.toggle('ring-2', myName === 'Khushi');
-            document.getElementById('bubble-Khushi').classList.toggle('ring-rose-400', myName === 'Khushi');
-        }
+        // --- Long Press Logic ---
+        function setupLongPress(el, id, table) { el.ontouchstart = () => { holdTimer = setTimeout(() => { triggerHaptic('medium'); deleteItem(id, table); }, 1000); }; el.onmousedown = () => { holdTimer = setTimeout(() => { triggerHaptic('medium'); deleteItem(id, table); }, 1000); }; el.ontouchend = () => clearTimeout(holdTimer); el.onmouseup = () => clearTimeout(holdTimer); }
+        async function deleteItem(id, table) { if (confirm("Remove this memory forever? ❤️")) { await _supabase.from(table).delete().eq('id', id); table === 'moments' ? fetchMoments() : fetchContent(); } }
 
-        function updateTimers() {
-            const now = new Date();
-            const diff = Math.abs(now - START_DATE);
-            document.getElementById('days').innerText = Math.floor(diff / 86400000);
-            document.getElementById('hours').innerText = Math.floor((diff / 3600000) % 24);
-            document.getElementById('mins').innerText = Math.floor((diff / 60000) % 60);
-            document.getElementById('secs').innerText = Math.floor((diff / 1000) % 60);
-            
-            const h = now.getHours();
-            let greeting = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening";
-            document.getElementById('personal-greeting').innerText = `${greeting}, ${myName} ❤️`;
-        }
-
-        function updateBdayCountdown() {
-            const now = new Date();
-            let bday = new Date(`${KHUSHI_BDAY}, ${now.getFullYear()}`);
-            if (now > bday) bday.setFullYear(now.getFullYear() + 1);
-            const diff = bday - now;
-            document.getElementById('bday-countdown').innerText = `${Math.floor(diff / 86400000)} Days & ${Math.floor((diff % 86400000) / 3600000)} Hours Left`;
-        }
-
-        function switchTab(tabId) {
-            triggerHaptic('light');
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(tabId + '-tab').classList.add('active');
-            document.querySelectorAll('nav button').forEach(b => {
-                b.classList.remove('text-rose-500', 'bg-rose-50');
-                b.classList.add('text-slate-400');
-            });
-            document.getElementById('nav-' + tabId).classList.add('text-rose-500', 'bg-rose-50');
-            if (tabId === 'story') fetchContent();
-            if (tabId === 'moments') fetchMoments();
-        }
-
-        // --- Content ---
+        // --- Database & Content ---
         async function fetchContent() {
             const { data } = await _supabase.from('stories').select('*').order('created_at', { ascending: false });
-            if (data) {
-                const list = document.getElementById('story-list'); list.innerHTML = '';
-                data.filter(i => !i.is_jar).forEach(i => {
-                    const div = document.createElement('div');
-                    div.className = "bg-white/80 p-6 rounded-3xl shadow-sm border border-white/50 mb-4";
-                    div.innerHTML = `<p class="font-roygen italic text-slate-700">"${i.text}"</p>`;
-                    setupLongPress(div, i.id, 'stories');
-                    list.appendChild(div);
-                });
-                window.jarMemories = data.filter(i => i.is_jar);
-            }
+            if (data) { const list = document.getElementById('story-list'); list.innerHTML = ''; data.filter(i => !i.is_jar).forEach(i => { const div = document.createElement('div'); div.className = "bg-white/80 p-6 rounded-3xl shadow-sm border border-white/50 mb-4"; div.innerHTML = `<p class="font-roygen italic text-slate-700">"${i.text}"</p>`; setupLongPress(div, i.id, 'stories'); list.appendChild(div); }); window.jarMemories = data.filter(i => i.is_jar); }
         }
-
         async function fetchMoments() {
             const { data } = await _supabase.from('moments').select('*').order('created_at', { ascending: false });
-            if (data) {
-                const list = document.getElementById('moments-list'); list.innerHTML = '';
-                data.forEach(p => {
-                    const div = document.createElement('div');
-                    div.className = "polaroid mx-auto max-w-[280px] mb-8";
-                    div.innerHTML = `<img src="${p.image_url}" class="w-full h-auto object-contain max-h-[400px] mb-2"><p class="font-roygen italic text-[10px] text-center">${p.caption}</p>`;
-                    setupLongPress(div, p.id, 'moments');
-                    list.appendChild(div);
-                });
-            }
+            if (data) { const list = document.getElementById('moments-list'); list.innerHTML = ''; data.forEach(p => { const div = document.createElement('div'); div.className = "polaroid mx-auto max-w-[280px] mb-8"; div.innerHTML = `<img src="${p.image_url}" class="w-full h-auto object-contain max-h-[400px] mb-2"><p class="font-roygen italic text-[10px] text-center">${p.caption}</p>`; setupLongPress(div, p.id, 'moments'); list.appendChild(div); }); }
         }
-
-        function setupLongPress(el, id, table) {
-            el.ontouchstart = () => { holdTimer = setTimeout(() => { triggerHaptic('medium'); deleteItem(id, table); }, 1000); };
-            el.onmousedown = () => { holdTimer = setTimeout(() => { triggerHaptic('medium'); deleteItem(id, table); }, 1000); };
-            el.ontouchend = () => clearTimeout(holdTimer); el.onmouseup = () => clearTimeout(holdTimer);
-        }
-
-        async function deleteItem(id, table) {
-            if (confirm("Remove this forever? ❤️")) {
-                const { error } = await _supabase.from(table).delete().eq('id', id);
-                if (!error) { triggerHaptic('success'); table === 'moments' ? fetchMoments() : fetchContent(); }
-            }
-        }
-
-        async function uploadPhoto(input) {
-            if (!input.files[0]) return;
-            const file = input.files[0], name = `moments/${Date.now()}-${file.name.replace(/\s/g, '_')}`;
-            const { error } = await _supabase.storage.from('moments').upload(name, file);
-            if (!error) {
-                const url = _supabase.storage.from('moments').getPublicUrl(name).data.publicUrl;
-                await _supabase.from('moments').insert([{ image_url: url, caption: prompt("Caption?") || "❤️" }]);
-                fetchMoments(); treeGrowth += 0.05; updateTreeVisuals(); triggerHaptic('success');
-            }
-        }
-
-        async function saveNote(isJar) {
-            const el = document.getElementById(isJar ? 'jar-input' : 'story-input');
-            if (!el.value) return;
-            const { error } = await _supabase.from('stories').insert([{ text: el.value, is_jar: isJar }]);
-            if(!error) {
-                document.getElementById(isJar ? 'jar-modal' : 'story-modal').classList.add('hidden');
-                el.value = ''; fetchContent(); triggerHaptic('success');
-                treeGrowth += 0.05; updateTreeVisuals();
-            }
-        }
-
-        function pickMemory() {
-            triggerHaptic('medium');
-            const jar = document.getElementById('jar-container'); jar.classList.add('shake-jar');
-            setTimeout(() => {
-                jar.classList.remove('shake-jar');
-                const m = window.jarMemories || []; if (!m.length) return;
-                const r = m[Math.floor(Math.random() * m.length)];
-                document.getElementById('memory-text').innerText = `"${r.text}"`;
-                document.getElementById('memory-date').innerText = new Date(r.created_at).toLocaleDateString();
-                document.getElementById('memory-display').classList.remove('hidden');
-            }, 400);
-        }
+        async function uploadPhoto(input) { if (!input.files[0]) return; const file = input.files[0], name = `moments/${Date.now()}-${file.name.replace(/\s/g, '_')}`; const { error } = await _supabase.storage.from('moments').upload(name, file); if (!error) { const url = _supabase.storage.from('moments').getPublicUrl(name).data.publicUrl; await _supabase.from('moments').insert([{ image_url: url, caption: prompt("Caption?") || "❤️" }]); fetchMoments(); treeGrowth += 0.05; updateTreeVisuals(); triggerHaptic('success'); } }
+        async function saveNote(isJar) { const el = document.getElementById(isJar ? 'jar-input' : 'story-input'); if (!el.value) return; const { error } = await _supabase.from('stories').insert([{ text: el.value, is_jar: isJar }]); if(!error) { document.getElementById(isJar ? 'jar-modal' : 'story-modal').classList.add('hidden'); el.value = ''; fetchContent(); treeGrowth += 0.05; updateTreeVisuals(); triggerHaptic('success'); } }
+        function pickMemory() { triggerHaptic('medium'); const jar = document.getElementById('jar-container'); jar.classList.add('shake-jar'); setTimeout(() => { jar.classList.remove('shake-jar'); const m = window.jarMemories || []; if (!m.length) return; const r = m[Math.floor(Math.random() * m.length)]; document.getElementById('memory-text').innerText = `"${r.text}"`; document.getElementById('memory-display').classList.remove('hidden'); }, 400); }
 
         // --- Daily Notes ---
-        async function fetchDailyNote() {
-            const yest = new Date(Date.now() - 24*60*60*1000).toISOString();
-            const { data } = await _supabase.from('daily_notes').select('*').gt('created_at', yest).order('created_at', { ascending: true });
-            allStories = data || [];
-        }
+        async function fetchDailyNote() { const yest = new Date(Date.now() - 24*60*60*1000).toISOString(); const { data } = await _supabase.from('daily_notes').select('*').gt('created_at', yest).order('created_at', { ascending: true }); allStories = data || []; }
         async function saveDailyNote() {
-            const text = document.getElementById('daily-note-input').value, photo = document.getElementById('daily-photo-input').files[0], btn = document.getElementById('post-story-btn');
-            if(!text && !photo) return;
-            btn.innerText = "Posting..."; btn.disabled = true;
-            try {
-                let imgUrl = null;
-                if (photo) {
-                    const fname = `stories/${Date.now()}-${photo.name.replace(/\s/g, '_')}`;
-                    await _supabase.storage.from('moments').upload(fname, photo);
-                    imgUrl = _supabase.storage.from('moments').getPublicUrl(fname).data.publicUrl;
-                }
-                const { error } = await _supabase.from('daily_notes').insert([{ user_name: myName, note_text: text || "", image_url: imgUrl }]);
-                if (error) throw error;
-                treeGrowth += 0.1; treeHealth = 100; updateTreeVisuals();
-                toggleDailyWrite(false); await fetchDailyNote(); showDailyNote();
-            } catch (err) { alert(err.message); } finally { btn.innerText = "Post ❤️"; btn.disabled = false; }
+            const text = document.getElementById('daily-note-input').value, photo = document.getElementById('daily-photo-input').files[0], btn = document.getElementById('post-story-btn'); if(!text && !photo) return; btn.innerText = "Posting..."; btn.disabled = true;
+            try { let imgUrl = null; if (photo) { const fname = `stories/${Date.now()}-${photo.name.replace(/\s/g, '_')}`; await _supabase.storage.from('moments').upload(fname, photo); imgUrl = _supabase.storage.from('moments').getPublicUrl(fname).data.publicUrl; } await _supabase.from('daily_notes').insert([{ user_name: myName, note_text: text || "", image_url: imgUrl }]); treeGrowth += 0.1; treeHealth = 100; updateTreeVisuals(); toggleDailyWrite(false); await fetchDailyNote(); showDailyNote(); } catch (err) { alert(err.message); } finally { btn.innerText = "Post ❤️"; btn.disabled = false; }
         }
-
-        function renderStory() {
-            const s = allStories[currentStoryIdx], v = document.getElementById('view-note-mode');
-            v.style.backgroundImage = s.image_url ? `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('${s.image_url}')` : 'none';
-            document.getElementById('display-daily-author').innerText = s.user_name;
-            runTypewriter(document.getElementById('display-daily-text'), s.note_text ? `"${s.note_text}"` : "");
-            document.getElementById('story-progress-bars').innerHTML = allStories.map((_, i) => `<div class="h-1 flex-1 rounded-full ${i <= currentStoryIdx ? 'bg-white' : 'bg-white/20'}"></div>`).join('');
-        }
+        function renderStory() { const s = allStories[currentStoryIdx], v = document.getElementById('view-note-mode'); v.style.backgroundImage = s.image_url ? `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('${s.image_url}')` : 'none'; document.getElementById('display-daily-author').innerText = s.user_name; runTypewriter(document.getElementById('display-daily-text'), s.note_text ? `"${s.note_text}"` : ""); document.getElementById('story-progress-bars').innerHTML = allStories.map((_, i) => `<div class="h-1 flex-1 rounded-full ${i <= currentStoryIdx ? 'bg-white' : 'bg-white/20'}"></div>`).join(''); }
         function runTypewriter(el, text) { clearInterval(typewriterInterval); el.innerText = ""; let i = 0; typewriterInterval = setInterval(() => { if (i < text.length) { el.innerText += text.charAt(i); i++; } else clearInterval(typewriterInterval); }, 50); }
         function showDailyNote() { if (!allStories.length) toggleDailyWrite(true); else { currentStoryIdx = 0; renderStory(); } document.getElementById('daily-note-modal').classList.remove('hidden'); }
         function closeDailyNote() { document.getElementById('daily-note-modal').classList.add('hidden'); clearInterval(typewriterInterval); }
@@ -407,40 +237,15 @@
         function nextStory() { if (currentStoryIdx < allStories.length - 1) { currentStoryIdx++; renderStory(); } else closeDailyNote(); }
         function prevStory() { if (currentStoryIdx > 0) { currentStoryIdx--; renderStory(); } }
 
-        // --- Visuals ---
-        function updateTreeVisuals() {
-            const trunk = document.getElementById('tree-trunk'), blossoms = document.getElementById('tree-blossoms'), container = document.getElementById('sakura-tree-container');
-            container.style.transform = `scale(${0.6 + (treeGrowth * 0.1)})`;
-            let bHTML = '';
-            for(let i = 0; i < Math.floor(treeGrowth * 5); i++) {
-                bHTML += `<circle cx="${100 + Math.sin(i)*60}" cy="${300 - i*30}" r="${10 + treeHealth/8}" fill="${treeHealth < 30 ? "#d1c4c9" : "#FFB7C5"}" opacity="${0.4 + (treeHealth/100)*0.4}" />`;
-            }
-            blossoms.innerHTML = bHTML;
-            localStorage.setItem('treeGrowth', treeGrowth); localStorage.setItem('treeHealth', treeHealth);
-        }
+        // --- Tree, Mood & Environment ---
+        function updateTreeVisuals() { const trunk = document.getElementById('tree-trunk'), blossoms = document.getElementById('tree-blossoms'), container = document.getElementById('sakura-tree-container'); container.style.transform = `scale(${0.6 + (treeGrowth * 0.1)})`; let bHTML = ''; for(let i = 0; i < Math.floor(treeGrowth * 5); i++) { bHTML += `<circle cx="${100 + Math.sin(i)*60}" cy="${300 - i*30}" r="${10 + treeHealth/8}" fill="${treeHealth < 30 ? "#d1c4c9" : "#FFB7C5"}" opacity="${0.4 + (treeHealth/100)*0.4}" />`; } blossoms.innerHTML = bHTML; localStorage.setItem('treeGrowth', treeGrowth); localStorage.setItem('treeHealth', treeHealth); }
         function hydrateTree() { triggerHaptic('success'); treeHealth = Math.min(100, treeHealth + 25); updateTreeVisuals(); }
-        
-        function updateEnv() {
-            const h = new Date().getHours(), body = document.getElementById('main-body');
-            body.classList.remove('theme-day', 'theme-sunset', 'theme-night');
-            if (h >= 6 && h < 17) body.classList.add('theme-day');
-            else if (h >= 17 && h < 19) body.classList.add('theme-sunset');
-            else body.classList.add('theme-night');
-        }
-
-        async function fetchMood() {
-            const { data } = await _supabase.from('status').select('*');
-            if (data) data.forEach(s => {
-                const em = document.getElementById(`mood-emoji-${s.user_name}`), tx = document.getElementById(`mood-text-${s.user_name}`);
-                if (em && tx) { em.innerText = s.emoji; tx.innerText = s.text; }
-            });
-        }
         function openMoodModal(user) { if (user === myName) { triggerHaptic('light'); document.getElementById('mood-modal').classList.remove('hidden'); } }
         async function setMood(emoji, text) { triggerHaptic('medium'); await _supabase.from('status').upsert([{ user_name: myName, emoji, text }]); document.getElementById('mood-modal').classList.add('hidden'); fetchMood(); }
+        async function fetchMood() { const { data } = await _supabase.from('status').select('*'); if (data) data.forEach(s => { const em = document.getElementById(`mood-emoji-${s.user_name}`), tx = document.getElementById(`mood-text-${s.user_name}`); if (em && tx) { em.innerText = s.emoji; tx.innerText = s.text; } }); }
+        function updateEnv() { const h = new Date().getHours(), body = document.getElementById('main-body'); body.classList.remove('theme-day', 'theme-sunset', 'theme-night'); if (h >= 6 && h < 17) body.classList.add('theme-day'); else if (h >= 17 && h < 19) body.classList.add('theme-sunset'); else body.classList.add('theme-night'); }
 
-        setInterval(updateTimers, 1000);
-        setInterval(createDaisy, 4000);
-        setInterval(() => { treeHealth = Math.max(0, treeHealth - 0.2); updateTreeVisuals(); }, 60000);
+        setInterval(updateTimers, 1000); setInterval(createDaisy, 4000); setInterval(() => { treeHealth = Math.max(0, treeHealth - 0.2); updateTreeVisuals(); }, 60000);
         init();
     </script>
 </body>
